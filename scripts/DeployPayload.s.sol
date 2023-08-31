@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: MIT
-// ################ EXAMPLE ################
-// PLEASE COPY THE FILE & ADJUST ACCORDINGLY
-//    WE WILL REMOVE SCRIPTS PERIODICALLY
-// #########################################
 pragma solidity ^0.8.0;
-import {EthereumScript} from 'aave-helpers/ScriptUtils.sol';
-import {ProposalPayloadStkAave, ProposalPayloadStkAbpt} from '../src/contracts/ProposalPayload.sol';
 
-contract DeployPayloads is EthereumScript {
+import {EthereumScript} from 'aave-helpers/ScriptUtils.sol';
+import {UpdateStkAavePayload, ProposalPayloadStkAbpt} from '../src/contracts/ProposalPayload.sol';
+
+contract DeployUpdateStkPayload is EthereumScript {
+  address public constant STK_IMPL = address(1);
+
   function run() external broadcast {
-    new ProposalPayloadStkAave();
+    new UpdateStkAavePayload(STK_IMPL);
+  }
+}
+
+contract DeployUpdateABPTPayload is EthereumScript {
+  function run() external broadcast {
     new ProposalPayloadStkAbpt();
   }
 }

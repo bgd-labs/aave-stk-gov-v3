@@ -174,12 +174,14 @@ contract SlashingValidation is BaseTest {
   function testFail_changeMaxSlashingToHigh() public {
     vm.startPrank(STAKE_CONTRACT.getAdmin(SLASHING_ADMIN));
     STAKE_CONTRACT.setMaxSlashablePercentage(10000);
+    vm.stopPrank();
   }
 
   function test_changeMaxSlashing() public {
     vm.startPrank(STAKE_CONTRACT.getAdmin(SLASHING_ADMIN));
     STAKE_CONTRACT.setMaxSlashablePercentage(1000);
     assertEq(STAKE_CONTRACT.getMaxSlashablePercentage(), 1000);
+    vm.stopPrank();
   }
 
   function test_slashMoreThanMax() public {
