@@ -25,7 +25,7 @@ After having installed Foundry:
 ## Security
 
 - Internal testing and review by the BGD Labs team, but in terms of logic and upgradeability considerations.
-    - [Test suite](./test/)
+    - [Test suite](./tests/)
     - [Storage layout diffs](./diffs/)
 - Security review and properties checking (formal verification) by [Certora](https://www.certora.com/), service provider of the Aave DAO.
     - [Properties](./certora/)
