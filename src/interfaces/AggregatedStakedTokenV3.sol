@@ -7,6 +7,7 @@ interface AggregatedStakedTokenV3 {
   event Cooldown(address indexed user, uint256 amount);
   event CooldownSecondsChanged(uint256 cooldownSeconds);
   event DelegateChanged(address indexed delegator, address indexed delegatee, uint8 delegationType);
+  event EIP712DomainChanged();
   event ExchangeRateChanged(uint216 exchangeRate);
   event FundsReturned(uint256 amount);
   event MaxSlashablePercentageChanged(uint256 newPercentage);
@@ -115,14 +116,18 @@ interface AggregatedStakedTokenV3 {
 
   function delegateByType(address delegatee, uint8 delegationType) external;
 
-  function deprecated_aaveGovernance() external view returns (address);
-
-  function deprecated_votingSnapshots(
-    address,
-    uint256
-  ) external view returns (uint128 blockNumber, uint128 value);
-
-  function deprecated_votingSnapshotsCounts(address) external view returns (uint256);
+  function eip712Domain()
+    external
+    view
+    returns (
+      bytes1 fields,
+      string memory name,
+      string memory version,
+      uint256 chainId,
+      address verifyingContract,
+      bytes32 salt,
+      uint256[] memory extensions
+    );
 
   function getAdmin(uint256 role) external view returns (address);
 
@@ -153,13 +158,7 @@ interface AggregatedStakedTokenV3 {
 
   function increaseAllowance(address spender, uint256 addedValue) external returns (bool);
 
-  function initialize(
-    address slashingAdmin,
-    address cooldownPauseAdmin,
-    address claimHelper,
-    uint256 maxSlashablePercentage,
-    uint256 cooldownSeconds
-  ) external;
+  function initialize() external;
 
   function metaDelegate(
     address delegator,
@@ -213,6 +212,15 @@ interface AggregatedStakedTokenV3 {
   function slash(address destination, uint256 amount) external returns (uint256);
 
   function stake(address to, uint256 amount) external;
+
+  function stakeWithPermit(
+    address from,
+    uint256 amount,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external;
 
   function stakerRewardsToClaim(address) external view returns (uint256);
 

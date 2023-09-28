@@ -115,406 +115,6 @@ interface IERC20Metadata is IERC20 {
   function decimals() external view returns (uint8);
 }
 
-// OpenZeppelin Contracts v4.4.1 (token/ERC20/utils/SafeERC20.sol)
-
-// OpenZeppelin Contracts (last updated v4.8.0) (utils/Address.sol)
-
-/**
- * @dev Collection of functions related to the address type
- */
-library Address {
-  /**
-   * @dev Returns true if `account` is a contract.
-   *
-   * [IMPORTANT]
-   * ====
-   * It is unsafe to assume that an address for which this function returns
-   * false is an externally-owned account (EOA) and not a contract.
-   *
-   * Among others, `isContract` will return false for the following
-   * types of addresses:
-   *
-   *  - an externally-owned account
-   *  - a contract in construction
-   *  - an address where a contract will be created
-   *  - an address where a contract lived, but was destroyed
-   * ====
-   *
-   * [IMPORTANT]
-   * ====
-   * You shouldn't rely on `isContract` to protect against flash loan attacks!
-   *
-   * Preventing calls from contracts is highly discouraged. It breaks composability, breaks support for smart wallets
-   * like Gnosis Safe, and does not provide security since it can be circumvented by calling from a contract
-   * constructor.
-   * ====
-   */
-  function isContract(address account) internal view returns (bool) {
-    // This method relies on extcodesize/address.code.length, which returns 0
-    // for contracts in construction, since the code is only stored at the end
-    // of the constructor execution.
-
-    return account.code.length > 0;
-  }
-
-  /**
-   * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
-   * `recipient`, forwarding all available gas and reverting on errors.
-   *
-   * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
-   * of certain opcodes, possibly making contracts go over the 2300 gas limit
-   * imposed by `transfer`, making them unable to receive funds via
-   * `transfer`. {sendValue} removes this limitation.
-   *
-   * https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/[Learn more].
-   *
-   * IMPORTANT: because control is transferred to `recipient`, care must be
-   * taken to not create reentrancy vulnerabilities. Consider using
-   * {ReentrancyGuard} or the
-   * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
-   */
-  function sendValue(address payable recipient, uint256 amount) internal {
-    require(address(this).balance >= amount, 'Address: insufficient balance');
-
-    (bool success, ) = recipient.call{value: amount}('');
-    require(success, 'Address: unable to send value, recipient may have reverted');
-  }
-
-  /**
-   * @dev Performs a Solidity function call using a low level `call`. A
-   * plain `call` is an unsafe replacement for a function call: use this
-   * function instead.
-   *
-   * If `target` reverts with a revert reason, it is bubbled up by this
-   * function (like regular Solidity function calls).
-   *
-   * Returns the raw returned data. To convert to the expected return value,
-   * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
-   *
-   * Requirements:
-   *
-   * - `target` must be a contract.
-   * - calling `target` with `data` must not revert.
-   *
-   * _Available since v3.1._
-   */
-  function functionCall(address target, bytes memory data) internal returns (bytes memory) {
-    return functionCallWithValue(target, data, 0, 'Address: low-level call failed');
-  }
-
-  /**
-   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
-   * `errorMessage` as a fallback revert reason when `target` reverts.
-   *
-   * _Available since v3.1._
-   */
-  function functionCall(
-    address target,
-    bytes memory data,
-    string memory errorMessage
-  ) internal returns (bytes memory) {
-    return functionCallWithValue(target, data, 0, errorMessage);
-  }
-
-  /**
-   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-   * but also transferring `value` wei to `target`.
-   *
-   * Requirements:
-   *
-   * - the calling contract must have an ETH balance of at least `value`.
-   * - the called Solidity function must be `payable`.
-   *
-   * _Available since v3.1._
-   */
-  function functionCallWithValue(
-    address target,
-    bytes memory data,
-    uint256 value
-  ) internal returns (bytes memory) {
-    return functionCallWithValue(target, data, value, 'Address: low-level call with value failed');
-  }
-
-  /**
-   * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
-   * with `errorMessage` as a fallback revert reason when `target` reverts.
-   *
-   * _Available since v3.1._
-   */
-  function functionCallWithValue(
-    address target,
-    bytes memory data,
-    uint256 value,
-    string memory errorMessage
-  ) internal returns (bytes memory) {
-    require(address(this).balance >= value, 'Address: insufficient balance for call');
-    (bool success, bytes memory returndata) = target.call{value: value}(data);
-    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
-  }
-
-  /**
-   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-   * but performing a static call.
-   *
-   * _Available since v3.3._
-   */
-  function functionStaticCall(
-    address target,
-    bytes memory data
-  ) internal view returns (bytes memory) {
-    return functionStaticCall(target, data, 'Address: low-level static call failed');
-  }
-
-  /**
-   * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
-   * but performing a static call.
-   *
-   * _Available since v3.3._
-   */
-  function functionStaticCall(
-    address target,
-    bytes memory data,
-    string memory errorMessage
-  ) internal view returns (bytes memory) {
-    (bool success, bytes memory returndata) = target.staticcall(data);
-    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
-  }
-
-  /**
-   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-   * but performing a delegate call.
-   *
-   * _Available since v3.4._
-   */
-  function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
-    return functionDelegateCall(target, data, 'Address: low-level delegate call failed');
-  }
-
-  /**
-   * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
-   * but performing a delegate call.
-   *
-   * _Available since v3.4._
-   */
-  function functionDelegateCall(
-    address target,
-    bytes memory data,
-    string memory errorMessage
-  ) internal returns (bytes memory) {
-    (bool success, bytes memory returndata) = target.delegatecall(data);
-    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
-  }
-
-  /**
-   * @dev Tool to verify that a low level call to smart-contract was successful, and revert (either by bubbling
-   * the revert reason or using the provided one) in case of unsuccessful call or if target was not a contract.
-   *
-   * _Available since v4.8._
-   */
-  function verifyCallResultFromTarget(
-    address target,
-    bool success,
-    bytes memory returndata,
-    string memory errorMessage
-  ) internal view returns (bytes memory) {
-    if (success) {
-      if (returndata.length == 0) {
-        // only check isContract if the call was successful and the return data is empty
-        // otherwise we already know that it was a contract
-        require(isContract(target), 'Address: call to non-contract');
-      }
-      return returndata;
-    } else {
-      _revert(returndata, errorMessage);
-    }
-  }
-
-  /**
-   * @dev Tool to verify that a low level call was successful, and revert if it wasn't, either by bubbling the
-   * revert reason or using the provided one.
-   *
-   * _Available since v4.3._
-   */
-  function verifyCallResult(
-    bool success,
-    bytes memory returndata,
-    string memory errorMessage
-  ) internal pure returns (bytes memory) {
-    if (success) {
-      return returndata;
-    } else {
-      _revert(returndata, errorMessage);
-    }
-  }
-
-  function _revert(bytes memory returndata, string memory errorMessage) private pure {
-    // Look for revert reason and bubble it up if present
-    if (returndata.length > 0) {
-      // The easiest way to bubble the revert reason is using memory via assembly
-      /// @solidity memory-safe-assembly
-      assembly {
-        let returndata_size := mload(returndata)
-        revert(add(32, returndata), returndata_size)
-      }
-    } else {
-      revert(errorMessage);
-    }
-  }
-}
-
-/**
- * @title SafeERC20
- * @dev Wrappers around ERC20 operations that throw on failure (when the token
- * contract returns false). Tokens that return no value (and instead revert or
- * throw on failure) are also supported, non-reverting calls are assumed to be
- * successful.
- * To use this library you can add a `using SafeERC20 for IERC20;` statement to your contract,
- * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
- */
-library SafeERC20 {
-  using Address for address;
-
-  function safeTransfer(IERC20 token, address to, uint256 value) internal {
-    _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
-  }
-
-  function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
-    );
-  }
-
-  /**
-   * @dev Deprecated. This function has issues similar to the ones found in
-   * {IERC20-approve}, and its usage is discouraged.
-   *
-   * Whenever possible, use {safeIncreaseAllowance} and
-   * {safeDecreaseAllowance} instead.
-   */
-  function safeApprove(IERC20 token, address spender, uint256 value) internal {
-    // safeApprove should only be called when setting an initial allowance,
-    // or when resetting it to zero. To increase and decrease it, use
-    // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
-    require(
-      (value == 0) || (token.allowance(address(this), spender) == 0),
-      'SafeERC20: approve from non-zero to non-zero allowance'
-    );
-    _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
-  }
-
-  function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
-    uint256 newAllowance = token.allowance(address(this), spender) + value;
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.approve.selector, spender, newAllowance)
-    );
-  }
-
-  function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
-    unchecked {
-      uint256 oldAllowance = token.allowance(address(this), spender);
-      require(oldAllowance >= value, 'SafeERC20: decreased allowance below zero');
-      uint256 newAllowance = oldAllowance - value;
-      _callOptionalReturn(
-        token,
-        abi.encodeWithSelector(token.approve.selector, spender, newAllowance)
-      );
-    }
-  }
-
-  /**
-   * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
-   * on the return value: the return value is optional (but if data is returned, it must not be false).
-   * @param token The token targeted by the call.
-   * @param data The call data (encoded using abi.encode or one of its variants).
-   */
-  function _callOptionalReturn(IERC20 token, bytes memory data) private {
-    // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
-    // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
-    // the target address contains contract code and also asserts for success in the low-level call.
-
-    bytes memory returndata = address(token).functionCall(data, 'SafeERC20: low-level call failed');
-    if (returndata.length > 0) {
-      // Return data is optional
-      require(abi.decode(returndata, (bool)), 'SafeERC20: ERC20 operation did not succeed');
-    }
-  }
-}
-
-interface IAaveDistributionManager {
-  function configureAssets(DistributionTypes.AssetConfigInput[] memory assetsConfigInput) external;
-}
-
-interface IStakedTokenV2 {
-  struct CooldownSnapshot {
-    uint40 timestamp;
-    uint216 amount;
-  }
-
-  event RewardsAccrued(address user, uint256 amount);
-  event RewardsClaimed(address indexed from, address indexed to, uint256 amount);
-  event Cooldown(address indexed user, uint256 amount);
-
-  /**
-   * @dev Allows staking a specified amount of STAKED_TOKEN
-   * @param to The address to receiving the shares
-   * @param amount The amount of assets to be staked
-   */
-  function stake(address to, uint256 amount) external;
-
-  /**
-   * @dev Redeems shares, and stop earning rewards
-   * @param to Address to redeem to
-   * @param amount Amount of shares to redeem
-   */
-  function redeem(address to, uint256 amount) external;
-
-  /**
-   * @dev Activates the cooldown period to unstake
-   * - It can't be called if the user is not staking
-   */
-  function cooldown() external;
-
-  /**
-   * @dev Claims an `amount` of `REWARD_TOKEN` to the address `to`
-   * @param to Address to send the claimed rewards
-   * @param amount Amount to stake
-   */
-  function claimRewards(address to, uint256 amount) external;
-
-  /**
-   * @dev Return the total rewards pending to claim by an staker
-   * @param staker The staker address
-   * @return The rewards
-   */
-  function getTotalRewardsBalance(address staker) external view returns (uint256);
-
-  /**
-   * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
-   * @param owner the owner of the funds
-   * @param spender the spender
-   * @param value the amount
-   * @param deadline the deadline timestamp, type(uint256).max for no deadline
-   * @param v signature param
-   * @param s signature param
-   * @param r signature param
-   */
-  function permit(
-    address owner,
-    address spender,
-    uint256 value,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external;
-}
-
-// Contract modified from OpenZeppelin Contracts (last updated v4.9.0) (utils/cryptography/EIP712.sol) to remove local
-// fallback storage variables, so contract does not affect on existing storage layout. This works as its used on contracts
-// that have name and revision < 32 bytes
-
 // OpenZeppelin Contracts (last updated v4.9.0) (utils/cryptography/ECDSA.sol)
 
 // OpenZeppelin Contracts (last updated v4.9.0) (utils/Strings.sol)
@@ -1317,6 +917,966 @@ library ECDSA {
   }
 }
 
+/** @notice influenced by OpenZeppelin SafeCast lib, which is missing to uint72 cast
+ * @author BGD Labs
+ */
+library SafeCast72 {
+  /**
+   * @dev Returns the downcasted uint72 from uint256, reverting on
+   * overflow (when the input is greater than largest uint72).
+   *
+   * Counterpart to Solidity's `uint16` operator.
+   *
+   * Requirements:
+   *
+   * - input must fit into 72 bits
+   */
+  function toUint72(uint256 value) internal pure returns (uint72) {
+    require(value <= type(uint72).max, "SafeCast: value doesn't fit in 72 bits");
+    return uint72(value);
+  }
+}
+
+interface IGovernancePowerDelegationToken {
+  enum GovernancePowerType {
+    VOTING,
+    PROPOSITION
+  }
+
+  /**
+   * @dev emitted when a user delegates to another
+   * @param delegator the user which delegated governance power
+   * @param delegatee the delegatee
+   * @param delegationType the type of delegation (VOTING, PROPOSITION)
+   **/
+  event DelegateChanged(
+    address indexed delegator,
+    address indexed delegatee,
+    GovernancePowerType delegationType
+  );
+
+  // @dev we removed DelegatedPowerChanged event because to reconstruct the full state of the system,
+  // is enough to have Transfer and DelegateChanged TODO: document it
+
+  /**
+   * @dev delegates the specific power to a delegatee
+   * @param delegatee the user which delegated power will change
+   * @param delegationType the type of delegation (VOTING, PROPOSITION)
+   **/
+  function delegateByType(address delegatee, GovernancePowerType delegationType) external;
+
+  /**
+   * @dev delegates all the governance powers to a specific user
+   * @param delegatee the user to which the powers will be delegated
+   **/
+  function delegate(address delegatee) external;
+
+  /**
+   * @dev returns the delegatee of an user
+   * @param delegator the address of the delegator
+   * @param delegationType the type of delegation (VOTING, PROPOSITION)
+   * @return address of the specified delegatee
+   **/
+  function getDelegateeByType(
+    address delegator,
+    GovernancePowerType delegationType
+  ) external view returns (address);
+
+  /**
+   * @dev returns delegates of an user
+   * @param delegator the address of the delegator
+   * @return a tuple of addresses the VOTING and PROPOSITION delegatee
+   **/
+  function getDelegates(address delegator) external view returns (address, address);
+
+  /**
+   * @dev returns the current voting or proposition power of a user.
+   * @param user the user
+   * @param delegationType the type of delegation (VOTING, PROPOSITION)
+   * @return the current voting or proposition power of a user
+   **/
+  function getPowerCurrent(
+    address user,
+    GovernancePowerType delegationType
+  ) external view returns (uint256);
+
+  /**
+   * @dev returns the current voting or proposition power of a user.
+   * @param user the user
+   * @return the current voting and proposition power of a user
+   **/
+  function getPowersCurrent(address user) external view returns (uint256, uint256);
+
+  /**
+   * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
+   * @param delegator the owner of the funds
+   * @param delegatee the user to who owner delegates his governance power
+   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
+   * @param deadline the deadline timestamp, type(uint256).max for no deadline
+   * @param v signature param
+   * @param s signature param
+   * @param r signature param
+   */
+  function metaDelegateByType(
+    address delegator,
+    address delegatee,
+    GovernancePowerType delegationType,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external;
+
+  /**
+   * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
+   * @param delegator the owner of the funds
+   * @param delegatee the user to who delegator delegates his voting and proposition governance power
+   * @param deadline the deadline timestamp, type(uint256).max for no deadline
+   * @param v signature param
+   * @param s signature param
+   * @param r signature param
+   */
+  function metaDelegate(
+    address delegator,
+    address delegatee,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external;
+}
+
+enum DelegationMode {
+  NO_DELEGATION,
+  VOTING_DELEGATED,
+  PROPOSITION_DELEGATED,
+  FULL_POWER_DELEGATED
+}
+
+/**
+ * @notice The contract implements generic delegation functionality for the upcoming governance v3
+ * @author BGD Labs
+ * @dev to make it's pluggable to any exising token it has a set of virtual functions
+ *   for simple access to balances and permit functionality
+ * @dev ************ IMPORTANT SECURITY CONSIDERATION ************
+ *   current version of the token can be used only with asset which has 18 decimals
+ *   and possible totalSupply lower then 4722366482869645213696,
+ *   otherwise at least POWER_SCALE_FACTOR should be adjusted !!!
+ *   *************************************************************
+ */
+abstract contract BaseDelegation is IGovernancePowerDelegationToken {
+  struct DelegationState {
+    uint72 delegatedPropositionBalance;
+    uint72 delegatedVotingBalance;
+    DelegationMode delegationMode;
+  }
+
+  mapping(address => address) internal _votingDelegatee;
+  mapping(address => address) internal _propositionDelegatee;
+
+  /** @dev we assume that for the governance system delegation with 18 decimals of precision is not needed,
+   *   by this constant we reduce it by 10, to 8 decimals.
+   *   In case of Aave token this will allow to work with up to 47'223'664'828'696,45213696 total supply
+   *   If your token already have less then 10 decimals, please change it to appropriate.
+   */
+  uint256 public constant POWER_SCALE_FACTOR = 1e10;
+
+  bytes32 public constant DELEGATE_BY_TYPE_TYPEHASH =
+    keccak256(
+      'DelegateByType(address delegator,address delegatee,uint8 delegationType,uint256 nonce,uint256 deadline)'
+    );
+  bytes32 public constant DELEGATE_TYPEHASH =
+    keccak256('Delegate(address delegator,address delegatee,uint256 nonce,uint256 deadline)');
+
+  /**
+   * @notice returns eip-2612 compatible domain separator
+   * @dev we expect that existing tokens, ie Aave, already have, so we want to reuse
+   * @return domain separator
+   */
+  function _getDomainSeparator() internal view virtual returns (bytes32);
+
+  /**
+   * @notice gets the delegation state of a user
+   * @param user address
+   * @return state of a user's delegation
+   */
+  function _getDelegationState(address user) internal view virtual returns (DelegationState memory);
+
+  /**
+   * @notice returns the token balance of a user
+   * @param user address
+   * @return current nonce before increase
+   */
+  function _getBalance(address user) internal view virtual returns (uint256);
+
+  /**
+   * @notice increases and return the current nonce of a user
+   * @dev should use `return nonce++;` pattern
+   * @param user address
+   * @return current nonce before increase
+   */
+  function _incrementNonces(address user) internal virtual returns (uint256);
+
+  /**
+   * @notice sets the delegation state of a user
+   * @param user address
+   * @param delegationState state of a user's delegation
+   */
+  function _setDelegationState(
+    address user,
+    DelegationState memory delegationState
+  ) internal virtual;
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function delegateByType(
+    address delegatee,
+    GovernancePowerType delegationType
+  ) external virtual override {
+    _delegateByType(msg.sender, delegatee, delegationType);
+  }
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function delegate(address delegatee) external override {
+    _delegateByType(msg.sender, delegatee, GovernancePowerType.VOTING);
+    _delegateByType(msg.sender, delegatee, GovernancePowerType.PROPOSITION);
+  }
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function getDelegateeByType(
+    address delegator,
+    GovernancePowerType delegationType
+  ) external view override returns (address) {
+    return _getDelegateeByType(delegator, _getDelegationState(delegator), delegationType);
+  }
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function getDelegates(address delegator) external view override returns (address, address) {
+    DelegationState memory delegatorBalance = _getDelegationState(delegator);
+    return (
+      _getDelegateeByType(delegator, delegatorBalance, GovernancePowerType.VOTING),
+      _getDelegateeByType(delegator, delegatorBalance, GovernancePowerType.PROPOSITION)
+    );
+  }
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function getPowerCurrent(
+    address user,
+    GovernancePowerType delegationType
+  ) public view virtual override returns (uint256) {
+    DelegationState memory userState = _getDelegationState(user);
+    uint256 userOwnPower = uint8(userState.delegationMode) & (uint8(delegationType) + 1) == 0
+      ? _getBalance(user)
+      : 0;
+    uint256 userDelegatedPower = _getDelegatedPowerByType(userState, delegationType);
+    return userOwnPower + userDelegatedPower;
+  }
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function getPowersCurrent(address user) external view override returns (uint256, uint256) {
+    return (
+      getPowerCurrent(user, GovernancePowerType.VOTING),
+      getPowerCurrent(user, GovernancePowerType.PROPOSITION)
+    );
+  }
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function metaDelegateByType(
+    address delegator,
+    address delegatee,
+    GovernancePowerType delegationType,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external override {
+    require(delegator != address(0), 'INVALID_OWNER');
+    //solium-disable-next-line
+    require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
+    bytes32 digest = ECDSA.toTypedDataHash(
+      _getDomainSeparator(),
+      keccak256(
+        abi.encode(
+          DELEGATE_BY_TYPE_TYPEHASH,
+          delegator,
+          delegatee,
+          delegationType,
+          _incrementNonces(delegator),
+          deadline
+        )
+      )
+    );
+
+    require(delegator == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
+    _delegateByType(delegator, delegatee, delegationType);
+  }
+
+  /// @inheritdoc IGovernancePowerDelegationToken
+  function metaDelegate(
+    address delegator,
+    address delegatee,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external override {
+    require(delegator != address(0), 'INVALID_OWNER');
+    //solium-disable-next-line
+    require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
+    bytes32 digest = ECDSA.toTypedDataHash(
+      _getDomainSeparator(),
+      keccak256(
+        abi.encode(DELEGATE_TYPEHASH, delegator, delegatee, _incrementNonces(delegator), deadline)
+      )
+    );
+
+    require(delegator == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
+    _delegateByType(delegator, delegatee, GovernancePowerType.VOTING);
+    _delegateByType(delegator, delegatee, GovernancePowerType.PROPOSITION);
+  }
+
+  /**
+   * @dev Modifies the delegated power of a `delegatee` account by type (VOTING, PROPOSITION).
+   * Passing the impact on the delegation of `delegatee` account before and after to reduce conditionals and not lose
+   * any precision.
+   * @param impactOnDelegationBefore how much impact a balance of another account had over the delegation of a `delegatee`
+   * before an action.
+   * For example, if the action is a delegation from one account to another, the impact before the action will be 0.
+   * @param impactOnDelegationAfter how much impact a balance of another account will have  over the delegation of a `delegatee`
+   * after an action.
+   * For example, if the action is a delegation from one account to another, the impact after the action will be the whole balance
+   * of the account changing the delegatee.
+   * @param delegatee the user whom delegated governance power will be changed
+   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
+   **/
+  function _governancePowerTransferByType(
+    uint256 impactOnDelegationBefore,
+    uint256 impactOnDelegationAfter,
+    address delegatee,
+    GovernancePowerType delegationType
+  ) internal {
+    if (delegatee == address(0)) return;
+    if (impactOnDelegationBefore == impactOnDelegationAfter) return;
+
+    // we use uint72, because this is the most optimal for AaveTokenV3
+    // To make delegated balance fit into uint72 we're decreasing precision of delegated balance by POWER_SCALE_FACTOR
+    uint72 impactOnDelegationBefore72 = SafeCast72.toUint72(
+      impactOnDelegationBefore / POWER_SCALE_FACTOR
+    );
+    uint72 impactOnDelegationAfter72 = SafeCast72.toUint72(
+      impactOnDelegationAfter / POWER_SCALE_FACTOR
+    );
+
+    DelegationState memory delegateeState = _getDelegationState(delegatee);
+    if (delegationType == GovernancePowerType.VOTING) {
+      delegateeState.delegatedVotingBalance =
+        delegateeState.delegatedVotingBalance -
+        impactOnDelegationBefore72 +
+        impactOnDelegationAfter72;
+    } else {
+      delegateeState.delegatedPropositionBalance =
+        delegateeState.delegatedPropositionBalance -
+        impactOnDelegationBefore72 +
+        impactOnDelegationAfter72;
+    }
+    _setDelegationState(delegatee, delegateeState);
+  }
+
+  /**
+   * @dev performs all state changes related delegation changes on transfer
+   * @param from token sender
+   * @param to token recipient
+   * @param fromBalanceBefore balance of the sender before transfer
+   * @param toBalanceBefore balance of the recipient before transfer
+   * @param amount amount of tokens sent
+   **/
+  function _delegationChangeOnTransfer(
+    address from,
+    address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
+    uint256 amount
+  ) internal {
+    if (from == to) {
+      return;
+    }
+
+    if (from != address(0)) {
+      DelegationState memory fromUserState = _getDelegationState(from);
+      uint256 fromBalanceAfter = fromBalanceBefore - amount;
+      if (fromUserState.delegationMode != DelegationMode.NO_DELEGATION) {
+        _governancePowerTransferByType(
+          fromBalanceBefore,
+          fromBalanceAfter,
+          _getDelegateeByType(from, fromUserState, GovernancePowerType.VOTING),
+          GovernancePowerType.VOTING
+        );
+        _governancePowerTransferByType(
+          fromBalanceBefore,
+          fromBalanceAfter,
+          _getDelegateeByType(from, fromUserState, GovernancePowerType.PROPOSITION),
+          GovernancePowerType.PROPOSITION
+        );
+      }
+    }
+
+    if (to != address(0)) {
+      DelegationState memory toUserState = _getDelegationState(to);
+      uint256 toBalanceAfter = toBalanceBefore + amount;
+
+      if (toUserState.delegationMode != DelegationMode.NO_DELEGATION) {
+        _governancePowerTransferByType(
+          toBalanceBefore,
+          toBalanceAfter,
+          _getDelegateeByType(to, toUserState, GovernancePowerType.VOTING),
+          GovernancePowerType.VOTING
+        );
+        _governancePowerTransferByType(
+          toBalanceBefore,
+          toBalanceAfter,
+          _getDelegateeByType(to, toUserState, GovernancePowerType.PROPOSITION),
+          GovernancePowerType.PROPOSITION
+        );
+      }
+    }
+  }
+
+  /**
+   * @dev Extracts from state and returns delegated governance power (Voting, Proposition)
+   * @param userState the current state of a user
+   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
+   **/
+  function _getDelegatedPowerByType(
+    DelegationState memory userState,
+    GovernancePowerType delegationType
+  ) internal pure returns (uint256) {
+    return
+      POWER_SCALE_FACTOR *
+      (
+        delegationType == GovernancePowerType.VOTING
+          ? userState.delegatedVotingBalance
+          : userState.delegatedPropositionBalance
+      );
+  }
+
+  /**
+   * @dev Extracts from state and returns the delegatee of a delegator by type of governance power (Voting, Proposition)
+   * - If the delegator doesn't have any delegatee, returns address(0)
+   * @param delegator delegator
+   * @param userState the current state of a user
+   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
+   **/
+  function _getDelegateeByType(
+    address delegator,
+    DelegationState memory userState,
+    GovernancePowerType delegationType
+  ) internal view returns (address) {
+    if (delegationType == GovernancePowerType.VOTING) {
+      return
+        /// With the & operation, we cover both VOTING_DELEGATED delegation and FULL_POWER_DELEGATED
+        /// as VOTING_DELEGATED is equivalent to 01 in binary and FULL_POWER_DELEGATED is equivalent to 11
+        (uint8(userState.delegationMode) & uint8(DelegationMode.VOTING_DELEGATED)) != 0
+          ? _votingDelegatee[delegator]
+          : address(0);
+    }
+    return
+      userState.delegationMode >= DelegationMode.PROPOSITION_DELEGATED
+        ? _propositionDelegatee[delegator]
+        : address(0);
+  }
+
+  /**
+   * @dev Changes user's delegatee address by type of governance power (Voting, Proposition)
+   * @param delegator delegator
+   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
+   * @param _newDelegatee the new delegatee
+   **/
+  function _updateDelegateeByType(
+    address delegator,
+    GovernancePowerType delegationType,
+    address _newDelegatee
+  ) internal {
+    address newDelegatee = _newDelegatee == delegator ? address(0) : _newDelegatee;
+    if (delegationType == GovernancePowerType.VOTING) {
+      _votingDelegatee[delegator] = newDelegatee;
+    } else {
+      _propositionDelegatee[delegator] = newDelegatee;
+    }
+  }
+
+  /**
+   * @dev Updates the specific flag which signaling about existence of delegation of governance power (Voting, Proposition)
+   * @param userState a user state to change
+   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
+   * @param willDelegate next state of delegation
+   **/
+  function _updateDelegationModeByType(
+    DelegationState memory userState,
+    GovernancePowerType delegationType,
+    bool willDelegate
+  ) internal pure returns (DelegationState memory) {
+    if (willDelegate) {
+      // Because GovernancePowerType starts from 0, we should add 1 first, then we apply bitwise OR
+      userState.delegationMode = DelegationMode(
+        uint8(userState.delegationMode) | (uint8(delegationType) + 1)
+      );
+    } else {
+      // First bitwise NEGATION, ie was 01, after XOR with 11 will be 10,
+      // then bitwise AND, which means it will keep only another delegation type if it exists
+      userState.delegationMode = DelegationMode(
+        uint8(userState.delegationMode) &
+          ((uint8(delegationType) + 1) ^ uint8(DelegationMode.FULL_POWER_DELEGATED))
+      );
+    }
+    return userState;
+  }
+
+  /**
+   * @dev This is the equivalent of an ERC20 transfer(), but for a power type: an atomic transfer of a balance (power).
+   * When needed, it decreases the power of the `delegator` and when needed, it increases the power of the `delegatee`
+   * @param delegator delegator
+   * @param _delegatee the user which delegated power will change
+   * @param delegationType the type of delegation (VOTING, PROPOSITION)
+   **/
+  function _delegateByType(
+    address delegator,
+    address _delegatee,
+    GovernancePowerType delegationType
+  ) internal {
+    // Here we unify the property that delegating power to address(0) == delegating power to yourself == no delegation
+    // So from now on, not being delegating is (exclusively) that delegatee == address(0)
+    address delegatee = _delegatee == delegator ? address(0) : _delegatee;
+
+    // We read the whole struct before validating delegatee, because in the optimistic case
+    // (_delegatee != currentDelegatee) we will reuse userState in the rest of the function
+    DelegationState memory delegatorState = _getDelegationState(delegator);
+    address currentDelegatee = _getDelegateeByType(delegator, delegatorState, delegationType);
+    if (delegatee == currentDelegatee) return;
+
+    bool delegatingNow = currentDelegatee != address(0);
+    bool willDelegateAfter = delegatee != address(0);
+    uint256 delegatorBalance = _getBalance(delegator);
+
+    if (delegatingNow) {
+      _governancePowerTransferByType(delegatorBalance, 0, currentDelegatee, delegationType);
+    }
+
+    if (willDelegateAfter) {
+      _governancePowerTransferByType(0, delegatorBalance, delegatee, delegationType);
+    }
+
+    _updateDelegateeByType(delegator, delegationType, delegatee);
+
+    if (willDelegateAfter != delegatingNow) {
+      _setDelegationState(
+        delegator,
+        _updateDelegationModeByType(delegatorState, delegationType, willDelegateAfter)
+      );
+    }
+
+    emit DelegateChanged(delegator, delegatee, delegationType);
+  }
+}
+
+// OpenZeppelin Contracts v4.4.1 (token/ERC20/utils/SafeERC20.sol)
+
+// OpenZeppelin Contracts (last updated v4.8.0) (utils/Address.sol)
+
+/**
+ * @dev Collection of functions related to the address type
+ */
+library Address {
+  /**
+   * @dev Returns true if `account` is a contract.
+   *
+   * [IMPORTANT]
+   * ====
+   * It is unsafe to assume that an address for which this function returns
+   * false is an externally-owned account (EOA) and not a contract.
+   *
+   * Among others, `isContract` will return false for the following
+   * types of addresses:
+   *
+   *  - an externally-owned account
+   *  - a contract in construction
+   *  - an address where a contract will be created
+   *  - an address where a contract lived, but was destroyed
+   * ====
+   *
+   * [IMPORTANT]
+   * ====
+   * You shouldn't rely on `isContract` to protect against flash loan attacks!
+   *
+   * Preventing calls from contracts is highly discouraged. It breaks composability, breaks support for smart wallets
+   * like Gnosis Safe, and does not provide security since it can be circumvented by calling from a contract
+   * constructor.
+   * ====
+   */
+  function isContract(address account) internal view returns (bool) {
+    // This method relies on extcodesize/address.code.length, which returns 0
+    // for contracts in construction, since the code is only stored at the end
+    // of the constructor execution.
+
+    return account.code.length > 0;
+  }
+
+  /**
+   * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+   * `recipient`, forwarding all available gas and reverting on errors.
+   *
+   * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
+   * of certain opcodes, possibly making contracts go over the 2300 gas limit
+   * imposed by `transfer`, making them unable to receive funds via
+   * `transfer`. {sendValue} removes this limitation.
+   *
+   * https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/[Learn more].
+   *
+   * IMPORTANT: because control is transferred to `recipient`, care must be
+   * taken to not create reentrancy vulnerabilities. Consider using
+   * {ReentrancyGuard} or the
+   * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+   */
+  function sendValue(address payable recipient, uint256 amount) internal {
+    require(address(this).balance >= amount, 'Address: insufficient balance');
+
+    (bool success, ) = recipient.call{value: amount}('');
+    require(success, 'Address: unable to send value, recipient may have reverted');
+  }
+
+  /**
+   * @dev Performs a Solidity function call using a low level `call`. A
+   * plain `call` is an unsafe replacement for a function call: use this
+   * function instead.
+   *
+   * If `target` reverts with a revert reason, it is bubbled up by this
+   * function (like regular Solidity function calls).
+   *
+   * Returns the raw returned data. To convert to the expected return value,
+   * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
+   *
+   * Requirements:
+   *
+   * - `target` must be a contract.
+   * - calling `target` with `data` must not revert.
+   *
+   * _Available since v3.1._
+   */
+  function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    return functionCallWithValue(target, data, 0, 'Address: low-level call failed');
+  }
+
+  /**
+   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
+   * `errorMessage` as a fallback revert reason when `target` reverts.
+   *
+   * _Available since v3.1._
+   */
+  function functionCall(
+    address target,
+    bytes memory data,
+    string memory errorMessage
+  ) internal returns (bytes memory) {
+    return functionCallWithValue(target, data, 0, errorMessage);
+  }
+
+  /**
+   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+   * but also transferring `value` wei to `target`.
+   *
+   * Requirements:
+   *
+   * - the calling contract must have an ETH balance of at least `value`.
+   * - the called Solidity function must be `payable`.
+   *
+   * _Available since v3.1._
+   */
+  function functionCallWithValue(
+    address target,
+    bytes memory data,
+    uint256 value
+  ) internal returns (bytes memory) {
+    return functionCallWithValue(target, data, value, 'Address: low-level call with value failed');
+  }
+
+  /**
+   * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
+   * with `errorMessage` as a fallback revert reason when `target` reverts.
+   *
+   * _Available since v3.1._
+   */
+  function functionCallWithValue(
+    address target,
+    bytes memory data,
+    uint256 value,
+    string memory errorMessage
+  ) internal returns (bytes memory) {
+    require(address(this).balance >= value, 'Address: insufficient balance for call');
+    (bool success, bytes memory returndata) = target.call{value: value}(data);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
+  }
+
+  /**
+   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+   * but performing a static call.
+   *
+   * _Available since v3.3._
+   */
+  function functionStaticCall(
+    address target,
+    bytes memory data
+  ) internal view returns (bytes memory) {
+    return functionStaticCall(target, data, 'Address: low-level static call failed');
+  }
+
+  /**
+   * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+   * but performing a static call.
+   *
+   * _Available since v3.3._
+   */
+  function functionStaticCall(
+    address target,
+    bytes memory data,
+    string memory errorMessage
+  ) internal view returns (bytes memory) {
+    (bool success, bytes memory returndata) = target.staticcall(data);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
+  }
+
+  /**
+   * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+   * but performing a delegate call.
+   *
+   * _Available since v3.4._
+   */
+  function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+    return functionDelegateCall(target, data, 'Address: low-level delegate call failed');
+  }
+
+  /**
+   * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+   * but performing a delegate call.
+   *
+   * _Available since v3.4._
+   */
+  function functionDelegateCall(
+    address target,
+    bytes memory data,
+    string memory errorMessage
+  ) internal returns (bytes memory) {
+    (bool success, bytes memory returndata) = target.delegatecall(data);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
+  }
+
+  /**
+   * @dev Tool to verify that a low level call to smart-contract was successful, and revert (either by bubbling
+   * the revert reason or using the provided one) in case of unsuccessful call or if target was not a contract.
+   *
+   * _Available since v4.8._
+   */
+  function verifyCallResultFromTarget(
+    address target,
+    bool success,
+    bytes memory returndata,
+    string memory errorMessage
+  ) internal view returns (bytes memory) {
+    if (success) {
+      if (returndata.length == 0) {
+        // only check isContract if the call was successful and the return data is empty
+        // otherwise we already know that it was a contract
+        require(isContract(target), 'Address: call to non-contract');
+      }
+      return returndata;
+    } else {
+      _revert(returndata, errorMessage);
+    }
+  }
+
+  /**
+   * @dev Tool to verify that a low level call was successful, and revert if it wasn't, either by bubbling the
+   * revert reason or using the provided one.
+   *
+   * _Available since v4.3._
+   */
+  function verifyCallResult(
+    bool success,
+    bytes memory returndata,
+    string memory errorMessage
+  ) internal pure returns (bytes memory) {
+    if (success) {
+      return returndata;
+    } else {
+      _revert(returndata, errorMessage);
+    }
+  }
+
+  function _revert(bytes memory returndata, string memory errorMessage) private pure {
+    // Look for revert reason and bubble it up if present
+    if (returndata.length > 0) {
+      // The easiest way to bubble the revert reason is using memory via assembly
+      /// @solidity memory-safe-assembly
+      assembly {
+        let returndata_size := mload(returndata)
+        revert(add(32, returndata), returndata_size)
+      }
+    } else {
+      revert(errorMessage);
+    }
+  }
+}
+
+/**
+ * @title SafeERC20
+ * @dev Wrappers around ERC20 operations that throw on failure (when the token
+ * contract returns false). Tokens that return no value (and instead revert or
+ * throw on failure) are also supported, non-reverting calls are assumed to be
+ * successful.
+ * To use this library you can add a `using SafeERC20 for IERC20;` statement to your contract,
+ * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
+ */
+library SafeERC20 {
+  using Address for address;
+
+  function safeTransfer(IERC20 token, address to, uint256 value) internal {
+    _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+  }
+
+  function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
+    _callOptionalReturn(
+      token,
+      abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
+    );
+  }
+
+  /**
+   * @dev Deprecated. This function has issues similar to the ones found in
+   * {IERC20-approve}, and its usage is discouraged.
+   *
+   * Whenever possible, use {safeIncreaseAllowance} and
+   * {safeDecreaseAllowance} instead.
+   */
+  function safeApprove(IERC20 token, address spender, uint256 value) internal {
+    // safeApprove should only be called when setting an initial allowance,
+    // or when resetting it to zero. To increase and decrease it, use
+    // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
+    require(
+      (value == 0) || (token.allowance(address(this), spender) == 0),
+      'SafeERC20: approve from non-zero to non-zero allowance'
+    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
+  }
+
+  function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+    uint256 newAllowance = token.allowance(address(this), spender) + value;
+    _callOptionalReturn(
+      token,
+      abi.encodeWithSelector(token.approve.selector, spender, newAllowance)
+    );
+  }
+
+  function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+    unchecked {
+      uint256 oldAllowance = token.allowance(address(this), spender);
+      require(oldAllowance >= value, 'SafeERC20: decreased allowance below zero');
+      uint256 newAllowance = oldAllowance - value;
+      _callOptionalReturn(
+        token,
+        abi.encodeWithSelector(token.approve.selector, spender, newAllowance)
+      );
+    }
+  }
+
+  /**
+   * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
+   * on the return value: the return value is optional (but if data is returned, it must not be false).
+   * @param token The token targeted by the call.
+   * @param data The call data (encoded using abi.encode or one of its variants).
+   */
+  function _callOptionalReturn(IERC20 token, bytes memory data) private {
+    // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
+    // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
+    // the target address contains contract code and also asserts for success in the low-level call.
+
+    bytes memory returndata = address(token).functionCall(data, 'SafeERC20: low-level call failed');
+    if (returndata.length > 0) {
+      // Return data is optional
+      require(abi.decode(returndata, (bool)), 'SafeERC20: ERC20 operation did not succeed');
+    }
+  }
+}
+
+interface IAaveDistributionManager {
+  function configureAssets(DistributionTypes.AssetConfigInput[] memory assetsConfigInput) external;
+}
+
+interface IStakedTokenV2 {
+  struct CooldownSnapshot {
+    uint40 timestamp;
+    uint216 amount;
+  }
+
+  event RewardsAccrued(address user, uint256 amount);
+  event RewardsClaimed(address indexed from, address indexed to, uint256 amount);
+  event Cooldown(address indexed user, uint256 amount);
+
+  /**
+   * @dev Allows staking a specified amount of STAKED_TOKEN
+   * @param to The address to receiving the shares
+   * @param amount The amount of assets to be staked
+   */
+  function stake(address to, uint256 amount) external;
+
+  /**
+   * @dev Redeems shares, and stop earning rewards
+   * @param to Address to redeem to
+   * @param amount Amount of shares to redeem
+   */
+  function redeem(address to, uint256 amount) external;
+
+  /**
+   * @dev Activates the cooldown period to unstake
+   * - It can't be called if the user is not staking
+   */
+  function cooldown() external;
+
+  /**
+   * @dev Claims an `amount` of `REWARD_TOKEN` to the address `to`
+   * @param to Address to send the claimed rewards
+   * @param amount Amount to stake
+   */
+  function claimRewards(address to, uint256 amount) external;
+
+  /**
+   * @dev Return the total rewards pending to claim by an staker
+   * @param staker The staker address
+   * @return The rewards
+   */
+  function getTotalRewardsBalance(address staker) external view returns (uint256);
+
+  /**
+   * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
+   * @param owner the owner of the funds
+   * @param spender the spender
+   * @param value the amount
+   * @param deadline the deadline timestamp, type(uint256).max for no deadline
+   * @param v signature param
+   * @param s signature param
+   * @param r signature param
+   */
+  function permit(
+    address owner,
+    address spender,
+    uint256 value,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external;
+}
+
+// Contract modified from OpenZeppelin Contracts (last updated v4.9.0) (utils/cryptography/EIP712.sol) to remove local
+// fallback storage variables, so contract does not affect on existing storage layout. This works as its used on contracts
+// that have name and revision < 32 bytes
+
 // OpenZeppelin Contracts (last updated v4.9.0) (utils/ShortStrings.sol)
 
 // OpenZeppelin Contracts (last updated v4.9.0) (utils/StorageSlot.sol)
@@ -2043,14 +2603,10 @@ contract AaveDistributionManager {
   }
 }
 
-interface ITransferHook {
-  function onTransfer(address from, address to, uint256 amount) external;
-}
-
 /**
- * @title ERC20WithSnapshot
- * @notice ERC20 including snapshots of balances on transfer-related actions
- * @author Aave
+ * @title MOCK CONTRACT TO KEEP VALID STORAGE LAYOUT
+ * @dev WAS including snapshots of balances on transfer-related actions
+ * @author BGD Labs
  **/
 abstract contract GovernancePowerWithSnapshot {
   uint256[3] private __________DEPRECATED_GOV_V2_PART;
@@ -2076,13 +2632,6 @@ abstract contract Context {
   function _msgData() internal view virtual returns (bytes calldata) {
     return msg.data;
   }
-}
-
-enum DelegationMode {
-  NO_DELEGATION,
-  VOTING_DELEGATED,
-  PROPOSITION_DELEGATED,
-  FULL_POWER_DELEGATED
 }
 
 // Inspired by OpenZeppelin Contracts (last updated v4.5.0) (token/ERC20/ERC20.sol)
@@ -2482,6 +3031,24 @@ interface IStakedTokenV3 is IStakedTokenV2 {
   event ExchangeRateChanged(uint216 exchangeRate);
   event FundsReturned(uint256 amount);
   event SlashingSettled();
+
+  /**
+   * @dev Allows staking a certain amount of STAKED_TOKEN with gasless approvals (permit)
+   * @param from The address staking the token
+   * @param amount The amount to be staked
+   * @param deadline The permit execution deadline
+   * @param v The v component of the signed message
+   * @param r The r component of the signed message
+   * @param s The s component of the signed message
+   */
+  function stakeWithPermit(
+    address from,
+    uint256 amount,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external;
 
   /**
    * @dev Returns the current exchange rate
@@ -3862,557 +4429,16 @@ library SafeCast {
   }
 }
 
-/** @notice influenced by OpenZeppelin SafeCast lib, which is missing to uint72 cast
- * @author BGD Labs
- */
-library SafeCast72 {
-  /**
-   * @dev Returns the downcasted uint72 from uint256, reverting on
-   * overflow (when the input is greater than largest uint72).
-   *
-   * Counterpart to Solidity's `uint16` operator.
-   *
-   * Requirements:
-   *
-   * - input must fit into 72 bits
-   */
-  function toUint72(uint256 value) internal pure returns (uint72) {
-    require(value <= type(uint72).max, "SafeCast: value doesn't fit in 72 bits");
-    return uint72(value);
-  }
-}
-
-interface IGovernancePowerDelegationToken {
-  enum GovernancePowerType {
-    VOTING,
-    PROPOSITION
-  }
-
-  /**
-   * @dev emitted when a user delegates to another
-   * @param delegator the user which delegated governance power
-   * @param delegatee the delegatee
-   * @param delegationType the type of delegation (VOTING, PROPOSITION)
-   **/
-  event DelegateChanged(
-    address indexed delegator,
-    address indexed delegatee,
-    GovernancePowerType delegationType
-  );
-
-  // @dev we removed DelegatedPowerChanged event because to reconstruct the full state of the system,
-  // is enough to have Transfer and DelegateChanged TODO: document it
-
-  /**
-   * @dev delegates the specific power to a delegatee
-   * @param delegatee the user which delegated power will change
-   * @param delegationType the type of delegation (VOTING, PROPOSITION)
-   **/
-  function delegateByType(address delegatee, GovernancePowerType delegationType) external;
-
-  /**
-   * @dev delegates all the governance powers to a specific user
-   * @param delegatee the user to which the powers will be delegated
-   **/
-  function delegate(address delegatee) external;
-
-  /**
-   * @dev returns the delegatee of an user
-   * @param delegator the address of the delegator
-   * @param delegationType the type of delegation (VOTING, PROPOSITION)
-   * @return address of the specified delegatee
-   **/
-  function getDelegateeByType(
-    address delegator,
-    GovernancePowerType delegationType
-  ) external view returns (address);
-
-  /**
-   * @dev returns delegates of an user
-   * @param delegator the address of the delegator
-   * @return a tuple of addresses the VOTING and PROPOSITION delegatee
-   **/
-  function getDelegates(address delegator) external view returns (address, address);
-
-  /**
-   * @dev returns the current voting or proposition power of a user.
-   * @param user the user
-   * @param delegationType the type of delegation (VOTING, PROPOSITION)
-   * @return the current voting or proposition power of a user
-   **/
-  function getPowerCurrent(
-    address user,
-    GovernancePowerType delegationType
-  ) external view returns (uint256);
-
-  /**
-   * @dev returns the current voting or proposition power of a user.
-   * @param user the user
-   * @return the current voting and proposition power of a user
-   **/
-  function getPowersCurrent(address user) external view returns (uint256, uint256);
-
-  /**
-   * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
-   * @param delegator the owner of the funds
-   * @param delegatee the user to who owner delegates his governance power
-   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
-   * @param deadline the deadline timestamp, type(uint256).max for no deadline
-   * @param v signature param
-   * @param s signature param
-   * @param r signature param
-   */
-  function metaDelegateByType(
-    address delegator,
-    address delegatee,
-    GovernancePowerType delegationType,
+interface IERC20WithPermit is IERC20 {
+  function permit(
+    address owner,
+    address spender,
+    uint256 value,
     uint256 deadline,
     uint8 v,
     bytes32 r,
     bytes32 s
   ) external;
-
-  /**
-   * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
-   * @param delegator the owner of the funds
-   * @param delegatee the user to who delegator delegates his voting and proposition governance power
-   * @param deadline the deadline timestamp, type(uint256).max for no deadline
-   * @param v signature param
-   * @param s signature param
-   * @param r signature param
-   */
-  function metaDelegate(
-    address delegator,
-    address delegatee,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external;
-}
-
-/**
- * @notice The contract implements generic delegation functionality for the upcoming governance v3
- * @author BGD Labs
- * @dev to make it's pluggable to any exising token it has a set of virtual functions
- *   for simple access to balances and permit functionality
- * @dev ************ IMPORTANT SECURITY CONSIDERATION ************
- *   current version of the token can be used only with asset which has 18 decimals
- *   and possible totalSupply lower then 4722366482869645213696,
- *   otherwise at least POWER_SCALE_FACTOR should be adjusted !!!
- *   *************************************************************
- */
-abstract contract BaseDelegation is IGovernancePowerDelegationToken {
-  struct DelegationState {
-    uint72 delegatedPropositionBalance;
-    uint72 delegatedVotingBalance;
-    DelegationMode delegationMode;
-  }
-
-  mapping(address => address) internal _votingDelegatee;
-  mapping(address => address) internal _propositionDelegatee;
-
-  /** @dev we assume that for the governance system delegation with 18 decimals of precision is not needed,
-   *   by this constant we reduce it by 10, to 8 decimals.
-   *   In case of Aave token this will allow to work with up to 47'223'664'828'696,45213696 total supply
-   *   If your token already have less then 10 decimals, please change it to appropriate.
-   */
-  uint256 public constant POWER_SCALE_FACTOR = 1e10;
-
-  bytes32 public constant DELEGATE_BY_TYPE_TYPEHASH =
-    keccak256(
-      'DelegateByType(address delegator,address delegatee,uint8 delegationType,uint256 nonce,uint256 deadline)'
-    );
-  bytes32 public constant DELEGATE_TYPEHASH =
-    keccak256('Delegate(address delegator,address delegatee,uint256 nonce,uint256 deadline)');
-
-  /**
-   * @notice returns eip-2612 compatible domain separator
-   * @dev we expect that existing tokens, ie Aave, already have, so we want to reuse
-   * @return domain separator
-   */
-  function _getDomainSeparator() internal view virtual returns (bytes32);
-
-  /**
-   * @notice gets the delegation state of a user
-   * @param user address
-   * @return state of a user's delegation
-   */
-  function _getDelegationState(address user) internal view virtual returns (DelegationState memory);
-
-  /**
-   * @notice returns the token balance of a user
-   * @param user address
-   * @return current nonce before increase
-   */
-  function _getBalance(address user) internal view virtual returns (uint256);
-
-  /**
-   * @notice increases and return the current nonce of a user
-   * @dev should use `return nonce++;` pattern
-   * @param user address
-   * @return current nonce before increase
-   */
-  function _incrementNonces(address user) internal virtual returns (uint256);
-
-  /**
-   * @notice sets the delegation state of a user
-   * @param user address
-   * @param delegationState state of a user's delegation
-   */
-  function _setDelegationState(
-    address user,
-    DelegationState memory delegationState
-  ) internal virtual;
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function delegateByType(
-    address delegatee,
-    GovernancePowerType delegationType
-  ) external virtual override {
-    _delegateByType(msg.sender, delegatee, delegationType);
-  }
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function delegate(address delegatee) external override {
-    _delegateByType(msg.sender, delegatee, GovernancePowerType.VOTING);
-    _delegateByType(msg.sender, delegatee, GovernancePowerType.PROPOSITION);
-  }
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function getDelegateeByType(
-    address delegator,
-    GovernancePowerType delegationType
-  ) external view override returns (address) {
-    return _getDelegateeByType(delegator, _getDelegationState(delegator), delegationType);
-  }
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function getDelegates(address delegator) external view override returns (address, address) {
-    DelegationState memory delegatorBalance = _getDelegationState(delegator);
-    return (
-      _getDelegateeByType(delegator, delegatorBalance, GovernancePowerType.VOTING),
-      _getDelegateeByType(delegator, delegatorBalance, GovernancePowerType.PROPOSITION)
-    );
-  }
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function getPowerCurrent(
-    address user,
-    GovernancePowerType delegationType
-  ) public view virtual override returns (uint256) {
-    DelegationState memory userState = _getDelegationState(user);
-    uint256 userOwnPower = uint8(userState.delegationMode) & (uint8(delegationType) + 1) == 0
-      ? _getBalance(user)
-      : 0;
-    uint256 userDelegatedPower = _getDelegatedPowerByType(userState, delegationType);
-    return userOwnPower + userDelegatedPower;
-  }
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function getPowersCurrent(address user) external view override returns (uint256, uint256) {
-    return (
-      getPowerCurrent(user, GovernancePowerType.VOTING),
-      getPowerCurrent(user, GovernancePowerType.PROPOSITION)
-    );
-  }
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function metaDelegateByType(
-    address delegator,
-    address delegatee,
-    GovernancePowerType delegationType,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external override {
-    require(delegator != address(0), 'INVALID_OWNER');
-    //solium-disable-next-line
-    require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
-    bytes32 digest = ECDSA.toTypedDataHash(
-      _getDomainSeparator(),
-      keccak256(
-        abi.encode(
-          DELEGATE_BY_TYPE_TYPEHASH,
-          delegator,
-          delegatee,
-          delegationType,
-          _incrementNonces(delegator),
-          deadline
-        )
-      )
-    );
-
-    require(delegator == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
-    _delegateByType(delegator, delegatee, delegationType);
-  }
-
-  /// @inheritdoc IGovernancePowerDelegationToken
-  function metaDelegate(
-    address delegator,
-    address delegatee,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external override {
-    require(delegator != address(0), 'INVALID_OWNER');
-    //solium-disable-next-line
-    require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
-    bytes32 digest = ECDSA.toTypedDataHash(
-      _getDomainSeparator(),
-      keccak256(
-        abi.encode(DELEGATE_TYPEHASH, delegator, delegatee, _incrementNonces(delegator), deadline)
-      )
-    );
-
-    require(delegator == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
-    _delegateByType(delegator, delegatee, GovernancePowerType.VOTING);
-    _delegateByType(delegator, delegatee, GovernancePowerType.PROPOSITION);
-  }
-
-  /**
-   * @dev Modifies the delegated power of a `delegatee` account by type (VOTING, PROPOSITION).
-   * Passing the impact on the delegation of `delegatee` account before and after to reduce conditionals and not lose
-   * any precision.
-   * @param impactOnDelegationBefore how much impact a balance of another account had over the delegation of a `delegatee`
-   * before an action.
-   * For example, if the action is a delegation from one account to another, the impact before the action will be 0.
-   * @param impactOnDelegationAfter how much impact a balance of another account will have  over the delegation of a `delegatee`
-   * after an action.
-   * For example, if the action is a delegation from one account to another, the impact after the action will be the whole balance
-   * of the account changing the delegatee.
-   * @param delegatee the user whom delegated governance power will be changed
-   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
-   **/
-  function _governancePowerTransferByType(
-    uint256 impactOnDelegationBefore,
-    uint256 impactOnDelegationAfter,
-    address delegatee,
-    GovernancePowerType delegationType
-  ) internal {
-    if (delegatee == address(0)) return;
-    if (impactOnDelegationBefore == impactOnDelegationAfter) return;
-
-    // we use uint72, because this is the most optimal for AaveTokenV3
-    // To make delegated balance fit into uint72 we're decreasing precision of delegated balance by POWER_SCALE_FACTOR
-    uint72 impactOnDelegationBefore72 = SafeCast72.toUint72(
-      impactOnDelegationBefore / POWER_SCALE_FACTOR
-    );
-    uint72 impactOnDelegationAfter72 = SafeCast72.toUint72(
-      impactOnDelegationAfter / POWER_SCALE_FACTOR
-    );
-
-    DelegationState memory delegateeState = _getDelegationState(delegatee);
-    if (delegationType == GovernancePowerType.VOTING) {
-      delegateeState.delegatedVotingBalance =
-        delegateeState.delegatedVotingBalance -
-        impactOnDelegationBefore72 +
-        impactOnDelegationAfter72;
-    } else {
-      delegateeState.delegatedPropositionBalance =
-        delegateeState.delegatedPropositionBalance -
-        impactOnDelegationBefore72 +
-        impactOnDelegationAfter72;
-    }
-    _setDelegationState(delegatee, delegateeState);
-  }
-
-  /**
-   * @dev performs all state changes related delegation changes on transfer
-   * @param from token sender
-   * @param to token recipient
-   * @param fromBalanceBefore balance of the sender before transfer
-   * @param toBalanceBefore balance of the recipient before transfer
-   * @param amount amount of tokens sent
-   **/
-  function _delegationChangeOnTransfer(
-    address from,
-    address to,
-    uint256 fromBalanceBefore,
-    uint256 toBalanceBefore,
-    uint256 amount
-  ) internal {
-    if (from == to) {
-      return;
-    }
-
-    if (from != address(0)) {
-      DelegationState memory fromUserState = _getDelegationState(from);
-      uint256 fromBalanceAfter = fromBalanceBefore - amount;
-      if (fromUserState.delegationMode != DelegationMode.NO_DELEGATION) {
-        _governancePowerTransferByType(
-          fromBalanceBefore,
-          fromBalanceAfter,
-          _getDelegateeByType(from, fromUserState, GovernancePowerType.VOTING),
-          GovernancePowerType.VOTING
-        );
-        _governancePowerTransferByType(
-          fromBalanceBefore,
-          fromBalanceAfter,
-          _getDelegateeByType(from, fromUserState, GovernancePowerType.PROPOSITION),
-          GovernancePowerType.PROPOSITION
-        );
-      }
-    }
-
-    if (to != address(0)) {
-      DelegationState memory toUserState = _getDelegationState(to);
-      uint256 toBalanceAfter = toBalanceBefore + amount;
-
-      if (toUserState.delegationMode != DelegationMode.NO_DELEGATION) {
-        _governancePowerTransferByType(
-          toBalanceBefore,
-          toBalanceAfter,
-          _getDelegateeByType(to, toUserState, GovernancePowerType.VOTING),
-          GovernancePowerType.VOTING
-        );
-        _governancePowerTransferByType(
-          toBalanceBefore,
-          toBalanceAfter,
-          _getDelegateeByType(to, toUserState, GovernancePowerType.PROPOSITION),
-          GovernancePowerType.PROPOSITION
-        );
-      }
-    }
-  }
-
-  /**
-   * @dev Extracts from state and returns delegated governance power (Voting, Proposition)
-   * @param userState the current state of a user
-   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
-   **/
-  function _getDelegatedPowerByType(
-    DelegationState memory userState,
-    GovernancePowerType delegationType
-  ) internal pure returns (uint256) {
-    return
-      POWER_SCALE_FACTOR *
-      (
-        delegationType == GovernancePowerType.VOTING
-          ? userState.delegatedVotingBalance
-          : userState.delegatedPropositionBalance
-      );
-  }
-
-  /**
-   * @dev Extracts from state and returns the delegatee of a delegator by type of governance power (Voting, Proposition)
-   * - If the delegator doesn't have any delegatee, returns address(0)
-   * @param delegator delegator
-   * @param userState the current state of a user
-   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
-   **/
-  function _getDelegateeByType(
-    address delegator,
-    DelegationState memory userState,
-    GovernancePowerType delegationType
-  ) internal view returns (address) {
-    if (delegationType == GovernancePowerType.VOTING) {
-      return
-        /// With the & operation, we cover both VOTING_DELEGATED delegation and FULL_POWER_DELEGATED
-        /// as VOTING_DELEGATED is equivalent to 01 in binary and FULL_POWER_DELEGATED is equivalent to 11
-        (uint8(userState.delegationMode) & uint8(DelegationMode.VOTING_DELEGATED)) != 0
-          ? _votingDelegatee[delegator]
-          : address(0);
-    }
-    return
-      userState.delegationMode >= DelegationMode.PROPOSITION_DELEGATED
-        ? _propositionDelegatee[delegator]
-        : address(0);
-  }
-
-  /**
-   * @dev Changes user's delegatee address by type of governance power (Voting, Proposition)
-   * @param delegator delegator
-   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
-   * @param _newDelegatee the new delegatee
-   **/
-  function _updateDelegateeByType(
-    address delegator,
-    GovernancePowerType delegationType,
-    address _newDelegatee
-  ) internal {
-    address newDelegatee = _newDelegatee == delegator ? address(0) : _newDelegatee;
-    if (delegationType == GovernancePowerType.VOTING) {
-      _votingDelegatee[delegator] = newDelegatee;
-    } else {
-      _propositionDelegatee[delegator] = newDelegatee;
-    }
-  }
-
-  /**
-   * @dev Updates the specific flag which signaling about existence of delegation of governance power (Voting, Proposition)
-   * @param userState a user state to change
-   * @param delegationType the type of governance power delegation (VOTING, PROPOSITION)
-   * @param willDelegate next state of delegation
-   **/
-  function _updateDelegationModeByType(
-    DelegationState memory userState,
-    GovernancePowerType delegationType,
-    bool willDelegate
-  ) internal pure returns (DelegationState memory) {
-    if (willDelegate) {
-      // Because GovernancePowerType starts from 0, we should add 1 first, then we apply bitwise OR
-      userState.delegationMode = DelegationMode(
-        uint8(userState.delegationMode) | (uint8(delegationType) + 1)
-      );
-    } else {
-      // First bitwise NEGATION, ie was 01, after XOR with 11 will be 10,
-      // then bitwise AND, which means it will keep only another delegation type if it exists
-      userState.delegationMode = DelegationMode(
-        uint8(userState.delegationMode) &
-          ((uint8(delegationType) + 1) ^ uint8(DelegationMode.FULL_POWER_DELEGATED))
-      );
-    }
-    return userState;
-  }
-
-  /**
-   * @dev This is the equivalent of an ERC20 transfer(), but for a power type: an atomic transfer of a balance (power).
-   * When needed, it decreases the power of the `delegator` and when needed, it increases the power of the `delegatee`
-   * @param delegator delegator
-   * @param _delegatee the user which delegated power will change
-   * @param delegationType the type of delegation (VOTING, PROPOSITION)
-   **/
-  function _delegateByType(
-    address delegator,
-    address _delegatee,
-    GovernancePowerType delegationType
-  ) internal {
-    // Here we unify the property that delegating power to address(0) == delegating power to yourself == no delegation
-    // So from now on, not being delegating is (exclusively) that delegatee == address(0)
-    address delegatee = _delegatee == delegator ? address(0) : _delegatee;
-
-    // We read the whole struct before validating delegatee, because in the optimistic case
-    // (_delegatee != currentDelegatee) we will reuse userState in the rest of the function
-    DelegationState memory delegatorState = _getDelegationState(delegator);
-    address currentDelegatee = _getDelegateeByType(delegator, delegatorState, delegationType);
-    if (delegatee == currentDelegatee) return;
-
-    bool delegatingNow = currentDelegatee != address(0);
-    bool willDelegateAfter = delegatee != address(0);
-    uint256 delegatorBalance = _getBalance(delegator);
-
-    if (delegatingNow) {
-      _governancePowerTransferByType(delegatorBalance, 0, currentDelegatee, delegationType);
-    }
-
-    if (willDelegateAfter) {
-      _governancePowerTransferByType(0, delegatorBalance, delegatee, delegationType);
-    }
-
-    _updateDelegateeByType(delegator, delegationType, delegatee);
-
-    if (willDelegateAfter != delegatingNow) {
-      _setDelegationState(
-        delegator,
-        _updateDelegationModeByType(delegatorState, delegationType, willDelegateAfter)
-      );
-    }
-
-    emit DelegateChanged(delegator, delegatee, delegationType);
-  }
 }
 
 /**
@@ -4552,6 +4578,19 @@ contract StakedTokenV3 is
   /// @inheritdoc IStakedTokenV2
   function stake(address to, uint256 amount) external override(IStakedTokenV2, StakedTokenV2) {
     _stake(msg.sender, to, amount);
+  }
+
+  /// @inheritdoc IStakedTokenV3
+  function stakeWithPermit(
+    address from,
+    uint256 amount,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external override {
+    IERC20WithPermit(address(STAKED_TOKEN)).permit(from, address(this), amount, deadline, v, r, s);
+    _stake(from, from, amount);
   }
 
   /// @inheritdoc IStakedTokenV2
@@ -4964,11 +5003,6 @@ interface IGhoVariableDebtTokenTransferHook {
 }
 
 interface IStakedAaveV3 is IStakedTokenV3 {
-  struct ExchangeRateSnapshot {
-    uint40 blockNumber;
-    uint216 value;
-  }
-
   event GHODebtTokenChanged(address indexed newDebtToken);
 
   /**
@@ -4995,36 +5029,6 @@ interface IStakedAaveV3 is IStakedTokenV3 {
     address to,
     uint256 amount
   ) external returns (uint256);
-
-  /**
-   * @dev Allows staking a certain amount of STAKED_TOKEN with gasless approvals (permit)
-   * @param from The address staking the token
-   * @param amount The amount to be staked
-   * @param deadline The permit execution deadline
-   * @param v The v component of the signed message
-   * @param r The r component of the signed message
-   * @param s The s component of the signed message
-   */
-  function stakeWithPermit(
-    address from,
-    uint256 amount,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external;
-}
-
-interface IERC20WithPermit is IERC20 {
-  function permit(
-    address owner,
-    address spender,
-    uint256 value,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external;
 }
 
 /**
@@ -5089,19 +5093,6 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     uint256 amount
   ) external override onlyClaimHelper returns (uint256) {
     return _claimRewardsAndStakeOnBehalf(from, to, amount);
-  }
-
-  /// @inheritdoc IStakedAaveV3
-  function stakeWithPermit(
-    address from,
-    uint256 amount,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external override {
-    IERC20WithPermit(address(STAKED_TOKEN)).permit(from, address(this), amount, deadline, v, r, s);
-    _stake(from, from, amount);
   }
 
   /**
