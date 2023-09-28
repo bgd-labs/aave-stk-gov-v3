@@ -42,21 +42,16 @@ abstract contract StakedTokenV2 is
   /// @dev To see the voting mappings, go to GovernancePowerWithSnapshot.sol
   mapping(address => address) internal _votingDelegates;
 
-  mapping(address => mapping(uint256 => Snapshot))
-    internal _propositionPowerSnapshots;
+  mapping(address => mapping(uint256 => Snapshot)) internal _propositionPowerSnapshots;
   mapping(address => uint256) internal _propositionPowerSnapshotsCounts;
   mapping(address => address) internal _propositionPowerDelegates;
 
   bytes32 public DOMAIN_SEPARATOR;
   bytes public constant EIP712_REVISION = bytes('1');
   bytes32 internal constant EIP712_DOMAIN =
-    keccak256(
-      'EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'
-    );
+    keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
   bytes32 public constant PERMIT_TYPEHASH =
-    keccak256(
-      'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'
-    );
+    keccak256('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)');
 
   /// @dev owner => next valid nonce to submit with permit()
   mapping(address => uint256) public _nonces;
@@ -88,9 +83,7 @@ abstract contract StakedTokenV2 is
   function claimRewards(address to, uint256 amount) external virtual override;
 
   /// @inheritdoc IStakedTokenV2
-  function getTotalRewardsBalance(
-    address staker
-  ) external view returns (uint256) {
+  function getTotalRewardsBalance(address staker) external view returns (uint256) {
     DistributionTypes.UserStakeInput[]
       memory userStakeInputs = new DistributionTypes.UserStakeInput[](1);
     userStakeInputs[0] = DistributionTypes.UserStakeInput({
@@ -98,9 +91,7 @@ abstract contract StakedTokenV2 is
       stakedByUser: balanceOf(staker),
       totalStaked: totalSupply()
     });
-    return
-      stakerRewardsToClaim[staker] +
-      _getUnclaimedRewards(staker, userStakeInputs);
+    return stakerRewardsToClaim[staker] + _getUnclaimedRewards(staker, userStakeInputs);
   }
 
   /// @inheritdoc IStakedTokenV2
@@ -121,16 +112,7 @@ abstract contract StakedTokenV2 is
       abi.encodePacked(
         '\x19\x01',
         DOMAIN_SEPARATOR,
-        keccak256(
-          abi.encode(
-            PERMIT_TYPEHASH,
-            owner,
-            spender,
-            value,
-            currentValidNonce,
-            deadline
-          )
-        )
+        keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, currentValidNonce, deadline))
       )
     );
 
@@ -161,17 +143,9 @@ abstract contract StakedTokenV2 is
     bytes32 s
   ) public {
     bytes32 structHash = keccak256(
-      abi.encode(
-        DELEGATE_BY_TYPE_TYPEHASH,
-        delegatee,
-        uint256(delegationType),
-        nonce,
-        expiry
-      )
+      abi.encode(DELEGATE_BY_TYPE_TYPEHASH, delegatee, uint256(delegationType), nonce, expiry)
     );
-    bytes32 digest = keccak256(
-      abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash)
-    );
+    bytes32 digest = keccak256(abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash));
     address signatory = ecrecover(digest, v, r, s);
     require(signatory != address(0), 'INVALID_SIGNATURE');
     require(nonce == _nonces[signatory]++, 'INVALID_NONCE');
@@ -196,12 +170,8 @@ abstract contract StakedTokenV2 is
     bytes32 r,
     bytes32 s
   ) public {
-    bytes32 structHash = keccak256(
-      abi.encode(DELEGATE_TYPEHASH, delegatee, nonce, expiry)
-    );
-    bytes32 digest = keccak256(
-      abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash)
-    );
+    bytes32 structHash = keccak256(abi.encode(DELEGATE_TYPEHASH, delegatee, nonce, expiry));
+    bytes32 digest = keccak256(abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash));
     address signatory = ecrecover(digest, v, r, s);
     require(signatory != address(0), 'INVALID_SIGNATURE');
     require(nonce == _nonces[signatory]++, 'INVALID_NONCE');

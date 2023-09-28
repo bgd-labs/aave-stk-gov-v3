@@ -47,10 +47,7 @@ interface IERC20 {
    *
    * This value changes when {approve} or {transferFrom} are called.
    */
-  function allowance(
-    address owner,
-    address spender
-  ) external view returns (uint256);
+  function allowance(address owner, address spender) external view returns (uint256);
 
   /**
    * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -77,11 +74,7 @@ interface IERC20 {
    *
    * Emits a {Transfer} event.
    */
-  function transferFrom(
-    address from,
-    address to,
-    uint256 amount
-  ) external returns (bool);
+  function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }
 
 library DistributionTypes {
@@ -184,10 +177,7 @@ library Address {
     require(address(this).balance >= amount, 'Address: insufficient balance');
 
     (bool success, ) = recipient.call{value: amount}('');
-    require(
-      success,
-      'Address: unable to send value, recipient may have reverted'
-    );
+    require(success, 'Address: unable to send value, recipient may have reverted');
   }
 
   /**
@@ -208,12 +198,8 @@ library Address {
    *
    * _Available since v3.1._
    */
-  function functionCall(
-    address target,
-    bytes memory data
-  ) internal returns (bytes memory) {
-    return
-      functionCallWithValue(target, data, 0, 'Address: low-level call failed');
+  function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    return functionCallWithValue(target, data, 0, 'Address: low-level call failed');
   }
 
   /**
@@ -246,13 +232,7 @@ library Address {
     bytes memory data,
     uint256 value
   ) internal returns (bytes memory) {
-    return
-      functionCallWithValue(
-        target,
-        data,
-        value,
-        'Address: low-level call with value failed'
-      );
+    return functionCallWithValue(target, data, value, 'Address: low-level call with value failed');
   }
 
   /**
@@ -267,13 +247,9 @@ library Address {
     uint256 value,
     string memory errorMessage
   ) internal returns (bytes memory) {
-    require(
-      address(this).balance >= value,
-      'Address: insufficient balance for call'
-    );
+    require(address(this).balance >= value, 'Address: insufficient balance for call');
     (bool success, bytes memory returndata) = target.call{value: value}(data);
-    return
-      verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
   }
 
   /**
@@ -286,8 +262,7 @@ library Address {
     address target,
     bytes memory data
   ) internal view returns (bytes memory) {
-    return
-      functionStaticCall(target, data, 'Address: low-level static call failed');
+    return functionStaticCall(target, data, 'Address: low-level static call failed');
   }
 
   /**
@@ -302,8 +277,7 @@ library Address {
     string memory errorMessage
   ) internal view returns (bytes memory) {
     (bool success, bytes memory returndata) = target.staticcall(data);
-    return
-      verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
   }
 
   /**
@@ -312,16 +286,8 @@ library Address {
    *
    * _Available since v3.4._
    */
-  function functionDelegateCall(
-    address target,
-    bytes memory data
-  ) internal returns (bytes memory) {
-    return
-      functionDelegateCall(
-        target,
-        data,
-        'Address: low-level delegate call failed'
-      );
+  function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+    return functionDelegateCall(target, data, 'Address: low-level delegate call failed');
   }
 
   /**
@@ -336,8 +302,7 @@ library Address {
     string memory errorMessage
   ) internal returns (bytes memory) {
     (bool success, bytes memory returndata) = target.delegatecall(data);
-    return
-      verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
   }
 
   /**
@@ -382,10 +347,7 @@ library Address {
     }
   }
 
-  function _revert(
-    bytes memory returndata,
-    string memory errorMessage
-  ) private pure {
+  function _revert(bytes memory returndata, string memory errorMessage) private pure {
     // Look for revert reason and bubble it up if present
     if (returndata.length > 0) {
       // The easiest way to bubble the revert reason is using memory via assembly
@@ -413,18 +375,10 @@ library SafeERC20 {
   using Address for address;
 
   function safeTransfer(IERC20 token, address to, uint256 value) internal {
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.transfer.selector, to, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
   }
 
-  function safeTransferFrom(
-    IERC20 token,
-    address from,
-    address to,
-    uint256 value
-  ) internal {
+  function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
     _callOptionalReturn(
       token,
       abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
@@ -446,17 +400,10 @@ library SafeERC20 {
       (value == 0) || (token.allowance(address(this), spender) == 0),
       'SafeERC20: approve from non-zero to non-zero allowance'
     );
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.approve.selector, spender, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
   }
 
-  function safeIncreaseAllowance(
-    IERC20 token,
-    address spender,
-    uint256 value
-  ) internal {
+  function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
     uint256 newAllowance = token.allowance(address(this), spender) + value;
     _callOptionalReturn(
       token,
@@ -464,17 +411,10 @@ library SafeERC20 {
     );
   }
 
-  function safeDecreaseAllowance(
-    IERC20 token,
-    address spender,
-    uint256 value
-  ) internal {
+  function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
     unchecked {
       uint256 oldAllowance = token.allowance(address(this), spender);
-      require(
-        oldAllowance >= value,
-        'SafeERC20: decreased allowance below zero'
-      );
+      require(oldAllowance >= value, 'SafeERC20: decreased allowance below zero');
       uint256 newAllowance = oldAllowance - value;
       _callOptionalReturn(
         token,
@@ -494,24 +434,16 @@ library SafeERC20 {
     // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
     // the target address contains contract code and also asserts for success in the low-level call.
 
-    bytes memory returndata = address(token).functionCall(
-      data,
-      'SafeERC20: low-level call failed'
-    );
+    bytes memory returndata = address(token).functionCall(data, 'SafeERC20: low-level call failed');
     if (returndata.length > 0) {
       // Return data is optional
-      require(
-        abi.decode(returndata, (bool)),
-        'SafeERC20: ERC20 operation did not succeed'
-      );
+      require(abi.decode(returndata, (bool)), 'SafeERC20: ERC20 operation did not succeed');
     }
   }
 }
 
 interface IAaveDistributionManager {
-  function configureAssets(
-    DistributionTypes.AssetConfigInput[] memory assetsConfigInput
-  ) external;
+  function configureAssets(DistributionTypes.AssetConfigInput[] memory assetsConfigInput) external;
 }
 
 interface IStakedTokenV2 {
@@ -521,11 +453,7 @@ interface IStakedTokenV2 {
   }
 
   event RewardsAccrued(address user, uint256 amount);
-  event RewardsClaimed(
-    address indexed from,
-    address indexed to,
-    uint256 amount
-  );
+  event RewardsClaimed(address indexed from, address indexed to, uint256 amount);
   event Cooldown(address indexed user, uint256 amount);
 
   /**
@@ -560,9 +488,7 @@ interface IStakedTokenV2 {
    * @param staker The staker address
    * @return The rewards
    */
-  function getTotalRewardsBalance(
-    address staker
-  ) external view returns (uint256);
+  function getTotalRewardsBalance(address staker) external view returns (uint256);
 
   /**
    * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
@@ -917,10 +843,7 @@ library Math {
    * @dev Return the log in base 2, following the selected rounding direction, of a positive value.
    * Returns 0 if given 0.
    */
-  function log2(
-    uint256 value,
-    Rounding rounding
-  ) internal pure returns (uint256) {
+  function log2(uint256 value, Rounding rounding) internal pure returns (uint256) {
     unchecked {
       uint256 result = log2(value);
       return result + (rounding == Rounding.Up && 1 << result < value ? 1 : 0);
@@ -969,10 +892,7 @@ library Math {
    * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
    * Returns 0 if given 0.
    */
-  function log10(
-    uint256 value,
-    Rounding rounding
-  ) internal pure returns (uint256) {
+  function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {
     unchecked {
       uint256 result = log10(value);
       return result + (rounding == Rounding.Up && 10 ** result < value ? 1 : 0);
@@ -1015,15 +935,10 @@ library Math {
    * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
    * Returns 0 if given 0.
    */
-  function log256(
-    uint256 value,
-    Rounding rounding
-  ) internal pure returns (uint256) {
+  function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {
     unchecked {
       uint256 result = log256(value);
-      return
-        result +
-        (rounding == Rounding.Up && 1 << (result << 3) < value ? 1 : 0);
+      return result + (rounding == Rounding.Up && 1 << (result << 3) < value ? 1 : 0);
     }
   }
 }
@@ -1125,10 +1040,7 @@ library Strings {
   /**
    * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
    */
-  function toHexString(
-    uint256 value,
-    uint256 length
-  ) internal pure returns (string memory) {
+  function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
     uint256 localValue = value;
     bytes memory buffer = new bytes(2 * length + 2);
     buffer[0] = '0';
@@ -1153,13 +1065,8 @@ library Strings {
   /**
    * @dev Returns true if the two strings are equal.
    */
-  function equal(
-    string memory a,
-    string memory b
-  ) internal pure returns (bool) {
-    return
-      bytes(a).length == bytes(b).length &&
-      keccak256(bytes(a)) == keccak256(bytes(b));
+  function equal(string memory a, string memory b) internal pure returns (bool) {
+    return bytes(a).length == bytes(b).length && keccak256(bytes(a)) == keccak256(bytes(b));
   }
 }
 
@@ -1242,11 +1149,7 @@ library ECDSA {
       }
       return tryRecover(hash, v, r, s);
     } else {
-      return (
-        address(0),
-        RecoverError.InvalidSignatureLength,
-        bytes32(signature.length)
-      );
+      return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
     }
   }
 
@@ -1264,14 +1167,8 @@ library ECDSA {
    * this is by receiving a hash of the original message (which may otherwise
    * be too long), and then calling {toEthSignedMessageHash} on it.
    */
-  function recover(
-    bytes32 hash,
-    bytes memory signature
-  ) internal pure returns (address) {
-    (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
-      hash,
-      signature
-    );
+  function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
+    (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, signature);
     _throwError(error, errorArg);
     return recovered;
   }
@@ -1289,10 +1186,7 @@ library ECDSA {
     bytes32 vs
   ) internal pure returns (address, RecoverError, bytes32) {
     unchecked {
-      bytes32 s = vs &
-        bytes32(
-          0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-        );
+      bytes32 s = vs & bytes32(0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
       // We do not check for an overflow here since the shift operation results in 0 or 1.
       uint8 v = uint8((uint256(vs) >> 255) + 27);
       return tryRecover(hash, v, r, s);
@@ -1304,16 +1198,8 @@ library ECDSA {
    *
    * _Available since v4.2._
    */
-  function recover(
-    bytes32 hash,
-    bytes32 r,
-    bytes32 vs
-  ) internal pure returns (address) {
-    (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
-      hash,
-      r,
-      vs
-    );
+  function recover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address) {
+    (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, r, vs);
     _throwError(error, errorArg);
     return recovered;
   }
@@ -1339,10 +1225,7 @@ library ECDSA {
     // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
     // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
     // these malleable signatures as well.
-    if (
-      uint256(s) >
-      0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
-    ) {
+    if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
       return (address(0), RecoverError.InvalidSignatureS, s);
     }
 
@@ -1359,18 +1242,8 @@ library ECDSA {
    * @dev Overload of {ECDSA-recover} that receives the `v`,
    * `r` and `s` signature fields separately.
    */
-  function recover(
-    bytes32 hash,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) internal pure returns (address) {
-    (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
-      hash,
-      v,
-      r,
-      s
-    );
+  function recover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
+    (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, v, r, s);
     _throwError(error, errorArg);
     return recovered;
   }
@@ -1383,9 +1256,7 @@ library ECDSA {
    *
    * See {recover}.
    */
-  function toEthSignedMessageHash(
-    bytes32 hash
-  ) internal pure returns (bytes32 message) {
+  function toEthSignedMessageHash(bytes32 hash) internal pure returns (bytes32 message) {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     /// @solidity memory-safe-assembly
@@ -1404,17 +1275,9 @@ library ECDSA {
    *
    * See {recover}.
    */
-  function toEthSignedMessageHash(
-    bytes memory s
-  ) internal pure returns (bytes32) {
+  function toEthSignedMessageHash(bytes memory s) internal pure returns (bytes32) {
     return
-      keccak256(
-        abi.encodePacked(
-          '\x19Ethereum Signed Message:\n',
-          Strings.toString(s.length),
-          s
-        )
-      );
+      keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n', Strings.toString(s.length), s));
   }
 
   /**
@@ -1514,9 +1377,7 @@ library StorageSlot {
   /**
    * @dev Returns an `AddressSlot` with member `value` located at `slot`.
    */
-  function getAddressSlot(
-    bytes32 slot
-  ) internal pure returns (AddressSlot storage r) {
+  function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := slot
@@ -1526,9 +1387,7 @@ library StorageSlot {
   /**
    * @dev Returns an `BooleanSlot` with member `value` located at `slot`.
    */
-  function getBooleanSlot(
-    bytes32 slot
-  ) internal pure returns (BooleanSlot storage r) {
+  function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := slot
@@ -1538,9 +1397,7 @@ library StorageSlot {
   /**
    * @dev Returns an `Bytes32Slot` with member `value` located at `slot`.
    */
-  function getBytes32Slot(
-    bytes32 slot
-  ) internal pure returns (Bytes32Slot storage r) {
+  function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := slot
@@ -1550,9 +1407,7 @@ library StorageSlot {
   /**
    * @dev Returns an `Uint256Slot` with member `value` located at `slot`.
    */
-  function getUint256Slot(
-    bytes32 slot
-  ) internal pure returns (Uint256Slot storage r) {
+  function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := slot
@@ -1562,9 +1417,7 @@ library StorageSlot {
   /**
    * @dev Returns an `StringSlot` with member `value` located at `slot`.
    */
-  function getStringSlot(
-    bytes32 slot
-  ) internal pure returns (StringSlot storage r) {
+  function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := slot
@@ -1574,9 +1427,7 @@ library StorageSlot {
   /**
    * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
    */
-  function getStringSlot(
-    string storage store
-  ) internal pure returns (StringSlot storage r) {
+  function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := store.slot
@@ -1586,9 +1437,7 @@ library StorageSlot {
   /**
    * @dev Returns an `BytesSlot` with member `value` located at `slot`.
    */
-  function getBytesSlot(
-    bytes32 slot
-  ) internal pure returns (BytesSlot storage r) {
+  function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := slot
@@ -1598,9 +1447,7 @@ library StorageSlot {
   /**
    * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
    */
-  function getBytesSlot(
-    bytes storage store
-  ) internal pure returns (BytesSlot storage r) {
+  function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
     /// @solidity memory-safe-assembly
     assembly {
       r.slot := store.slot
@@ -1653,9 +1500,7 @@ library ShortStrings {
    *
    * This will trigger a `StringTooLong` error is the input string is too long.
    */
-  function toShortString(
-    string memory str
-  ) internal pure returns (ShortString) {
+  function toShortString(string memory str) internal pure returns (ShortString) {
     bytes memory bstr = bytes(str);
     if (bstr.length > 31) {
       revert StringTooLong(str);
@@ -1791,9 +1636,7 @@ abstract contract EIP712 is IERC5267 {
   using ShortStrings for *;
 
   bytes32 private constant _TYPE_HASH =
-    keccak256(
-      'EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'
-    );
+    keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
 
   // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
   // invalidate the cached domain separator if the chain id changes.
@@ -1845,15 +1688,7 @@ abstract contract EIP712 is IERC5267 {
 
   function _buildDomainSeparator() private view returns (bytes32) {
     return
-      keccak256(
-        abi.encode(
-          _TYPE_HASH,
-          _hashedName,
-          _hashedVersion,
-          block.chainid,
-          address(this)
-        )
-      );
+      keccak256(abi.encode(_TYPE_HASH, _hashedName, _hashedVersion, block.chainid, address(this)));
   }
 
   /**
@@ -1871,9 +1706,7 @@ abstract contract EIP712 is IERC5267 {
    * address signer = ECDSA.recover(digest, signature);
    * ```
    */
-  function _hashTypedDataV4(
-    bytes32 structHash
-  ) internal view virtual returns (bytes32) {
+  function _hashTypedDataV4(bytes32 structHash) internal view virtual returns (bytes32) {
     return ECDSA.toTypedDataHash(_domainSeparatorV4(), structHash);
   }
 
@@ -1961,10 +1794,7 @@ abstract contract VersionedInitializable {
    */
   modifier initializer() {
     uint256 revision = getRevision();
-    require(
-      revision > lastInitializedRevision,
-      'Contract instance has already been initialized'
-    );
+    require(revision > lastInitializedRevision, 'Contract instance has already been initialized');
 
     lastInitializedRevision = revision;
 
@@ -2002,11 +1832,7 @@ contract AaveDistributionManager {
 
   event AssetConfigUpdated(address indexed asset, uint256 emission);
   event AssetIndexUpdated(address indexed asset, uint256 index);
-  event UserIndexUpdated(
-    address indexed user,
-    address indexed asset,
-    uint256 index
-  );
+  event UserIndexUpdated(address indexed user, address indexed asset, uint256 index);
 
   constructor(address emissionManager, uint256 distributionDuration) {
     DISTRIBUTION_END = block.timestamp + distributionDuration;
@@ -2021,9 +1847,7 @@ contract AaveDistributionManager {
     DistributionTypes.AssetConfigInput[] memory assetsConfigInput
   ) internal {
     for (uint256 i = 0; i < assetsConfigInput.length; i++) {
-      AssetData storage assetConfig = assets[
-        assetsConfigInput[i].underlyingAsset
-      ];
+      AssetData storage assetConfig = assets[assetsConfigInput[i].underlyingAsset];
 
       _updateAssetStateInternal(
         assetsConfigInput[i].underlyingAsset,
@@ -2157,11 +1981,7 @@ contract AaveDistributionManager {
 
       accruedRewards =
         accruedRewards +
-        _getRewards(
-          stakes[i].stakedByUser,
-          assetIndex,
-          assetConfig.users[user]
-        );
+        _getRewards(stakes[i].stakedByUser, assetIndex, assetConfig.users[user]);
     }
     return accruedRewards;
   }
@@ -2178,9 +1998,7 @@ contract AaveDistributionManager {
     uint256 reserveIndex,
     uint256 userIndex
   ) internal pure returns (uint256) {
-    return
-      (principalUserBalance * (reserveIndex - userIndex)) /
-      (10 ** uint256(PRECISION));
+    return (principalUserBalance * (reserveIndex - userIndex)) / (10 ** uint256(PRECISION));
   }
 
   /**
@@ -2211,8 +2029,7 @@ contract AaveDistributionManager {
       : block.timestamp;
     uint256 timeDelta = currentTimestamp - lastUpdateTimestamp;
     return
-      ((emissionPerSecond * timeDelta * (10 ** uint256(PRECISION))) /
-        totalBalance) + currentIndex;
+      ((emissionPerSecond * timeDelta * (10 ** uint256(PRECISION))) / totalBalance) + currentIndex;
   }
 
   /**
@@ -2221,10 +2038,7 @@ contract AaveDistributionManager {
    * @param asset The address of the reference asset of the distribution
    * @return The new index
    */
-  function getUserAssetData(
-    address user,
-    address asset
-  ) public view returns (uint256) {
+  function getUserAssetData(address user, address asset) public view returns (uint256) {
     return assets[asset].users[user];
   }
 }
@@ -2316,16 +2130,11 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
     return _totalSupply;
   }
 
-  function balanceOf(
-    address account
-  ) public view virtual override returns (uint256) {
+  function balanceOf(address account) public view virtual override returns (uint256) {
     return _balances[account].balance;
   }
 
-  function transfer(
-    address to,
-    uint256 amount
-  ) public virtual override returns (bool) {
+  function transfer(address to, uint256 amount) public virtual override returns (bool) {
     address owner = _msgSender();
     _transfer(owner, to, amount);
     return true;
@@ -2338,10 +2147,7 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
     return _allowances[owner][spender];
   }
 
-  function approve(
-    address spender,
-    uint256 amount
-  ) public virtual override returns (bool) {
+  function approve(address spender, uint256 amount) public virtual override returns (bool) {
     address owner = _msgSender();
     _approve(owner, spender, amount);
     return true;
@@ -2358,10 +2164,7 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
     return true;
   }
 
-  function increaseAllowance(
-    address spender,
-    uint256 addedValue
-  ) public virtual returns (bool) {
+  function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
     address owner = _msgSender();
     _approve(owner, spender, _allowances[owner][spender] + addedValue);
     return true;
@@ -2373,10 +2176,7 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
   ) public virtual returns (bool) {
     address owner = _msgSender();
     uint256 currentAllowance = _allowances[owner][spender];
-    require(
-      currentAllowance >= subtractedValue,
-      'ERC20: decreased allowance below zero'
-    );
+    require(currentAllowance >= subtractedValue, 'ERC20: decreased allowance below zero');
     unchecked {
       _approve(owner, spender, currentAllowance - subtractedValue);
     }
@@ -2384,11 +2184,7 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
     return true;
   }
 
-  function _transfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {
+  function _transfer(address from, address to, uint256 amount) internal virtual {
     require(from != address(0), 'ERC20: transfer from the zero address');
     require(to != address(0), 'ERC20: transfer to the zero address');
 
@@ -2396,10 +2192,7 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
       uint104 fromBalanceBefore = _balances[from].balance;
       uint104 toBalanceBefore = _balances[to].balance;
 
-      require(
-        fromBalanceBefore >= amount,
-        'ERC20: transfer amount exceeds balance'
-      );
+      require(fromBalanceBefore >= amount, 'ERC20: transfer amount exceeds balance');
       unchecked {
         _balances[from].balance = fromBalanceBefore - uint104(amount);
       }
@@ -2411,11 +2204,7 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
     emit Transfer(from, to, amount);
   }
 
-  function _approve(
-    address owner,
-    address spender,
-    uint256 amount
-  ) internal virtual {
+  function _approve(address owner, address spender, uint256 amount) internal virtual {
     require(owner != address(0), 'ERC20: approve from the zero address');
     require(spender != address(0), 'ERC20: approve to the zero address');
 
@@ -2423,11 +2212,7 @@ abstract contract BaseAaveToken is Context, IERC20Metadata {
     emit Approval(owner, spender, amount);
   }
 
-  function _spendAllowance(
-    address owner,
-    address spender,
-    uint256 amount
-  ) internal virtual {
+  function _spendAllowance(address owner, address spender, uint256 amount) internal virtual {
     uint256 currentAllowance = allowance(owner, spender);
     if (currentAllowance != type(uint256).max) {
       require(currentAllowance >= amount, 'ERC20: insufficient allowance');
@@ -2524,11 +2309,7 @@ contract BaseMintableAaveToken is BaseAaveToken {
    *
    * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {}
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 
   /**
    * @dev Hook that is called after any transfer of tokens. This includes
@@ -2544,11 +2325,7 @@ contract BaseMintableAaveToken is BaseAaveToken {
    *
    * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
    */
-  function _afterTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {}
+  function _afterTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 }
 
 /**
@@ -2582,9 +2359,7 @@ abstract contract StakedTokenV2 is
   uint256[5] private ______DEPRECATED_FROM_STK_AAVE_V2;
 
   bytes32 public constant PERMIT_TYPEHASH =
-    keccak256(
-      'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'
-    );
+    keccak256('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)');
 
   /// @dev owner => next valid nonce to submit with permit()
   mapping(address => uint256) public _nonces;
@@ -2596,10 +2371,7 @@ abstract contract StakedTokenV2 is
     address rewardsVault,
     address emissionManager,
     uint128 distributionDuration
-  )
-    AaveDistributionManager(emissionManager, distributionDuration)
-    EIP712('Staked Aave', '2')
-  {
+  ) AaveDistributionManager(emissionManager, distributionDuration) EIP712('Staked Aave', '2') {
     STAKED_TOKEN = stakedToken;
     REWARD_TOKEN = rewardToken;
     UNSTAKE_WINDOW = unstakeWindow;
@@ -2633,9 +2405,7 @@ abstract contract StakedTokenV2 is
   function claimRewards(address to, uint256 amount) external virtual override;
 
   /// @inheritdoc IStakedTokenV2
-  function getTotalRewardsBalance(
-    address staker
-  ) external view returns (uint256) {
+  function getTotalRewardsBalance(address staker) external view returns (uint256) {
     DistributionTypes.UserStakeInput[]
       memory userStakeInputs = new DistributionTypes.UserStakeInput[](1);
     userStakeInputs[0] = DistributionTypes.UserStakeInput({
@@ -2643,9 +2413,7 @@ abstract contract StakedTokenV2 is
       stakedByUser: balanceOf(staker),
       totalStaked: totalSupply()
     });
-    return
-      stakerRewardsToClaim[staker] +
-      _getUnclaimedRewards(staker, userStakeInputs);
+    return stakerRewardsToClaim[staker] + _getUnclaimedRewards(staker, userStakeInputs);
   }
 
   /// @inheritdoc IStakedTokenV2
@@ -2663,16 +2431,7 @@ abstract contract StakedTokenV2 is
     require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
     uint256 currentValidNonce = _nonces[owner];
     bytes32 digest = _hashTypedDataV4(
-      keccak256(
-        abi.encode(
-          PERMIT_TYPEHASH,
-          owner,
-          spender,
-          value,
-          currentValidNonce,
-          deadline
-        )
-      )
+      keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, currentValidNonce, deadline))
     );
 
     require(owner == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
@@ -2714,18 +2473,8 @@ abstract contract StakedTokenV2 is
 }
 
 interface IStakedTokenV3 is IStakedTokenV2 {
-  event Staked(
-    address indexed from,
-    address indexed to,
-    uint256 assets,
-    uint256 shares
-  );
-  event Redeem(
-    address indexed from,
-    address indexed to,
-    uint256 assets,
-    uint256 shares
-  );
+  event Staked(address indexed from, address indexed to, uint256 assets, uint256 shares);
+  event Redeem(address indexed from, address indexed to, uint256 assets, uint256 shares);
   event MaxSlashablePercentageChanged(uint256 newPercentage);
   event Slashed(address indexed destination, uint256 amount);
   event SlashingExitWindowDurationChanged(uint256 windowSeconds);
@@ -2751,10 +2500,7 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * - if the amount bigger than maximum allowed, the maximum will be slashed instead.
    * @return amount the amount slashed
    */
-  function slash(
-    address destination,
-    uint256 amount
-  ) external returns (uint256);
+  function slash(address destination, uint256 amount) external returns (uint256);
 
   /**
    * @dev Settles an ongoing slashing event
@@ -2846,11 +2592,7 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * @param claimAmount Amount to claim
    * @param redeemAmount Amount to redeem
    */
-  function claimRewardsAndRedeem(
-    address to,
-    uint256 claimAmount,
-    uint256 redeemAmount
-  ) external;
+  function claimRewardsAndRedeem(address to, uint256 claimAmount, uint256 redeemAmount) external;
 
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and redeems the `redeemAmount` to an address. Only the claim helper contract is allowed to call this function
@@ -2885,18 +2627,12 @@ library PercentageMath {
    * @param percentage The percentage of the value to be calculated
    * @return The percentage of value
    **/
-  function percentMul(
-    uint256 value,
-    uint256 percentage
-  ) internal pure returns (uint256) {
+  function percentMul(uint256 value, uint256 percentage) internal pure returns (uint256) {
     if (value == 0 || percentage == 0) {
       return 0;
     }
 
-    require(
-      value <= (type(uint256).max) / percentage,
-      'MATH_MULTIPLICATION_OVERFLOW'
-    );
+    require(value <= (type(uint256).max) / percentage, 'MATH_MULTIPLICATION_OVERFLOW');
 
     return (value * percentage) / PERCENTAGE_FACTOR;
   }
@@ -2907,16 +2643,10 @@ library PercentageMath {
    * @param percentage The percentage of the value to be calculated
    * @return The value divided the percentage
    **/
-  function percentDiv(
-    uint256 value,
-    uint256 percentage
-  ) internal pure returns (uint256) {
+  function percentDiv(uint256 value, uint256 percentage) internal pure returns (uint256) {
     require(percentage != 0, 'MATH_DIVISION_BY_ZERO');
 
-    require(
-      value <= type(uint256).max / PERCENTAGE_FACTOR,
-      'MATH_MULTIPLICATION_OVERFLOW'
-    );
+    require(value <= type(uint256).max / PERCENTAGE_FACTOR, 'MATH_MULTIPLICATION_OVERFLOW');
 
     return (value * PERCENTAGE_FACTOR) / percentage;
   }
@@ -2946,10 +2676,7 @@ contract RoleManager {
   }
 
   modifier onlyPendingRoleAdmin(uint256 role) {
-    require(
-      _pendingAdmins[role] == msg.sender,
-      'CALLER_NOT_PENDING_ROLE_ADMIN'
-    );
+    require(_pendingAdmins[role] == msg.sender, 'CALLER_NOT_PENDING_ROLE_ADMIN');
     _;
   }
 
@@ -2974,10 +2701,7 @@ contract RoleManager {
    * @param role the role associated with the new pending admin being set
    * @param newPendingAdmin the address of the new pending admin
    **/
-  function setPendingAdmin(
-    uint256 role,
-    address newPendingAdmin
-  ) public onlyRoleAdmin(role) {
+  function setPendingAdmin(uint256 role, address newPendingAdmin) public onlyRoleAdmin(role) {
     _pendingAdmins[role] = newPendingAdmin;
     emit PendingAdminChanged(newPendingAdmin, role);
   }
@@ -2995,8 +2719,7 @@ contract RoleManager {
   function _initAdmins(InitAdmin[] memory initAdmins) internal {
     for (uint256 i = 0; i < initAdmins.length; i++) {
       require(
-        _admins[initAdmins[i].role] == address(0) &&
-          initAdmins[i].admin != address(0),
+        _admins[initAdmins[i].role] == address(0) && initAdmins[i].admin != address(0),
         'ADMIN_CANNOT_BE_INITIALIZED'
       );
       _admins[initAdmins[i].role] = initAdmins[i].admin;
@@ -3037,10 +2760,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint248(uint256 value) internal pure returns (uint248) {
-    require(
-      value <= type(uint248).max,
-      "SafeCast: value doesn't fit in 248 bits"
-    );
+    require(value <= type(uint248).max, "SafeCast: value doesn't fit in 248 bits");
     return uint248(value);
   }
 
@@ -3057,10 +2777,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint240(uint256 value) internal pure returns (uint240) {
-    require(
-      value <= type(uint240).max,
-      "SafeCast: value doesn't fit in 240 bits"
-    );
+    require(value <= type(uint240).max, "SafeCast: value doesn't fit in 240 bits");
     return uint240(value);
   }
 
@@ -3077,10 +2794,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint232(uint256 value) internal pure returns (uint232) {
-    require(
-      value <= type(uint232).max,
-      "SafeCast: value doesn't fit in 232 bits"
-    );
+    require(value <= type(uint232).max, "SafeCast: value doesn't fit in 232 bits");
     return uint232(value);
   }
 
@@ -3097,10 +2811,7 @@ library SafeCast {
    * _Available since v4.2._
    */
   function toUint224(uint256 value) internal pure returns (uint224) {
-    require(
-      value <= type(uint224).max,
-      "SafeCast: value doesn't fit in 224 bits"
-    );
+    require(value <= type(uint224).max, "SafeCast: value doesn't fit in 224 bits");
     return uint224(value);
   }
 
@@ -3117,10 +2828,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint216(uint256 value) internal pure returns (uint216) {
-    require(
-      value <= type(uint216).max,
-      "SafeCast: value doesn't fit in 216 bits"
-    );
+    require(value <= type(uint216).max, "SafeCast: value doesn't fit in 216 bits");
     return uint216(value);
   }
 
@@ -3137,10 +2845,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint208(uint256 value) internal pure returns (uint208) {
-    require(
-      value <= type(uint208).max,
-      "SafeCast: value doesn't fit in 208 bits"
-    );
+    require(value <= type(uint208).max, "SafeCast: value doesn't fit in 208 bits");
     return uint208(value);
   }
 
@@ -3157,10 +2862,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint200(uint256 value) internal pure returns (uint200) {
-    require(
-      value <= type(uint200).max,
-      "SafeCast: value doesn't fit in 200 bits"
-    );
+    require(value <= type(uint200).max, "SafeCast: value doesn't fit in 200 bits");
     return uint200(value);
   }
 
@@ -3177,10 +2879,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint192(uint256 value) internal pure returns (uint192) {
-    require(
-      value <= type(uint192).max,
-      "SafeCast: value doesn't fit in 192 bits"
-    );
+    require(value <= type(uint192).max, "SafeCast: value doesn't fit in 192 bits");
     return uint192(value);
   }
 
@@ -3197,10 +2896,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint184(uint256 value) internal pure returns (uint184) {
-    require(
-      value <= type(uint184).max,
-      "SafeCast: value doesn't fit in 184 bits"
-    );
+    require(value <= type(uint184).max, "SafeCast: value doesn't fit in 184 bits");
     return uint184(value);
   }
 
@@ -3217,10 +2913,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint176(uint256 value) internal pure returns (uint176) {
-    require(
-      value <= type(uint176).max,
-      "SafeCast: value doesn't fit in 176 bits"
-    );
+    require(value <= type(uint176).max, "SafeCast: value doesn't fit in 176 bits");
     return uint176(value);
   }
 
@@ -3237,10 +2930,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint168(uint256 value) internal pure returns (uint168) {
-    require(
-      value <= type(uint168).max,
-      "SafeCast: value doesn't fit in 168 bits"
-    );
+    require(value <= type(uint168).max, "SafeCast: value doesn't fit in 168 bits");
     return uint168(value);
   }
 
@@ -3257,10 +2947,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint160(uint256 value) internal pure returns (uint160) {
-    require(
-      value <= type(uint160).max,
-      "SafeCast: value doesn't fit in 160 bits"
-    );
+    require(value <= type(uint160).max, "SafeCast: value doesn't fit in 160 bits");
     return uint160(value);
   }
 
@@ -3277,10 +2964,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint152(uint256 value) internal pure returns (uint152) {
-    require(
-      value <= type(uint152).max,
-      "SafeCast: value doesn't fit in 152 bits"
-    );
+    require(value <= type(uint152).max, "SafeCast: value doesn't fit in 152 bits");
     return uint152(value);
   }
 
@@ -3297,10 +2981,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint144(uint256 value) internal pure returns (uint144) {
-    require(
-      value <= type(uint144).max,
-      "SafeCast: value doesn't fit in 144 bits"
-    );
+    require(value <= type(uint144).max, "SafeCast: value doesn't fit in 144 bits");
     return uint144(value);
   }
 
@@ -3317,10 +2998,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint136(uint256 value) internal pure returns (uint136) {
-    require(
-      value <= type(uint136).max,
-      "SafeCast: value doesn't fit in 136 bits"
-    );
+    require(value <= type(uint136).max, "SafeCast: value doesn't fit in 136 bits");
     return uint136(value);
   }
 
@@ -3337,10 +3015,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint128(uint256 value) internal pure returns (uint128) {
-    require(
-      value <= type(uint128).max,
-      "SafeCast: value doesn't fit in 128 bits"
-    );
+    require(value <= type(uint128).max, "SafeCast: value doesn't fit in 128 bits");
     return uint128(value);
   }
 
@@ -3357,10 +3032,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint120(uint256 value) internal pure returns (uint120) {
-    require(
-      value <= type(uint120).max,
-      "SafeCast: value doesn't fit in 120 bits"
-    );
+    require(value <= type(uint120).max, "SafeCast: value doesn't fit in 120 bits");
     return uint120(value);
   }
 
@@ -3377,10 +3049,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint112(uint256 value) internal pure returns (uint112) {
-    require(
-      value <= type(uint112).max,
-      "SafeCast: value doesn't fit in 112 bits"
-    );
+    require(value <= type(uint112).max, "SafeCast: value doesn't fit in 112 bits");
     return uint112(value);
   }
 
@@ -3397,10 +3066,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint104(uint256 value) internal pure returns (uint104) {
-    require(
-      value <= type(uint104).max,
-      "SafeCast: value doesn't fit in 104 bits"
-    );
+    require(value <= type(uint104).max, "SafeCast: value doesn't fit in 104 bits");
     return uint104(value);
   }
 
@@ -3417,10 +3083,7 @@ library SafeCast {
    * _Available since v4.2._
    */
   function toUint96(uint256 value) internal pure returns (uint96) {
-    require(
-      value <= type(uint96).max,
-      "SafeCast: value doesn't fit in 96 bits"
-    );
+    require(value <= type(uint96).max, "SafeCast: value doesn't fit in 96 bits");
     return uint96(value);
   }
 
@@ -3437,10 +3100,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint88(uint256 value) internal pure returns (uint88) {
-    require(
-      value <= type(uint88).max,
-      "SafeCast: value doesn't fit in 88 bits"
-    );
+    require(value <= type(uint88).max, "SafeCast: value doesn't fit in 88 bits");
     return uint88(value);
   }
 
@@ -3457,10 +3117,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint80(uint256 value) internal pure returns (uint80) {
-    require(
-      value <= type(uint80).max,
-      "SafeCast: value doesn't fit in 80 bits"
-    );
+    require(value <= type(uint80).max, "SafeCast: value doesn't fit in 80 bits");
     return uint80(value);
   }
 
@@ -3477,10 +3134,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint72(uint256 value) internal pure returns (uint72) {
-    require(
-      value <= type(uint72).max,
-      "SafeCast: value doesn't fit in 72 bits"
-    );
+    require(value <= type(uint72).max, "SafeCast: value doesn't fit in 72 bits");
     return uint72(value);
   }
 
@@ -3497,10 +3151,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint64(uint256 value) internal pure returns (uint64) {
-    require(
-      value <= type(uint64).max,
-      "SafeCast: value doesn't fit in 64 bits"
-    );
+    require(value <= type(uint64).max, "SafeCast: value doesn't fit in 64 bits");
     return uint64(value);
   }
 
@@ -3517,10 +3168,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint56(uint256 value) internal pure returns (uint56) {
-    require(
-      value <= type(uint56).max,
-      "SafeCast: value doesn't fit in 56 bits"
-    );
+    require(value <= type(uint56).max, "SafeCast: value doesn't fit in 56 bits");
     return uint56(value);
   }
 
@@ -3537,10 +3185,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint48(uint256 value) internal pure returns (uint48) {
-    require(
-      value <= type(uint48).max,
-      "SafeCast: value doesn't fit in 48 bits"
-    );
+    require(value <= type(uint48).max, "SafeCast: value doesn't fit in 48 bits");
     return uint48(value);
   }
 
@@ -3557,10 +3202,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint40(uint256 value) internal pure returns (uint40) {
-    require(
-      value <= type(uint40).max,
-      "SafeCast: value doesn't fit in 40 bits"
-    );
+    require(value <= type(uint40).max, "SafeCast: value doesn't fit in 40 bits");
     return uint40(value);
   }
 
@@ -3577,10 +3219,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint32(uint256 value) internal pure returns (uint32) {
-    require(
-      value <= type(uint32).max,
-      "SafeCast: value doesn't fit in 32 bits"
-    );
+    require(value <= type(uint32).max, "SafeCast: value doesn't fit in 32 bits");
     return uint32(value);
   }
 
@@ -3597,10 +3236,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint24(uint256 value) internal pure returns (uint24) {
-    require(
-      value <= type(uint24).max,
-      "SafeCast: value doesn't fit in 24 bits"
-    );
+    require(value <= type(uint24).max, "SafeCast: value doesn't fit in 24 bits");
     return uint24(value);
   }
 
@@ -3617,10 +3253,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint16(uint256 value) internal pure returns (uint16) {
-    require(
-      value <= type(uint16).max,
-      "SafeCast: value doesn't fit in 16 bits"
-    );
+    require(value <= type(uint16).max, "SafeCast: value doesn't fit in 16 bits");
     return uint16(value);
   }
 
@@ -4224,10 +3857,7 @@ library SafeCast {
    */
   function toInt256(uint256 value) internal pure returns (int256) {
     // Note: Unsafe cast below is okay because `type(int256).max` is guaranteed to be positive
-    require(
-      value <= uint256(type(int256).max),
-      "SafeCast: value doesn't fit in an int256"
-    );
+    require(value <= uint256(type(int256).max), "SafeCast: value doesn't fit in an int256");
     return int256(value);
   }
 }
@@ -4247,10 +3877,7 @@ library SafeCast72 {
    * - input must fit into 72 bits
    */
   function toUint72(uint256 value) internal pure returns (uint72) {
-    require(
-      value <= type(uint72).max,
-      "SafeCast: value doesn't fit in 72 bits"
-    );
+    require(value <= type(uint72).max, "SafeCast: value doesn't fit in 72 bits");
     return uint72(value);
   }
 }
@@ -4281,10 +3908,7 @@ interface IGovernancePowerDelegationToken {
    * @param delegatee the user which delegated power will change
    * @param delegationType the type of delegation (VOTING, PROPOSITION)
    **/
-  function delegateByType(
-    address delegatee,
-    GovernancePowerType delegationType
-  ) external;
+  function delegateByType(address delegatee, GovernancePowerType delegationType) external;
 
   /**
    * @dev delegates all the governance powers to a specific user
@@ -4308,9 +3932,7 @@ interface IGovernancePowerDelegationToken {
    * @param delegator the address of the delegator
    * @return a tuple of addresses the VOTING and PROPOSITION delegatee
    **/
-  function getDelegates(
-    address delegator
-  ) external view returns (address, address);
+  function getDelegates(address delegator) external view returns (address, address);
 
   /**
    * @dev returns the current voting or proposition power of a user.
@@ -4328,9 +3950,7 @@ interface IGovernancePowerDelegationToken {
    * @param user the user
    * @return the current voting and proposition power of a user
    **/
-  function getPowersCurrent(
-    address user
-  ) external view returns (uint256, uint256);
+  function getPowersCurrent(address user) external view returns (uint256, uint256);
 
   /**
    * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
@@ -4404,9 +4024,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
       'DelegateByType(address delegator,address delegatee,uint8 delegationType,uint256 nonce,uint256 deadline)'
     );
   bytes32 public constant DELEGATE_TYPEHASH =
-    keccak256(
-      'Delegate(address delegator,address delegatee,uint256 nonce,uint256 deadline)'
-    );
+    keccak256('Delegate(address delegator,address delegatee,uint256 nonce,uint256 deadline)');
 
   /**
    * @notice returns eip-2612 compatible domain separator
@@ -4420,9 +4038,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
    * @param user address
    * @return state of a user's delegation
    */
-  function _getDelegationState(
-    address user
-  ) internal view virtual returns (DelegationState memory);
+  function _getDelegationState(address user) internal view virtual returns (DelegationState memory);
 
   /**
    * @notice returns the token balance of a user
@@ -4468,30 +4084,15 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
     address delegator,
     GovernancePowerType delegationType
   ) external view override returns (address) {
-    return
-      _getDelegateeByType(
-        delegator,
-        _getDelegationState(delegator),
-        delegationType
-      );
+    return _getDelegateeByType(delegator, _getDelegationState(delegator), delegationType);
   }
 
   /// @inheritdoc IGovernancePowerDelegationToken
-  function getDelegates(
-    address delegator
-  ) external view override returns (address, address) {
+  function getDelegates(address delegator) external view override returns (address, address) {
     DelegationState memory delegatorBalance = _getDelegationState(delegator);
     return (
-      _getDelegateeByType(
-        delegator,
-        delegatorBalance,
-        GovernancePowerType.VOTING
-      ),
-      _getDelegateeByType(
-        delegator,
-        delegatorBalance,
-        GovernancePowerType.PROPOSITION
-      )
+      _getDelegateeByType(delegator, delegatorBalance, GovernancePowerType.VOTING),
+      _getDelegateeByType(delegator, delegatorBalance, GovernancePowerType.PROPOSITION)
     );
   }
 
@@ -4501,22 +4102,15 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
     GovernancePowerType delegationType
   ) public view virtual override returns (uint256) {
     DelegationState memory userState = _getDelegationState(user);
-    uint256 userOwnPower = uint8(userState.delegationMode) &
-      (uint8(delegationType) + 1) ==
-      0
+    uint256 userOwnPower = uint8(userState.delegationMode) & (uint8(delegationType) + 1) == 0
       ? _getBalance(user)
       : 0;
-    uint256 userDelegatedPower = _getDelegatedPowerByType(
-      userState,
-      delegationType
-    );
+    uint256 userDelegatedPower = _getDelegatedPowerByType(userState, delegationType);
     return userOwnPower + userDelegatedPower;
   }
 
   /// @inheritdoc IGovernancePowerDelegationToken
-  function getPowersCurrent(
-    address user
-  ) external view override returns (uint256, uint256) {
+  function getPowersCurrent(address user) external view override returns (uint256, uint256) {
     return (
       getPowerCurrent(user, GovernancePowerType.VOTING),
       getPowerCurrent(user, GovernancePowerType.PROPOSITION)
@@ -4569,13 +4163,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
     bytes32 digest = ECDSA.toTypedDataHash(
       _getDomainSeparator(),
       keccak256(
-        abi.encode(
-          DELEGATE_TYPEHASH,
-          delegator,
-          delegatee,
-          _incrementNonces(delegator),
-          deadline
-        )
+        abi.encode(DELEGATE_TYPEHASH, delegator, delegatee, _incrementNonces(delegator), deadline)
       )
     );
 
@@ -4663,11 +4251,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
         _governancePowerTransferByType(
           fromBalanceBefore,
           fromBalanceAfter,
-          _getDelegateeByType(
-            from,
-            fromUserState,
-            GovernancePowerType.PROPOSITION
-          ),
+          _getDelegateeByType(from, fromUserState, GovernancePowerType.PROPOSITION),
           GovernancePowerType.PROPOSITION
         );
       }
@@ -4728,8 +4312,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
       return
         /// With the & operation, we cover both VOTING_DELEGATED delegation and FULL_POWER_DELEGATED
         /// as VOTING_DELEGATED is equivalent to 01 in binary and FULL_POWER_DELEGATED is equivalent to 11
-        (uint8(userState.delegationMode) &
-          uint8(DelegationMode.VOTING_DELEGATED)) != 0
+        (uint8(userState.delegationMode) & uint8(DelegationMode.VOTING_DELEGATED)) != 0
           ? _votingDelegatee[delegator]
           : address(0);
     }
@@ -4750,9 +4333,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
     GovernancePowerType delegationType,
     address _newDelegatee
   ) internal {
-    address newDelegatee = _newDelegatee == delegator
-      ? address(0)
-      : _newDelegatee;
+    address newDelegatee = _newDelegatee == delegator ? address(0) : _newDelegatee;
     if (delegationType == GovernancePowerType.VOTING) {
       _votingDelegatee[delegator] = newDelegatee;
     } else {
@@ -4781,8 +4362,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
       // then bitwise AND, which means it will keep only another delegation type if it exists
       userState.delegationMode = DelegationMode(
         uint8(userState.delegationMode) &
-          ((uint8(delegationType) + 1) ^
-            uint8(DelegationMode.FULL_POWER_DELEGATED))
+          ((uint8(delegationType) + 1) ^ uint8(DelegationMode.FULL_POWER_DELEGATED))
       );
     }
     return userState;
@@ -4807,11 +4387,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
     // We read the whole struct before validating delegatee, because in the optimistic case
     // (_delegatee != currentDelegatee) we will reuse userState in the rest of the function
     DelegationState memory delegatorState = _getDelegationState(delegator);
-    address currentDelegatee = _getDelegateeByType(
-      delegator,
-      delegatorState,
-      delegationType
-    );
+    address currentDelegatee = _getDelegateeByType(delegator, delegatorState, delegationType);
     if (delegatee == currentDelegatee) return;
 
     bool delegatingNow = currentDelegatee != address(0);
@@ -4819,21 +4395,11 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
     uint256 delegatorBalance = _getBalance(delegator);
 
     if (delegatingNow) {
-      _governancePowerTransferByType(
-        delegatorBalance,
-        0,
-        currentDelegatee,
-        delegationType
-      );
+      _governancePowerTransferByType(delegatorBalance, 0, currentDelegatee, delegationType);
     }
 
     if (willDelegateAfter) {
-      _governancePowerTransferByType(
-        0,
-        delegatorBalance,
-        delegatee,
-        delegationType
-      );
+      _governancePowerTransferByType(0, delegatorBalance, delegatee, delegationType);
     }
 
     _updateDelegateeByType(delegator, delegationType, delegatee);
@@ -4841,11 +4407,7 @@ abstract contract BaseDelegation is IGovernancePowerDelegationToken {
     if (willDelegateAfter != delegatingNow) {
       _setDelegationState(
         delegator,
-        _updateDelegationModeByType(
-          delegatorState,
-          delegationType,
-          willDelegateAfter
-        )
+        _updateDelegationModeByType(delegatorState, delegationType, willDelegateAfter)
       );
     }
 
@@ -4892,26 +4454,17 @@ contract StakedTokenV3 is
   bool public inPostSlashingPeriod;
 
   modifier onlySlashingAdmin() {
-    require(
-      msg.sender == getAdmin(SLASH_ADMIN_ROLE),
-      'CALLER_NOT_SLASHING_ADMIN'
-    );
+    require(msg.sender == getAdmin(SLASH_ADMIN_ROLE), 'CALLER_NOT_SLASHING_ADMIN');
     _;
   }
 
   modifier onlyCooldownAdmin() {
-    require(
-      msg.sender == getAdmin(COOLDOWN_ADMIN_ROLE),
-      'CALLER_NOT_COOLDOWN_ADMIN'
-    );
+    require(msg.sender == getAdmin(COOLDOWN_ADMIN_ROLE), 'CALLER_NOT_COOLDOWN_ADMIN');
     _;
   }
 
   modifier onlyClaimHelper() {
-    require(
-      msg.sender == getAdmin(CLAIM_HELPER_ROLE),
-      'CALLER_NOT_CLAIM_HELPER'
-    );
+    require(msg.sender == getAdmin(CLAIM_HELPER_ROLE), 'CALLER_NOT_CLAIM_HELPER');
     _;
   }
 
@@ -4997,10 +4550,7 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV2
-  function stake(
-    address to,
-    uint256 amount
-  ) external override(IStakedTokenV2, StakedTokenV2) {
+  function stake(address to, uint256 amount) external override(IStakedTokenV2, StakedTokenV2) {
     _stake(msg.sender, to, amount);
   }
 
@@ -5026,10 +4576,7 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV2
-  function redeem(
-    address to,
-    uint256 amount
-  ) external override(IStakedTokenV2, StakedTokenV2) {
+  function redeem(address to, uint256 amount) external override(IStakedTokenV2, StakedTokenV2) {
     _redeem(msg.sender, to, amount.toUint104());
   }
 
@@ -5086,9 +4633,7 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV3
-  function previewRedeem(
-    uint256 shares
-  ) public view override returns (uint256) {
+  function previewRedeem(uint256 shares) public view override returns (uint256) {
     return (EXCHANGE_RATE_UNIT * shares) / _currentExchangeRate;
   }
 
@@ -5137,26 +4682,17 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV3
-  function setMaxSlashablePercentage(
-    uint256 percentage
-  ) external override onlySlashingAdmin {
+  function setMaxSlashablePercentage(uint256 percentage) external override onlySlashingAdmin {
     _setMaxSlashablePercentage(percentage);
   }
 
   /// @inheritdoc IStakedTokenV3
-  function getMaxSlashablePercentage()
-    external
-    view
-    override
-    returns (uint256)
-  {
+  function getMaxSlashablePercentage() external view override returns (uint256) {
     return _maxSlashablePercentage;
   }
 
   /// @inheritdoc IStakedTokenV3
-  function setCooldownSeconds(
-    uint256 cooldownSeconds
-  ) external onlyCooldownAdmin {
+  function setCooldownSeconds(uint256 cooldownSeconds) external onlyCooldownAdmin {
     _setCooldownSeconds(cooldownSeconds);
   }
 
@@ -5175,10 +4711,7 @@ contract StakedTokenV3 is
    * @param percentage must be strictly lower 100% as otherwise the exchange rate calculation would result in 0 division
    */
   function _setMaxSlashablePercentage(uint256 percentage) internal {
-    require(
-      percentage < PercentageMath.PERCENTAGE_FACTOR,
-      'INVALID_SLASHING_PERCENTAGE'
-    );
+    require(percentage < PercentageMath.PERCENTAGE_FACTOR, 'INVALID_SLASHING_PERCENTAGE');
 
     _maxSlashablePercentage = percentage;
     emit MaxSlashablePercentageChanged(percentage);
@@ -5200,21 +4733,11 @@ contract StakedTokenV3 is
    * @param amount Amount to claim
    * @return amount claimed
    */
-  function _claimRewards(
-    address from,
-    address to,
-    uint256 amount
-  ) internal returns (uint256) {
+  function _claimRewards(address from, address to, uint256 amount) internal returns (uint256) {
     require(amount != 0, 'INVALID_ZERO_AMOUNT');
-    uint256 newTotalRewards = _updateCurrentUnclaimedRewards(
-      from,
-      balanceOf(from),
-      false
-    );
+    uint256 newTotalRewards = _updateCurrentUnclaimedRewards(from, balanceOf(from), false);
 
-    uint256 amountToClaim = (amount > newTotalRewards)
-      ? newTotalRewards
-      : amount;
+    uint256 amountToClaim = (amount > newTotalRewards) ? newTotalRewards : amount;
     require(amountToClaim != 0, 'INVALID_ZERO_AMOUNT');
 
     stakerRewardsToClaim[from] = newTotalRewards - amountToClaim;
@@ -5237,14 +4760,8 @@ contract StakedTokenV3 is
   ) internal returns (uint256) {
     require(REWARD_TOKEN == STAKED_TOKEN, 'REWARD_TOKEN_IS_NOT_STAKED_TOKEN');
 
-    uint256 userUpdatedRewards = _updateCurrentUnclaimedRewards(
-      from,
-      balanceOf(from),
-      true
-    );
-    uint256 amountToClaim = (amount > userUpdatedRewards)
-      ? userUpdatedRewards
-      : amount;
+    uint256 userUpdatedRewards = _updateCurrentUnclaimedRewards(from, balanceOf(from), true);
+    uint256 amountToClaim = (amount > userUpdatedRewards) ? userUpdatedRewards : amount;
 
     if (amountToClaim != 0) {
       _claimRewards(from, address(this), amountToClaim);
@@ -5302,16 +4819,13 @@ contract StakedTokenV3 is
         'INSUFFICIENT_COOLDOWN'
       );
       require(
-        (block.timestamp - (cooldownSnapshot.timestamp + _cooldownSeconds) <=
-          UNSTAKE_WINDOW),
+        (block.timestamp - (cooldownSnapshot.timestamp + _cooldownSeconds) <= UNSTAKE_WINDOW),
         'UNSTAKE_WINDOW_FINISHED'
       );
     }
 
     uint256 balanceOfFrom = balanceOf(from);
-    uint256 maxRedeemable = inPostSlashingPeriod
-      ? balanceOfFrom
-      : cooldownSnapshot.amount;
+    uint256 maxRedeemable = inPostSlashingPeriod ? balanceOfFrom : cooldownSnapshot.amount;
     require(maxRedeemable != 0, 'INVALID_ZERO_MAX_REDEEMABLE');
 
     uint256 amountToRedeem = (amount > maxRedeemable) ? maxRedeemable : amount;
@@ -5326,9 +4840,7 @@ contract StakedTokenV3 is
       if (cooldownSnapshot.amount - amountToRedeem == 0) {
         delete stakersCooldowns[from];
       } else {
-        stakersCooldowns[from].amount =
-          stakersCooldowns[from].amount -
-          amountToRedeem.toUint184();
+        stakersCooldowns[from].amount = stakersCooldowns[from].amount - amountToRedeem.toUint184();
       }
     }
 
@@ -5358,16 +4870,10 @@ contract StakedTokenV3 is
     uint256 totalAssets,
     uint256 totalShares
   ) internal pure returns (uint216) {
-    return
-      (((totalShares * EXCHANGE_RATE_UNIT) + totalAssets - 1) / totalAssets)
-        .toUint216();
+    return (((totalShares * EXCHANGE_RATE_UNIT) + totalAssets - 1) / totalAssets).toUint216();
   }
 
-  function _transfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _transfer(address from, address to, uint256 amount) internal override {
     uint256 balanceOfFrom = balanceOf(from);
     // Sender
     _updateCurrentUnclaimedRewards(from, balanceOfFrom, true);
@@ -5388,13 +4894,7 @@ contract StakedTokenV3 is
       }
     }
 
-    _delegationChangeOnTransfer(
-      from,
-      to,
-      _getBalance(from),
-      _getBalance(to),
-      amount
-    );
+    _delegationChangeOnTransfer(from, to, _getBalance(from), _getBalance(to), amount);
 
     super._transfer(from, to, amount);
   }
@@ -5419,9 +4919,7 @@ contract StakedTokenV3 is
     address user,
     GovernancePowerType delegationType
   ) public view override returns (uint256) {
-    return
-      (super.getPowerCurrent(user, delegationType) * EXCHANGE_RATE_UNIT) /
-      getExchangeRate();
+    return (super.getPowerCurrent(user, delegationType) * EXCHANGE_RATE_UNIT) / getExchangeRate();
   }
 
   function _setDelegationState(
@@ -5429,8 +4927,7 @@ contract StakedTokenV3 is
     DelegationState memory delegationState
   ) internal override {
     DelegationAwareBalance storage userState = _balances[user];
-    userState.delegatedPropositionBalance = delegationState
-      .delegatedPropositionBalance;
+    userState.delegatedPropositionBalance = delegationState.delegatedPropositionBalance;
     userState.delegatedVotingBalance = delegationState.delegatedVotingBalance;
     userState.delegationMode = delegationState.delegationMode;
   }
@@ -5478,19 +4975,14 @@ interface IStakedAaveV3 is IStakedTokenV3 {
    * @dev Sets the GHO debt token (only callable by SHORT_EXECUTOR)
    * @param newGHODebtToken Address to GHO debt token
    */
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external;
+  function setGHODebtToken(IGhoVariableDebtTokenTransferHook newGHODebtToken) external;
 
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and stakes.
    * @param to Address to stake to
    * @param amount Amount to claim
    */
-  function claimRewardsAndStake(
-    address to,
-    uint256 amount
-  ) external returns (uint256);
+  function claimRewardsAndStake(address to, uint256 amount) external returns (uint256);
 
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and stakes. Only the claim helper contract is allowed to call this function
@@ -5579,19 +5071,14 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   function initialize() external override initializer {}
 
   /// @inheritdoc IStakedAaveV3
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external {
+  function setGHODebtToken(IGhoVariableDebtTokenTransferHook newGHODebtToken) external {
     require(msg.sender == 0xEE56e2B3D491590B5b31738cC34d5232F378a8D5); // Short executor
     ghoDebtToken = newGHODebtToken;
     emit GHODebtTokenChanged(address(newGHODebtToken));
   }
 
   /// @inheritdoc IStakedAaveV3
-  function claimRewardsAndStake(
-    address to,
-    uint256 amount
-  ) external override returns (uint256) {
+  function claimRewardsAndStake(address to, uint256 amount) external override returns (uint256) {
     return _claimRewardsAndStakeOnBehalf(msg.sender, to, amount);
   }
 
@@ -5613,15 +5100,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     bytes32 r,
     bytes32 s
   ) external override {
-    IERC20WithPermit(address(STAKED_TOKEN)).permit(
-      from,
-      address(this),
-      amount,
-      deadline,
-      v,
-      r,
-      s
-    );
+    IERC20WithPermit(address(STAKED_TOKEN)).permit(from, address(this), amount, deadline, v, r, s);
     _stake(from, from, amount);
   }
 
@@ -5634,11 +5113,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    * @param to the to address
    * @param amount the amount to transfer
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try

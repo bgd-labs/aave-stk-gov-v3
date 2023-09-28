@@ -33,16 +33,11 @@ contract ClaimRewardsValidation is BaseTest {
 
     vm.warp(block.timestamp + 60 * 60 * 24 * 100);
 
-    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(
-      address(this)
-    );
+    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(address(this));
     uint256 halfClaim = balanceToClaim / 2;
     STAKE_CONTRACT.claimRewards(address(this), halfClaim);
     assertEq(STAKE_CONTRACT.REWARD_TOKEN().balanceOf(address(this)), halfClaim);
-    assertEq(
-      STAKE_CONTRACT.getTotalRewardsBalance(address(this)),
-      balanceToClaim - halfClaim
-    );
+    assertEq(STAKE_CONTRACT.getTotalRewardsBalance(address(this)), balanceToClaim - halfClaim);
   }
 
   /**
@@ -55,14 +50,9 @@ contract ClaimRewardsValidation is BaseTest {
 
     vm.warp(block.timestamp + 60 * 60 * 24 * 100);
 
-    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(
-      address(this)
-    );
+    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(address(this));
     STAKE_CONTRACT.claimRewards(address(this), balanceToClaim * 2);
-    assertEq(
-      STAKE_CONTRACT.REWARD_TOKEN().balanceOf(address(this)),
-      balanceToClaim
-    );
+    assertEq(STAKE_CONTRACT.REWARD_TOKEN().balanceOf(address(this)), balanceToClaim);
     assertEq(STAKE_CONTRACT.getTotalRewardsBalance(address(this)), 0);
   }
 
@@ -76,14 +66,9 @@ contract ClaimRewardsValidation is BaseTest {
 
     vm.warp(block.timestamp + 60 * 60 * 24 * 100);
 
-    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(
-      address(this)
-    );
+    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(address(this));
     STAKE_CONTRACT.claimRewards(address(this), balanceToClaim);
-    assertEq(
-      STAKE_CONTRACT.REWARD_TOKEN().balanceOf(address(this)),
-      balanceToClaim
-    );
+    assertEq(STAKE_CONTRACT.REWARD_TOKEN().balanceOf(address(this)), balanceToClaim);
     assertEq(STAKE_CONTRACT.getTotalRewardsBalance(address(this)), 0);
   }
 
@@ -95,9 +80,7 @@ contract ClaimRewardsValidation is BaseTest {
     vm.warp(block.timestamp + 60 * 60 * 24 * 100);
 
     uint256 balanceBefore = STAKE_CONTRACT.balanceOf(address(this));
-    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(
-      address(this)
-    );
+    uint256 balanceToClaim = STAKE_CONTRACT.getTotalRewardsBalance(address(this));
     require(balanceToClaim != 0);
     STAKE_CONTRACT.claimRewardsAndStake(address(this), balanceToClaim);
     uint256 balanceAfter = STAKE_CONTRACT.balanceOf(address(this));

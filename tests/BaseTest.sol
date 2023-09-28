@@ -27,28 +27,23 @@ contract BaseTest is Test {
     uint256 proposalId;
     GovHelpers.Payload[] memory payloads = new GovHelpers.Payload[](1);
     if (stkAAVE) {
-      payloads[0] = GovHelpers.buildMainnet(
-        address(new ProposalPayloadStkAave())
-      );
+      payloads[0] = GovHelpers.buildMainnet(address(new ProposalPayloadStkAave()));
       proposalId = GovHelpers.createProposal(
         AaveGovernanceV2.LONG_EXECUTOR,
         payloads,
         bytes32('1')
       );
     } else {
-      payloads[0] = GovHelpers.buildMainnet(
-        address(new ProposalPayloadStkAbpt())
-      );
+      payloads[0] = GovHelpers.buildMainnet(address(new ProposalPayloadStkAbpt()));
       proposalId = GovHelpers.createProposal(payloads, bytes32('1'));
     }
     GovHelpers.passVoteAndExecute(vm, proposalId);
 
     // ensure implementation is bricked
-    address impl = ProxyHelpers
-      .getInitializableAdminUpgradeabilityProxyImplementation(
-        vm,
-        address(STAKE_CONTRACT)
-      );
+    address impl = ProxyHelpers.getInitializableAdminUpgradeabilityProxyImplementation(
+      vm,
+      address(STAKE_CONTRACT)
+    );
 
     try StakedTokenV3(impl).initialize() {} catch Error(string memory reason) {
       require(
@@ -94,9 +89,7 @@ contract BaseTest is Test {
 
   function _slash20() internal {
     address receiver = address(42);
-    uint256 amountToSlash = (STAKE_CONTRACT.previewRedeem(
-      STAKE_CONTRACT.totalSupply()
-    ) * 2) / 10;
+    uint256 amountToSlash = (STAKE_CONTRACT.previewRedeem(STAKE_CONTRACT.totalSupply()) * 2) / 10;
 
     // slash
     vm.startPrank(STAKE_CONTRACT.getAdmin(SLASHING_ADMIN));

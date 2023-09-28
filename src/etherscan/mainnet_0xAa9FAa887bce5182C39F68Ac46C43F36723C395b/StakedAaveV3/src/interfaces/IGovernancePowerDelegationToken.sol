@@ -25,21 +25,14 @@ interface IGovernancePowerDelegationToken {
    * @param amount the amount of delegated power for the user
    * @param delegationType the type of delegation (VOTING_POWER, PROPOSITION_POWER)
    **/
-  event DelegatedPowerChanged(
-    address indexed user,
-    uint256 amount,
-    DelegationType delegationType
-  );
+  event DelegatedPowerChanged(address indexed user, uint256 amount, DelegationType delegationType);
 
   /**
    * @dev delegates the specific power to a delegatee
    * @param delegatee the user which delegated power has changed
    * @param delegationType the type of delegation (VOTING_POWER, PROPOSITION_POWER)
    **/
-  function delegateByType(
-    address delegatee,
-    DelegationType delegationType
-  ) external;
+  function delegateByType(address delegatee, DelegationType delegationType) external;
 
   /**
    * @dev delegates all the powers to a specific user

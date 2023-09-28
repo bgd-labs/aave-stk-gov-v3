@@ -25,21 +25,14 @@ interface IDelegationAwareToken {
    * @param amount the amount of delegated power for the user
    * @param delegationType the type of delegation (VOTING_POWER, PROPOSITION_POWER)
    **/
-  event DelegatedPowerChanged(
-    address indexed user,
-    uint256 amount,
-    DelegationType delegationType
-  );
+  event DelegatedPowerChanged(address indexed user, uint256 amount, DelegationType delegationType);
 
   /**
    * @dev delegates the specific power to a delegatee
    * @param delegatee the user which delegated power has changed
    * @param delegationType the type of delegation (VOTING_POWER, PROPOSITION_POWER)
    **/
-  function delegate(
-    address delegatee,
-    DelegationType delegationType
-  ) external virtual;
+  function delegate(address delegatee, DelegationType delegationType) external virtual;
 
   /**
    * @dev delegates all the powers to a specific user
@@ -79,7 +72,5 @@ interface IDelegationAwareToken {
   /**
    * @dev returns the total supply at a certain block number
    **/
-  function totalSupplyAt(
-    uint256 blockNumber
-  ) external view virtual returns (uint256);
+  function totalSupplyAt(uint256 blockNumber) external view virtual returns (uint256);
 }

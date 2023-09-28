@@ -1,4 +1,4 @@
-```diff
+````diff
 diff --git a/src/flattened/CurrentStakedTokenV3Flattened.sol b/src/flattened/StakedTokenV3Flattened.sol
 index 6b21e42..619a695 100644
 --- a/src/flattened/CurrentStakedTokenV3Flattened.sol
@@ -6,16 +6,16 @@ index 6b21e42..619a695 100644
 @@ -1,7 +1,7 @@
  // SPDX-License-Identifier: agpl-3.0
  pragma solidity ^0.8.0;
- 
+
 -// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
 +// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC20/IERC20.sol)
- 
+
  /**
   * @dev Interface of the ERC20 standard as defined in the EIP.
 @@ -84,6 +84,30 @@ interface IERC20 {
    ) external returns (bool);
  }
- 
+
 +// OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/IERC20Metadata.sol)
 +
 +/**
@@ -46,7 +46,7 @@ index 6b21e42..619a695 100644
 @@ -490,30 +514,6 @@ interface IAaveDistributionManager {
    ) external;
  }
- 
+
 -// OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/IERC20Metadata.sol)
 -
 -/**
@@ -77,15 +77,15 @@ index 6b21e42..619a695 100644
 @@ -585,427 +585,1355 @@ interface IStakedTokenV2 {
    ) external;
  }
- 
+
 -// OpenZeppelin Contracts (last updated v4.8.0) (token/ERC20/ERC20.sol)
 +// Contract modified from OpenZeppelin Contracts (last updated v4.9.0) (utils/cryptography/EIP712.sol) to remove local
 +// fallback storage variables, so contract does not affect on existing storage layout. This works as its used on contracts
 +// that have name and revision < 32 bytes
- 
+
 -// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 +// OpenZeppelin Contracts (last updated v4.9.0) (utils/cryptography/ECDSA.sol)
- 
+
 -/**
 - * @dev Provides information about the current execution context, including the
 - * sender of the transaction and its data. While these are generally available
@@ -101,13 +101,13 @@ index 6b21e42..619a695 100644
 -    return msg.sender;
 -  }
 +// OpenZeppelin Contracts (last updated v4.9.0) (utils/Strings.sol)
- 
+
 -  function _msgData() internal view virtual returns (bytes calldata) {
 -    return msg.data;
 -  }
 -}
 +// OpenZeppelin Contracts (last updated v4.9.0) (utils/math/Math.sol)
- 
+
  /**
 - * @dev Implementation of the {IERC20} interface.
 - *
@@ -147,7 +147,7 @@ index 6b21e42..619a695 100644
 +    Up, // Toward infinity
 +    Zero // Toward zero
 +  }
- 
+
 -  mapping(address => mapping(address => uint256)) private _allowances;
 +  /**
 +   * @dev Returns the addition of two unsigned integers, with an overflow flag.
@@ -161,7 +161,7 @@ index 6b21e42..619a695 100644
 +      return (true, c);
 +    }
 +  }
- 
+
 -  uint256 internal _totalSupply;
 +  /**
 +   * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
@@ -174,7 +174,7 @@ index 6b21e42..619a695 100644
 +      return (true, a - b);
 +    }
 +  }
- 
+
 -  string private _name;
 -  string private _symbol;
 -  uint8 private _decimals; // @deprecated
@@ -194,7 +194,7 @@ index 6b21e42..619a695 100644
 +      return (true, c);
 +    }
 +  }
- 
+
    /**
 -   * @dev Sets the values for {name} and {symbol}.
 +   * @dev Returns the division of two unsigned integers, with a division by zero flag.
@@ -231,7 +231,7 @@ index 6b21e42..619a695 100644
 +  function max(uint256 a, uint256 b) internal pure returns (uint256) {
 +    return a > b ? a : b;
 +  }
- 
+
    /**
 -   * @dev Returns the name of the token.
 +   * @dev Returns the smallest of two numbers.
@@ -241,7 +241,7 @@ index 6b21e42..619a695 100644
 +  function min(uint256 a, uint256 b) internal pure returns (uint256) {
 +    return a < b ? a : b;
    }
- 
+
    /**
 -   * @dev Returns the symbol of the token, usually a shorter version of the
 -   * name.
@@ -254,7 +254,7 @@ index 6b21e42..619a695 100644
 +    // (a + b) / 2 can overflow.
 +    return (a & b) + (a ^ b) / 2;
    }
- 
+
    /**
 -   * @dev Returns the number of decimals used to get its user representation.
 -   * For example, if `decimals` equals `2`, a balance of `505` tokens should
@@ -282,7 +282,7 @@ index 6b21e42..619a695 100644
 +    // (a + b - 1) / b can overflow on addition, so we distribute.
 +    return a == 0 ? 0 : (a - 1) / b + 1;
    }
- 
+
    /**
 -   * @dev See {IERC20-totalSupply}.
 +   * @notice Calculates floor(x * y / denominator) with full precision. Throws if result overflows a uint256 or denominator == 0
@@ -377,7 +377,7 @@ index 6b21e42..619a695 100644
 +      return result;
 +    }
    }
- 
+
    /**
 -   * @dev See {IERC20-balanceOf}.
 +   * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.
@@ -398,7 +398,7 @@ index 6b21e42..619a695 100644
 +    }
 +    return result;
    }
- 
+
    /**
 -   * @dev See {IERC20-transfer}.
 -   *
@@ -458,7 +458,7 @@ index 6b21e42..619a695 100644
 +      return result + (rounding == Rounding.Up && result * result < a ? 1 : 0);
 +    }
    }
- 
+
    /**
 -   * @dev See {IERC20-allowance}.
 +   * @dev Return the log in base 2, rounded down, of a positive value.
@@ -506,7 +506,7 @@ index 6b21e42..619a695 100644
 +    }
 +    return result;
    }
- 
+
    /**
 -   * @dev See {IERC20-approve}.
 -   *
@@ -811,7 +811,7 @@ index 6b21e42..619a695 100644
 +      revert ECDSAInvalidSignatureS(errorArg);
 +    }
    }
- 
+
    /**
 -   * @dev See {IERC20-transferFrom}.
 +   * @dev Returns the address that signed a hashed message (`hash`) with
@@ -876,7 +876,7 @@ index 6b21e42..619a695 100644
 +      );
 +    }
    }
- 
+
    /**
 -   * @dev Atomically increases the allowance granted to `spender` by the caller.
 +   * @dev Returns the address that signed a hashed message (`hash`) with
@@ -917,7 +917,7 @@ index 6b21e42..619a695 100644
 +    _throwError(error, errorArg);
 +    return recovered;
    }
- 
+
    /**
 -   * @dev Atomically decreases the allowance granted to `spender` by the caller.
 +   * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
@@ -1013,7 +1013,7 @@ index 6b21e42..619a695 100644
 +    if (signer == address(0)) {
 +      return (address(0), RecoverError.InvalidSignature, bytes32(0));
      }
- 
+
 -    return true;
 +    return (signer, RecoverError.NoError, bytes32(0));
 +  }
@@ -1037,7 +1037,7 @@ index 6b21e42..619a695 100644
 +    _throwError(error, errorArg);
 +    return recovered;
    }
- 
+
    /**
 -   * @dev Moves `amount` of tokens from `from` to `to`.
 +   * @dev Returns an Ethereum Signed Message, created from a `hash`. This
@@ -1131,10 +1131,10 @@ index 6b21e42..619a695 100644
 +    return keccak256(abi.encodePacked(hex'19_00', validator, data));
 +  }
 +}
- 
+
 -    _beforeTokenTransfer(from, to, amount);
 +// OpenZeppelin Contracts (last updated v4.9.0) (utils/ShortStrings.sol)
- 
+
 -    uint256 fromBalance = _balances[from];
 -    require(fromBalance >= amount, 'ERC20: transfer amount exceeds balance');
 -    unchecked {
@@ -1208,7 +1208,7 @@ index 6b21e42..619a695 100644
 +      r.slot := slot
      }
 +  }
- 
+
 -    emit Transfer(from, to, amount);
 +  /**
 +   * @dev Returns an `BooleanSlot` with member `value` located at `slot`.
@@ -1221,7 +1221,7 @@ index 6b21e42..619a695 100644
 +      r.slot := slot
 +    }
 +  }
- 
+
 -    _afterTokenTransfer(from, to, amount);
 +  /**
 +   * @dev Returns an `Bytes32Slot` with member `value` located at `slot`.
@@ -1234,7 +1234,7 @@ index 6b21e42..619a695 100644
 +      r.slot := slot
 +    }
    }
- 
+
 -  /** @dev Creates `amount` tokens and assigns them to `account`, increasing
 -   * the total supply.
 -   *
@@ -1256,7 +1256,7 @@ index 6b21e42..619a695 100644
 +      r.slot := slot
 +    }
 +  }
- 
+
 -    _beforeTokenTransfer(address(0), account, amount);
 +  /**
 +   * @dev Returns an `StringSlot` with member `value` located at `slot`.
@@ -1269,7 +1269,7 @@ index 6b21e42..619a695 100644
 +      r.slot := slot
 +    }
 +  }
- 
+
 -    _totalSupply += amount;
 -    unchecked {
 -      // Overflow not possible: balance + amount is at most totalSupply + amount, which is checked above.
@@ -1286,7 +1286,7 @@ index 6b21e42..619a695 100644
      }
 -    emit Transfer(address(0), account, amount);
 +  }
- 
+
 -    _afterTokenTransfer(address(0), account, amount);
 +  /**
 +   * @dev Returns an `BytesSlot` with member `value` located at `slot`.
@@ -1299,7 +1299,7 @@ index 6b21e42..619a695 100644
 +      r.slot := slot
 +    }
    }
- 
+
    /**
 -   * @dev Destroys `amount` tokens from `account`, reducing the
 -   * total supply.
@@ -1377,7 +1377,7 @@ index 6b21e42..619a695 100644
 +    }
 +    return ShortString.wrap(bytes32(uint256(bytes32(bstr)) | bstr.length));
 +  }
- 
+
 -    _beforeTokenTransfer(account, address(0), amount);
 +  /**
 +   * @dev Decode a `ShortString` back to a "normal" string.
@@ -1393,7 +1393,7 @@ index 6b21e42..619a695 100644
 +    }
 +    return str;
 +  }
- 
+
 -    uint256 accountBalance = _balances[account];
 -    require(accountBalance >= amount, 'ERC20: burn amount exceeds balance');
 -    unchecked {
@@ -1410,7 +1410,7 @@ index 6b21e42..619a695 100644
      }
 +    return result;
 +  }
- 
+
 -    emit Transfer(account, address(0), amount);
 +  /**
 +   * @dev Encode a string into a `ShortString`, or write it to storage if it is too long.
@@ -1426,7 +1426,7 @@ index 6b21e42..619a695 100644
 +      return ShortString.wrap(_FALLBACK_SENTINEL);
 +    }
 +  }
- 
+
 -    _afterTokenTransfer(account, address(0), amount);
 +  /**
 +   * @dev Decode a string that was encoded to `ShortString` or written to storage using {setWithFallback}.
@@ -1441,7 +1441,7 @@ index 6b21e42..619a695 100644
 +      return store;
 +    }
    }
- 
+
    /**
 -   * @dev Sets `amount` as the allowance of `spender` over the `owner` s tokens.
 +   * @dev Return the length of a string that was encoded to `ShortString` or written to storage using {setWithFallback}.
@@ -1564,14 +1564,14 @@ index 6b21e42..619a695 100644
 +    _version = version.toShortString();
 +    _hashedName = keccak256(bytes(name));
 +    _hashedVersion = keccak256(bytes(version));
- 
+
 -    _allowances[owner][spender] = amount;
 -    emit Approval(owner, spender, amount);
 +    _cachedChainId = block.chainid;
 +    _cachedDomainSeparator = _buildDomainSeparator();
 +    _cachedThis = address(this);
    }
- 
+
    /**
 -   * @dev Updates `owner` s allowance for `spender` based on spent `amount`.
 -   *
@@ -1599,7 +1599,7 @@ index 6b21e42..619a695 100644
 +      return _buildDomainSeparator();
      }
    }
- 
+
 +  function _buildDomainSeparator() private view returns (bytes32) {
 +    return
 +      keccak256(
@@ -1677,7 +1677,7 @@ index 6b21e42..619a695 100644
 +      new uint256[](0)
 +    );
 +  }
- 
+
    /**
 -   * @dev Hook that is called after any transfer of tokens. This includes
 -   * minting and burning.
@@ -1720,12 +1720,12 @@ index 6b21e42..619a695 100644
 +    return _version.toString();
 +  }
  }
- 
+
  /**
 @@ -1305,439 +2233,322 @@ interface ITransferHook {
    function onTransfer(address from, address to, uint256 amount) external;
  }
- 
+
 -interface IGovernancePowerDelegationToken {
 -  enum DelegationType {
 -    VOTING_POWER,
@@ -2469,7 +2469,7 @@ index 6b21e42..619a695 100644
 +    uint256 amount
 +  ) internal virtual {}
  }
- 
+
  /**
 @@ -1747,9 +2558,11 @@ abstract contract GovernancePowerWithSnapshot is
   */
@@ -2483,13 +2483,13 @@ index 6b21e42..619a695 100644
 +  EIP712
  {
    using SafeERC20 for IERC20;
- 
+
 @@ -1766,21 +2579,8 @@ abstract contract StakedTokenV2 is
    mapping(address => CooldownSnapshot) public stakersCooldowns;
- 
+
    /// @dev End of Storage layout from StakedToken v1
 +  uint256[5] private ______DEPRECATED_FROM_STK_AAVE_V2;
- 
+
 -  /// @dev To see the voting mappings, go to GovernancePowerWithSnapshot.sol
 -  mapping(address => address) internal _votingDelegates;
 -
@@ -2521,7 +2521,7 @@ index 6b21e42..619a695 100644
      UNSTAKE_WINDOW = unstakeWindow;
      REWARDS_VAULT = rewardsVault;
    }
- 
+
 +  /**
 +   * @notice Get the domain separator for the token
 +   * @dev Return cached value if chainId matches cache, otherwise recomputes separator
@@ -2538,7 +2538,7 @@ index 6b21e42..619a695 100644
 +
    /// @inheritdoc IStakedTokenV2
    function stake(address onBehalfOf, uint256 amount) external virtual override;
- 
+
 @@ -1845,99 +2662,26 @@ abstract contract StakedTokenV2 is
      //solium-disable-next-line
      require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
@@ -2568,7 +2568,7 @@ index 6b21e42..619a695 100644
          )
        )
      );
- 
+
 -    require(owner == ecrecover(digest, v, r, s), 'INVALID_SIGNATURE');
 +    require(owner == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
      unchecked {
@@ -2576,7 +2576,7 @@ index 6b21e42..619a695 100644
      }
      _approve(owner, spender, value);
    }
- 
+
 -  /**
 -   * @dev Delegates power from signatory to `delegatee`
 -   * @param delegatee The address to delegate votes to
@@ -2650,7 +2650,7 @@ index 6b21e42..619a695 100644
     * @dev Updates the user state related with his accrued rewards
     * @param user Address of the user
 @@ -1967,34 +2711,6 @@ abstract contract StakedTokenV2 is
- 
+
      return unclaimedRewards;
    }
 -
@@ -2682,12 +2682,12 @@ index 6b21e42..619a695 100644
 -    }
 -  }
  }
- 
+
  interface IStakedTokenV3 is IStakedTokenV2 {
 @@ -3516,6 +4232,627 @@ library SafeCast {
    }
  }
- 
+
 +/** @notice influenced by OpenZeppelin SafeCast lib, which is missing to uint72 cast
 + * @author BGD Labs
 + */
@@ -3324,12 +3324,12 @@ index 6b21e42..619a695 100644
    using PercentageMath for uint256;
    using SafeCast for uint256;
 +  using SafeCast for uint104;
- 
+
    uint256 public constant SLASH_ADMIN_ROLE = 0;
    uint256 public constant COOLDOWN_ADMIN_ROLE = 1;
 @@ -3542,7 +4881,7 @@ contract StakedTokenV3 is
    uint256 public immutable LOWER_BOUND;
- 
+
    // Reserved storage space to allow for layout changes in the future.
 -  uint256[8] private ______gap;
 +  uint256[6] private ______gap;
@@ -3343,7 +3343,7 @@ index 6b21e42..619a695 100644
 -    return 3;
 +    return 4;
    }
- 
+
    /**
 @@ -3618,21 +4957,7 @@ contract StakedTokenV3 is
    /**
@@ -3365,7 +3365,7 @@ index 6b21e42..619a695 100644
 -    );
 -  }
 +  function initialize() external virtual initializer {}
- 
+
    function _initialize(
      address slashingAdmin,
 @@ -3705,7 +5030,7 @@ contract StakedTokenV3 is
@@ -3375,7 +3375,7 @@ index 6b21e42..619a695 100644
 -    _redeem(msg.sender, to, amount);
 +    _redeem(msg.sender, to, amount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV3
 @@ -3714,7 +5039,7 @@ contract StakedTokenV3 is
      address to,
@@ -3384,7 +3384,7 @@ index 6b21e42..619a695 100644
 -    _redeem(from, to, amount);
 +    _redeem(from, to, amount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV2
 @@ -3741,7 +5066,7 @@ contract StakedTokenV3 is
      uint256 redeemAmount
@@ -3393,7 +3393,7 @@ index 6b21e42..619a695 100644
 -    _redeem(msg.sender, to, redeemAmount);
 +    _redeem(msg.sender, to, redeemAmount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV3
 @@ -3752,7 +5077,7 @@ contract StakedTokenV3 is
      uint256 redeemAmount
@@ -3402,15 +3402,15 @@ index 6b21e42..619a695 100644
 -    _redeem(from, to, redeemAmount);
 +    _redeem(from, to, redeemAmount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV3
 @@ -3956,7 +5281,7 @@ contract StakedTokenV3 is
- 
+
      STAKED_TOKEN.safeTransferFrom(from, address(this), amount);
- 
+
 -    _mint(to, sharesToMint);
 +    _mint(to, sharesToMint.toUint104());
- 
+
      emit Staked(from, to, amount, sharesToMint);
    }
 @@ -3967,13 +5292,13 @@ contract StakedTokenV3 is
@@ -3420,7 +3420,7 @@ index 6b21e42..619a695 100644
 -  function _redeem(address from, address to, uint256 amount) internal {
 +  function _redeem(address from, address to, uint104 amount) internal {
      require(amount != 0, 'INVALID_ZERO_AMOUNT');
- 
+
      CooldownSnapshot memory cooldownSnapshot = stakersCooldowns[from];
      if (!inPostSlashingPeriod) {
        require(
@@ -3430,12 +3430,12 @@ index 6b21e42..619a695 100644
        );
        require(
 @@ -3995,7 +5320,7 @@ contract StakedTokenV3 is
- 
+
      uint256 underlyingToRedeem = previewRedeem(amountToRedeem);
- 
+
 -    _burn(from, amountToRedeem);
 +    _burn(from, amountToRedeem.toUint104());
- 
+
      if (cooldownSnapshot.timestamp != 0) {
        if (cooldownSnapshot.amount - amountToRedeem == 0) {
 @@ -4058,11 +5383,66 @@ contract StakedTokenV3 is
@@ -3447,7 +3447,7 @@ index 6b21e42..619a695 100644
          }
        }
      }
- 
+
 +    _delegationChangeOnTransfer(
 +      from,
 +      to,
@@ -3506,4 +3506,4 @@ index 6b21e42..619a695 100644
 +    return DOMAIN_SEPARATOR();
 +  }
  }
-```
+````

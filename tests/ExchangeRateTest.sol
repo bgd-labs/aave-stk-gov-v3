@@ -26,9 +26,7 @@ contract ExchangeRateMock is Test {
     uint256 totalAssets,
     uint256 totalShares
   ) internal pure returns (uint216) {
-    return
-      (((totalShares * TOKEN_UNIT) + totalAssets - 1) / totalAssets)
-        .toUint216();
+    return (((totalShares * TOKEN_UNIT) + totalAssets - 1) / totalAssets).toUint216();
   }
 
   /**
@@ -49,9 +47,7 @@ contract ExchangeRateTest is Test, ExchangeRateMock {
     uint256 initialAmount = 1 ether;
     uint256 refundAmount = 501 ether;
 
-    _updateExchangeRate(
-      _getExchangeRate(initialAmount + refundAmount, initialAmount)
-    );
+    _updateExchangeRate(_getExchangeRate(initialAmount + refundAmount, initialAmount));
     _testRefund(refundAmount, initialAmount);
 
     assertLe(previewRedeem(initialAmount), refundAmount + initialAmount);
@@ -92,11 +88,7 @@ contract ExchangeRateTest is Test, ExchangeRateMock {
     _updateExchangeRate(_getExchangeRate(shares - amount, shares));
 
     assertLe(previewRedeem(shares), shares - amount);
-    assertApproxEqAbs(
-      previewRedeem(shares),
-      shares - amount,
-      (shares - amount) / 1 gwei
-    );
+    assertApproxEqAbs(previewRedeem(shares), shares - amount, (shares - amount) / 1 gwei);
   }
 
   function _testRefund(uint256 amount, uint256 shares) public {
@@ -104,10 +96,6 @@ contract ExchangeRateTest is Test, ExchangeRateMock {
 
     _updateExchangeRate(_getExchangeRate(shares + amount, shares));
     assertLe(previewRedeem(shares), shares + amount);
-    assertApproxEqAbs(
-      previewRedeem(shares),
-      shares + amount,
-      (shares + amount) / 1 gwei
-    );
+    assertApproxEqAbs(previewRedeem(shares), shares + amount, (shares + amount) / 1 gwei);
   }
 }

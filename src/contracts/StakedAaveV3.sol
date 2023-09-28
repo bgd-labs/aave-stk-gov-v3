@@ -52,19 +52,14 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   function initialize() external override initializer {}
 
   /// @inheritdoc IStakedAaveV3
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external {
+  function setGHODebtToken(IGhoVariableDebtTokenTransferHook newGHODebtToken) external {
     require(msg.sender == 0xEE56e2B3D491590B5b31738cC34d5232F378a8D5); // Short executor
     ghoDebtToken = newGHODebtToken;
     emit GHODebtTokenChanged(address(newGHODebtToken));
   }
 
   /// @inheritdoc IStakedAaveV3
-  function claimRewardsAndStake(
-    address to,
-    uint256 amount
-  ) external override returns (uint256) {
+  function claimRewardsAndStake(address to, uint256 amount) external override returns (uint256) {
     return _claimRewardsAndStakeOnBehalf(msg.sender, to, amount);
   }
 
@@ -86,11 +81,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    * @param to the to address
    * @param amount the amount to transfer
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try

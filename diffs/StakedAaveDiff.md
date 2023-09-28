@@ -1,4 +1,4 @@
-```diff
+````diff
 diff --git a/src/flattened/CurrentStakedAaveV3Flattened.sol b/src/flattened/StakedAaveV3Flattened.sol
 index 12d5367..8279957 100644
 --- a/src/flattened/CurrentStakedAaveV3Flattened.sol
@@ -6,25 +6,25 @@ index 12d5367..8279957 100644
 @@ -1,7 +1,7 @@
  // SPDX-License-Identifier: agpl-3.0
  pragma solidity ^0.8.0;
- 
+
 -// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
 +// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC20/IERC20.sol)
- 
+
  /**
   * @dev Interface of the ERC20 standard as defined in the EIP.
 @@ -98,8 +98,6 @@ library DistributionTypes {
    }
  }
- 
+
 -// OpenZeppelin Contracts (last updated v4.8.0) (token/ERC20/ERC20.sol)
 -
  // OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/IERC20Metadata.sol)
- 
+
  /**
 @@ -124,838 +122,6 @@ interface IERC20Metadata is IERC20 {
    function decimals() external view returns (uint8);
  }
- 
+
 -// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 -
 -/**
@@ -858,12 +858,12 @@ index 12d5367..8279957 100644
 -}
 -
  // OpenZeppelin Contracts v4.4.1 (token/ERC20/utils/SafeERC20.sol)
- 
+
  // OpenZeppelin Contracts (last updated v4.8.0) (utils/Address.sol)
 @@ -1419,6 +585,1357 @@ interface IStakedTokenV2 {
    ) external;
  }
- 
+
 +// Contract modified from OpenZeppelin Contracts (last updated v4.9.0) (utils/cryptography/EIP712.sol) to remove local
 +// fallback storage variables, so contract does not affect on existing storage layout. This works as its used on contracts
 +// that have name and revision < 32 bytes
@@ -2549,7 +2549,7 @@ index 12d5367..8279957 100644
 +    uint256 amount
 +  ) internal virtual {}
  }
- 
+
  /**
 @@ -1747,9 +2558,11 @@ abstract contract GovernancePowerWithSnapshot is
   */
@@ -2563,13 +2563,13 @@ index 12d5367..8279957 100644
 +  EIP712
  {
    using SafeERC20 for IERC20;
- 
+
 @@ -1766,21 +2579,8 @@ abstract contract StakedTokenV2 is
    mapping(address => CooldownSnapshot) public stakersCooldowns;
- 
+
    /// @dev End of Storage layout from StakedToken v1
 +  uint256[5] private ______DEPRECATED_FROM_STK_AAVE_V2;
- 
+
 -  /// @dev To see the voting mappings, go to GovernancePowerWithSnapshot.sol
 -  mapping(address => address) internal _votingDelegates;
 -
@@ -2601,7 +2601,7 @@ index 12d5367..8279957 100644
      UNSTAKE_WINDOW = unstakeWindow;
      REWARDS_VAULT = rewardsVault;
    }
- 
+
 +  /**
 +   * @notice Get the domain separator for the token
 +   * @dev Return cached value if chainId matches cache, otherwise recomputes separator
@@ -2618,7 +2618,7 @@ index 12d5367..8279957 100644
 +
    /// @inheritdoc IStakedTokenV2
    function stake(address onBehalfOf, uint256 amount) external virtual override;
- 
+
 @@ -1845,99 +2662,26 @@ abstract contract StakedTokenV2 is
      //solium-disable-next-line
      require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
@@ -2648,7 +2648,7 @@ index 12d5367..8279957 100644
          )
        )
      );
- 
+
 -    require(owner == ecrecover(digest, v, r, s), 'INVALID_SIGNATURE');
 +    require(owner == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
      unchecked {
@@ -2656,7 +2656,7 @@ index 12d5367..8279957 100644
      }
      _approve(owner, spender, value);
    }
- 
+
 -  /**
 -   * @dev Delegates power from signatory to `delegatee`
 -   * @param delegatee The address to delegate votes to
@@ -2730,7 +2730,7 @@ index 12d5367..8279957 100644
     * @dev Updates the user state related with his accrued rewards
     * @param user Address of the user
 @@ -1967,34 +2711,6 @@ abstract contract StakedTokenV2 is
- 
+
      return unclaimedRewards;
    }
 -
@@ -2762,12 +2762,12 @@ index 12d5367..8279957 100644
 -    }
 -  }
  }
- 
+
  interface IStakedTokenV3 is IStakedTokenV2 {
 @@ -3516,6 +4232,627 @@ library SafeCast {
    }
  }
- 
+
 +/** @notice influenced by OpenZeppelin SafeCast lib, which is missing to uint72 cast
 + * @author BGD Labs
 + */
@@ -3404,12 +3404,12 @@ index 12d5367..8279957 100644
    using PercentageMath for uint256;
    using SafeCast for uint256;
 +  using SafeCast for uint104;
- 
+
    uint256 public constant SLASH_ADMIN_ROLE = 0;
    uint256 public constant COOLDOWN_ADMIN_ROLE = 1;
 @@ -3542,7 +4881,7 @@ contract StakedTokenV3 is
    uint256 public immutable LOWER_BOUND;
- 
+
    // Reserved storage space to allow for layout changes in the future.
 -  uint256[8] private ______gap;
 +  uint256[6] private ______gap;
@@ -3423,7 +3423,7 @@ index 12d5367..8279957 100644
 -    return 3;
 +    return 4;
    }
- 
+
    /**
 @@ -3618,21 +4957,7 @@ contract StakedTokenV3 is
    /**
@@ -3445,7 +3445,7 @@ index 12d5367..8279957 100644
 -    );
 -  }
 +  function initialize() external virtual initializer {}
- 
+
    function _initialize(
      address slashingAdmin,
 @@ -3705,7 +5030,7 @@ contract StakedTokenV3 is
@@ -3455,7 +3455,7 @@ index 12d5367..8279957 100644
 -    _redeem(msg.sender, to, amount);
 +    _redeem(msg.sender, to, amount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV3
 @@ -3714,7 +5039,7 @@ contract StakedTokenV3 is
      address to,
@@ -3464,7 +3464,7 @@ index 12d5367..8279957 100644
 -    _redeem(from, to, amount);
 +    _redeem(from, to, amount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV2
 @@ -3741,7 +5066,7 @@ contract StakedTokenV3 is
      uint256 redeemAmount
@@ -3473,7 +3473,7 @@ index 12d5367..8279957 100644
 -    _redeem(msg.sender, to, redeemAmount);
 +    _redeem(msg.sender, to, redeemAmount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV3
 @@ -3752,7 +5077,7 @@ contract StakedTokenV3 is
      uint256 redeemAmount
@@ -3482,15 +3482,15 @@ index 12d5367..8279957 100644
 -    _redeem(from, to, redeemAmount);
 +    _redeem(from, to, redeemAmount.toUint104());
    }
- 
+
    /// @inheritdoc IStakedTokenV3
 @@ -3956,7 +5281,7 @@ contract StakedTokenV3 is
- 
+
      STAKED_TOKEN.safeTransferFrom(from, address(this), amount);
- 
+
 -    _mint(to, sharesToMint);
 +    _mint(to, sharesToMint.toUint104());
- 
+
      emit Staked(from, to, amount, sharesToMint);
    }
 @@ -3967,13 +5292,13 @@ contract StakedTokenV3 is
@@ -3500,7 +3500,7 @@ index 12d5367..8279957 100644
 -  function _redeem(address from, address to, uint256 amount) internal {
 +  function _redeem(address from, address to, uint104 amount) internal {
      require(amount != 0, 'INVALID_ZERO_AMOUNT');
- 
+
      CooldownSnapshot memory cooldownSnapshot = stakersCooldowns[from];
      if (!inPostSlashingPeriod) {
        require(
@@ -3510,12 +3510,12 @@ index 12d5367..8279957 100644
        );
        require(
 @@ -3995,7 +5320,7 @@ contract StakedTokenV3 is
- 
+
      uint256 underlyingToRedeem = previewRedeem(amountToRedeem);
- 
+
 -    _burn(from, amountToRedeem);
 +    _burn(from, amountToRedeem.toUint104());
- 
+
      if (cooldownSnapshot.timestamp != 0) {
        if (cooldownSnapshot.amount - amountToRedeem == 0) {
 @@ -4058,13 +5383,68 @@ contract StakedTokenV3 is
@@ -3527,7 +3527,7 @@ index 12d5367..8279957 100644
          }
        }
      }
- 
+
 +    _delegationChangeOnTransfer(
 +      from,
 +      to,
@@ -3586,12 +3586,12 @@ index 12d5367..8279957 100644
 +    return DOMAIN_SEPARATOR();
 +  }
  }
- 
+
  interface IGhoVariableDebtTokenTransferHook {
 @@ -4094,19 +5474,6 @@ interface IStakedAaveV3 is IStakedTokenV3 {
- 
+
    event GHODebtTokenChanged(address indexed newDebtToken);
- 
+
 -  /**
 -   * @dev Returnes the number of excahngeRate snapshots
 -   */
@@ -3611,20 +3611,20 @@ index 12d5367..8279957 100644
 @@ -4176,15 +5543,13 @@ interface IERC20WithPermit is IERC20 {
  contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    using SafeCast for uint256;
- 
+
 -  uint32 internal _exchangeRateSnapshotsCount;
 -  /// @notice Snapshots of the exchangeRate for a given block
 -  mapping(uint256 => ExchangeRateSnapshot) internal _exchangeRateSnapshots;
 +  uint256[1] private ______DEPRECATED_FROM_STK_AAVE_V3;
- 
+
    /// @notice GHO debt token to be used in the _beforeTokenTransfer hook
    IGhoVariableDebtTokenTransferHook public ghoDebtToken;
- 
+
    function REVISION() public pure virtual override returns (uint256) {
 -    return 5;
 +    return 6;
    }
- 
+
    constructor(
 @@ -4211,24 +5576,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    /**
@@ -3649,13 +3649,13 @@ index 12d5367..8279957 100644
 -    STAKED_TOKEN.approve(address(this), type(uint256).max);
 -  }
 +  function initialize() external override initializer {}
- 
+
    /// @inheritdoc IStakedAaveV3
    function setGHODebtToken(
 @@ -4277,18 +5625,6 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
      _stake(from, from, amount);
    }
- 
+
 -  /// @inheritdoc IStakedAaveV3
 -  function getExchangeRateSnapshotsCount() external view returns (uint32) {
 -    return _exchangeRateSnapshotsCount;
@@ -3773,4 +3773,4 @@ index 12d5367..8279957 100644
 -    }
    }
  }
-```
+````

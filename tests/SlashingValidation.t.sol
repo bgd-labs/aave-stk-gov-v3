@@ -185,9 +185,8 @@ contract SlashingValidation is BaseTest {
   function test_slashMoreThanMax() public {
     address receiver = address(42);
 
-    uint256 expectedAmount = (STAKE_CONTRACT.previewRedeem(
-      STAKE_CONTRACT.totalSupply()
-    ) * STAKE_CONTRACT.getMaxSlashablePercentage()) / 10000;
+    uint256 expectedAmount = (STAKE_CONTRACT.previewRedeem(STAKE_CONTRACT.totalSupply()) *
+      STAKE_CONTRACT.getMaxSlashablePercentage()) / 10000;
 
     // slash
     vm.startPrank(STAKE_CONTRACT.getAdmin(SLASHING_ADMIN));

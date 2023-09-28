@@ -73,19 +73,14 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   }
 
   /// @inheritdoc IStakedAaveV3
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external {
+  function setGHODebtToken(IGhoVariableDebtTokenTransferHook newGHODebtToken) external {
     require(msg.sender == 0xEE56e2B3D491590B5b31738cC34d5232F378a8D5); // Short executor
     ghoDebtToken = newGHODebtToken;
     emit GHODebtTokenChanged(address(newGHODebtToken));
   }
 
   /// @inheritdoc IStakedAaveV3
-  function claimRewardsAndStake(
-    address to,
-    uint256 amount
-  ) external override returns (uint256) {
+  function claimRewardsAndStake(address to, uint256 amount) external override returns (uint256) {
     return _claimRewardsAndStakeOnBehalf(msg.sender, to, amount);
   }
 
@@ -107,15 +102,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     bytes32 r,
     bytes32 s
   ) external override {
-    IERC20WithPermit(address(STAKED_TOKEN)).permit(
-      from,
-      address(this),
-      amount,
-      deadline,
-      v,
-      r,
-      s
-    );
+    IERC20WithPermit(address(STAKED_TOKEN)).permit(from, address(this), amount, deadline, v, r, s);
     _stake(from, from, amount);
   }
 
@@ -140,11 +127,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    * @param to the to address
    * @param amount the amount to transfer
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try
@@ -201,17 +184,9 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     uint256 blockNumber
   ) internal view override returns (uint256) {
     return
-      (super._searchByBlockNumber(
-        snapshots,
-        snapshotsCounts,
-        user,
-        blockNumber
-      ) * EXCHANGE_RATE_UNIT) /
-      _binarySearchExchangeRate(
-        _exchangeRateSnapshots,
-        _exchangeRateSnapshotsCount,
-        blockNumber
-      );
+      (super._searchByBlockNumber(snapshots, snapshotsCounts, user, blockNumber) *
+        EXCHANGE_RATE_UNIT) /
+      _binarySearchExchangeRate(_exchangeRateSnapshots, _exchangeRateSnapshotsCount, blockNumber);
   }
 
   /**

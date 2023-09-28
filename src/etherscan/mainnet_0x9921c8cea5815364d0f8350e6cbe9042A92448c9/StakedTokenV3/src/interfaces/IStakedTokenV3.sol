@@ -4,18 +4,8 @@ pragma solidity ^0.8.0;
 import {IStakedTokenV2} from './IStakedTokenV2.sol';
 
 interface IStakedTokenV3 is IStakedTokenV2 {
-  event Staked(
-    address indexed from,
-    address indexed to,
-    uint256 assets,
-    uint256 shares
-  );
-  event Redeem(
-    address indexed from,
-    address indexed to,
-    uint256 assets,
-    uint256 shares
-  );
+  event Staked(address indexed from, address indexed to, uint256 assets, uint256 shares);
+  event Redeem(address indexed from, address indexed to, uint256 assets, uint256 shares);
   event MaxSlashablePercentageChanged(uint256 newPercentage);
   event Slashed(address indexed destination, uint256 amount);
   event SlashingExitWindowDurationChanged(uint256 windowSeconds);
@@ -41,10 +31,7 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * - if the amount bigger than maximum allowed, the maximum will be slashed instead.
    * @return amount the amount slashed
    */
-  function slash(
-    address destination,
-    uint256 amount
-  ) external returns (uint256);
+  function slash(address destination, uint256 amount) external returns (uint256);
 
   /**
    * @dev Settles an ongoing slashing event
@@ -136,11 +123,7 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * @param claimAmount Amount to claim
    * @param redeemAmount Amount to redeem
    */
-  function claimRewardsAndRedeem(
-    address to,
-    uint256 claimAmount,
-    uint256 redeemAmount
-  ) external;
+  function claimRewardsAndRedeem(address to, uint256 claimAmount, uint256 redeemAmount) external;
 
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and redeems the `redeemAmount` to an address. Only the claim helper contract is allowed to call this function

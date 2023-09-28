@@ -68,5 +68,5 @@ jobs:
           - token-v3-general.conf --rule sumOfPBalancesCorrectness
           - token-v3-general.conf --rule transferDoesntChangeDelegationMode
           - token-v3-erc20.conf
-          - token-v3-delegate.conf 
+          - token-v3-delegate.conf
           - token-v3-community.conf

@@ -47,10 +47,7 @@ interface IERC20 {
    *
    * This value changes when {approve} or {transferFrom} are called.
    */
-  function allowance(
-    address owner,
-    address spender
-  ) external view returns (uint256);
+  function allowance(address owner, address spender) external view returns (uint256);
 
   /**
    * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -77,11 +74,7 @@ interface IERC20 {
    *
    * Emits a {Transfer} event.
    */
-  function transferFrom(
-    address from,
-    address to,
-    uint256 amount
-  ) external returns (bool);
+  function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }
 
 library DistributionTypes {
@@ -235,9 +228,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
   /**
    * @dev See {IERC20-balanceOf}.
    */
-  function balanceOf(
-    address account
-  ) public view virtual override returns (uint256) {
+  function balanceOf(address account) public view virtual override returns (uint256) {
     return _balances[account];
   }
 
@@ -249,10 +240,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    * - `to` cannot be the zero address.
    * - the caller must have a balance of at least `amount`.
    */
-  function transfer(
-    address to,
-    uint256 amount
-  ) public virtual override returns (bool) {
+  function transfer(address to, uint256 amount) public virtual override returns (bool) {
     address owner = _msgSender();
     _transfer(owner, to, amount);
     return true;
@@ -278,10 +266,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    *
    * - `spender` cannot be the zero address.
    */
-  function approve(
-    address spender,
-    uint256 amount
-  ) public virtual override returns (bool) {
+  function approve(address spender, uint256 amount) public virtual override returns (bool) {
     address owner = _msgSender();
     _approve(owner, spender, amount);
     return true;
@@ -326,10 +311,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    *
    * - `spender` cannot be the zero address.
    */
-  function increaseAllowance(
-    address spender,
-    uint256 addedValue
-  ) public virtual returns (bool) {
+  function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
     address owner = _msgSender();
     _approve(owner, spender, allowance(owner, spender) + addedValue);
     return true;
@@ -355,10 +337,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
   ) public virtual returns (bool) {
     address owner = _msgSender();
     uint256 currentAllowance = allowance(owner, spender);
-    require(
-      currentAllowance >= subtractedValue,
-      'ERC20: decreased allowance below zero'
-    );
+    require(currentAllowance >= subtractedValue, 'ERC20: decreased allowance below zero');
     unchecked {
       _approve(owner, spender, currentAllowance - subtractedValue);
     }
@@ -380,11 +359,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    * - `to` cannot be the zero address.
    * - `from` must have a balance of at least `amount`.
    */
-  function _transfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {
+  function _transfer(address from, address to, uint256 amount) internal virtual {
     require(from != address(0), 'ERC20: transfer from the zero address');
     require(to != address(0), 'ERC20: transfer to the zero address');
 
@@ -470,11 +445,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    * - `owner` cannot be the zero address.
    * - `spender` cannot be the zero address.
    */
-  function _approve(
-    address owner,
-    address spender,
-    uint256 amount
-  ) internal virtual {
+  function _approve(address owner, address spender, uint256 amount) internal virtual {
     require(owner != address(0), 'ERC20: approve from the zero address');
     require(spender != address(0), 'ERC20: approve to the zero address');
 
@@ -490,11 +461,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    *
    * Might emit an {Approval} event.
    */
-  function _spendAllowance(
-    address owner,
-    address spender,
-    uint256 amount
-  ) internal virtual {
+  function _spendAllowance(address owner, address spender, uint256 amount) internal virtual {
     uint256 currentAllowance = allowance(owner, spender);
     if (currentAllowance != type(uint256).max) {
       require(currentAllowance >= amount, 'ERC20: insufficient allowance');
@@ -518,11 +485,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    *
    * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {}
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 
   /**
    * @dev Hook that is called after any transfer of tokens. This includes
@@ -538,11 +501,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
    *
    * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
    */
-  function _afterTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {}
+  function _afterTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 }
 
 interface IGovernancePowerDelegationToken {
@@ -569,21 +528,14 @@ interface IGovernancePowerDelegationToken {
    * @param amount the amount of delegated power for the user
    * @param delegationType the type of delegation (VOTING_POWER, PROPOSITION_POWER)
    **/
-  event DelegatedPowerChanged(
-    address indexed user,
-    uint256 amount,
-    DelegationType delegationType
-  );
+  event DelegatedPowerChanged(address indexed user, uint256 amount, DelegationType delegationType);
 
   /**
    * @dev delegates the specific power to a delegatee
    * @param delegatee the user which delegated power has changed
    * @param delegationType the type of delegation (VOTING_POWER, PROPOSITION_POWER)
    **/
-  function delegateByType(
-    address delegatee,
-    DelegationType delegationType
-  ) external;
+  function delegateByType(address delegatee, DelegationType delegationType) external;
 
   /**
    * @dev delegates all the powers to a specific user
@@ -630,15 +582,10 @@ interface IGovernancePowerDelegationToken {
  * @notice implementation of the AAVE token contract
  * @author Aave
  */
-abstract contract GovernancePowerDelegationERC20 is
-  ERC20,
-  IGovernancePowerDelegationToken
-{
+abstract contract GovernancePowerDelegationERC20 is ERC20, IGovernancePowerDelegationToken {
   /// @notice The EIP-712 typehash for the delegation struct used by the contract
   bytes32 public constant DELEGATE_BY_TYPE_TYPEHASH =
-    keccak256(
-      'DelegateByType(address delegatee,uint256 type,uint256 nonce,uint256 expiry)'
-    );
+    keccak256('DelegateByType(address delegatee,uint256 type,uint256 nonce,uint256 expiry)');
 
   bytes32 public constant DELEGATE_TYPEHASH =
     keccak256('Delegate(address delegatee,uint256 nonce,uint256 expiry)');
@@ -654,10 +601,7 @@ abstract contract GovernancePowerDelegationERC20 is
    * @param delegatee the user which delegated power has changed
    * @param delegationType the type of delegation (VOTING_POWER, PROPOSITION_POWER)
    **/
-  function delegateByType(
-    address delegatee,
-    DelegationType delegationType
-  ) external override {
+  function delegateByType(address delegatee, DelegationType delegationType) external override {
     _delegateByType(msg.sender, delegatee, delegationType);
   }
 
@@ -678,11 +622,7 @@ abstract contract GovernancePowerDelegationERC20 is
     address delegator,
     DelegationType delegationType
   ) external view override returns (address) {
-    (
-      ,
-      ,
-      mapping(address => address) storage delegates
-    ) = _getDelegationDataByType(delegationType);
+    (, , mapping(address => address) storage delegates) = _getDelegationDataByType(delegationType);
 
     return _getDelegatee(delegator, delegates);
   }
@@ -745,11 +685,7 @@ abstract contract GovernancePowerDelegationERC20 is
   ) internal {
     require(delegatee != address(0), 'INVALID_DELEGATEE');
 
-    (
-      ,
-      ,
-      mapping(address => address) storage delegates
-    ) = _getDelegationDataByType(delegationType);
+    (, , mapping(address => address) storage delegates) = _getDelegationDataByType(delegationType);
 
     uint256 delegatorBalance = balanceOf(delegator);
 
@@ -757,12 +693,7 @@ abstract contract GovernancePowerDelegationERC20 is
 
     delegates[delegator] = delegatee;
 
-    _moveDelegatesByType(
-      previousDelegatee,
-      delegatee,
-      delegatorBalance,
-      delegationType
-    );
+    _moveDelegatesByType(previousDelegatee, delegatee, delegatorBalance, delegationType);
     emit DelegateChanged(delegator, delegatee, delegationType);
   }
 
@@ -818,13 +749,7 @@ abstract contract GovernancePowerDelegationERC20 is
         previous = balanceOf(to);
       }
 
-      _writeSnapshot(
-        snapshots,
-        snapshotsCounts,
-        to,
-        uint128(previous),
-        uint128(previous + amount)
-      );
+      _writeSnapshot(snapshots, snapshotsCounts, to, uint128(previous), uint128(previous + amount));
 
       emit DelegatedPowerChanged(to, previous + amount, delegationType);
     }
@@ -1018,10 +943,7 @@ library Address {
     require(address(this).balance >= amount, 'Address: insufficient balance');
 
     (bool success, ) = recipient.call{value: amount}('');
-    require(
-      success,
-      'Address: unable to send value, recipient may have reverted'
-    );
+    require(success, 'Address: unable to send value, recipient may have reverted');
   }
 
   /**
@@ -1042,12 +964,8 @@ library Address {
    *
    * _Available since v3.1._
    */
-  function functionCall(
-    address target,
-    bytes memory data
-  ) internal returns (bytes memory) {
-    return
-      functionCallWithValue(target, data, 0, 'Address: low-level call failed');
+  function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    return functionCallWithValue(target, data, 0, 'Address: low-level call failed');
   }
 
   /**
@@ -1080,13 +998,7 @@ library Address {
     bytes memory data,
     uint256 value
   ) internal returns (bytes memory) {
-    return
-      functionCallWithValue(
-        target,
-        data,
-        value,
-        'Address: low-level call with value failed'
-      );
+    return functionCallWithValue(target, data, value, 'Address: low-level call with value failed');
   }
 
   /**
@@ -1101,13 +1013,9 @@ library Address {
     uint256 value,
     string memory errorMessage
   ) internal returns (bytes memory) {
-    require(
-      address(this).balance >= value,
-      'Address: insufficient balance for call'
-    );
+    require(address(this).balance >= value, 'Address: insufficient balance for call');
     (bool success, bytes memory returndata) = target.call{value: value}(data);
-    return
-      verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
   }
 
   /**
@@ -1120,8 +1028,7 @@ library Address {
     address target,
     bytes memory data
   ) internal view returns (bytes memory) {
-    return
-      functionStaticCall(target, data, 'Address: low-level static call failed');
+    return functionStaticCall(target, data, 'Address: low-level static call failed');
   }
 
   /**
@@ -1136,8 +1043,7 @@ library Address {
     string memory errorMessage
   ) internal view returns (bytes memory) {
     (bool success, bytes memory returndata) = target.staticcall(data);
-    return
-      verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
   }
 
   /**
@@ -1146,16 +1052,8 @@ library Address {
    *
    * _Available since v3.4._
    */
-  function functionDelegateCall(
-    address target,
-    bytes memory data
-  ) internal returns (bytes memory) {
-    return
-      functionDelegateCall(
-        target,
-        data,
-        'Address: low-level delegate call failed'
-      );
+  function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+    return functionDelegateCall(target, data, 'Address: low-level delegate call failed');
   }
 
   /**
@@ -1170,8 +1068,7 @@ library Address {
     string memory errorMessage
   ) internal returns (bytes memory) {
     (bool success, bytes memory returndata) = target.delegatecall(data);
-    return
-      verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    return verifyCallResultFromTarget(target, success, returndata, errorMessage);
   }
 
   /**
@@ -1216,10 +1113,7 @@ library Address {
     }
   }
 
-  function _revert(
-    bytes memory returndata,
-    string memory errorMessage
-  ) private pure {
+  function _revert(bytes memory returndata, string memory errorMessage) private pure {
     // Look for revert reason and bubble it up if present
     if (returndata.length > 0) {
       // The easiest way to bubble the revert reason is using memory via assembly
@@ -1247,18 +1141,10 @@ library SafeERC20 {
   using Address for address;
 
   function safeTransfer(IERC20 token, address to, uint256 value) internal {
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.transfer.selector, to, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
   }
 
-  function safeTransferFrom(
-    IERC20 token,
-    address from,
-    address to,
-    uint256 value
-  ) internal {
+  function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
     _callOptionalReturn(
       token,
       abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
@@ -1280,17 +1166,10 @@ library SafeERC20 {
       (value == 0) || (token.allowance(address(this), spender) == 0),
       'SafeERC20: approve from non-zero to non-zero allowance'
     );
-    _callOptionalReturn(
-      token,
-      abi.encodeWithSelector(token.approve.selector, spender, value)
-    );
+    _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
   }
 
-  function safeIncreaseAllowance(
-    IERC20 token,
-    address spender,
-    uint256 value
-  ) internal {
+  function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
     uint256 newAllowance = token.allowance(address(this), spender) + value;
     _callOptionalReturn(
       token,
@@ -1298,17 +1177,10 @@ library SafeERC20 {
     );
   }
 
-  function safeDecreaseAllowance(
-    IERC20 token,
-    address spender,
-    uint256 value
-  ) internal {
+  function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
     unchecked {
       uint256 oldAllowance = token.allowance(address(this), spender);
-      require(
-        oldAllowance >= value,
-        'SafeERC20: decreased allowance below zero'
-      );
+      require(oldAllowance >= value, 'SafeERC20: decreased allowance below zero');
       uint256 newAllowance = oldAllowance - value;
       _callOptionalReturn(
         token,
@@ -1328,24 +1200,16 @@ library SafeERC20 {
     // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
     // the target address contains contract code and also asserts for success in the low-level call.
 
-    bytes memory returndata = address(token).functionCall(
-      data,
-      'SafeERC20: low-level call failed'
-    );
+    bytes memory returndata = address(token).functionCall(data, 'SafeERC20: low-level call failed');
     if (returndata.length > 0) {
       // Return data is optional
-      require(
-        abi.decode(returndata, (bool)),
-        'SafeERC20: ERC20 operation did not succeed'
-      );
+      require(abi.decode(returndata, (bool)), 'SafeERC20: ERC20 operation did not succeed');
     }
   }
 }
 
 interface IAaveDistributionManager {
-  function configureAssets(
-    DistributionTypes.AssetConfigInput[] memory assetsConfigInput
-  ) external;
+  function configureAssets(DistributionTypes.AssetConfigInput[] memory assetsConfigInput) external;
 }
 
 interface IStakedTokenV2 {
@@ -1355,11 +1219,7 @@ interface IStakedTokenV2 {
   }
 
   event RewardsAccrued(address user, uint256 amount);
-  event RewardsClaimed(
-    address indexed from,
-    address indexed to,
-    uint256 amount
-  );
+  event RewardsClaimed(address indexed from, address indexed to, uint256 amount);
   event Cooldown(address indexed user, uint256 amount);
 
   /**
@@ -1394,9 +1254,7 @@ interface IStakedTokenV2 {
    * @param staker The staker address
    * @return The rewards
    */
-  function getTotalRewardsBalance(
-    address staker
-  ) external view returns (uint256);
+  function getTotalRewardsBalance(address staker) external view returns (uint256);
 
   /**
    * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
@@ -1444,10 +1302,7 @@ abstract contract VersionedInitializable {
    */
   modifier initializer() {
     uint256 revision = getRevision();
-    require(
-      revision > lastInitializedRevision,
-      'Contract instance has already been initialized'
-    );
+    require(revision > lastInitializedRevision, 'Contract instance has already been initialized');
 
     lastInitializedRevision = revision;
 
@@ -1485,11 +1340,7 @@ contract AaveDistributionManager {
 
   event AssetConfigUpdated(address indexed asset, uint256 emission);
   event AssetIndexUpdated(address indexed asset, uint256 index);
-  event UserIndexUpdated(
-    address indexed user,
-    address indexed asset,
-    uint256 index
-  );
+  event UserIndexUpdated(address indexed user, address indexed asset, uint256 index);
 
   constructor(address emissionManager, uint256 distributionDuration) {
     DISTRIBUTION_END = block.timestamp + distributionDuration;
@@ -1504,9 +1355,7 @@ contract AaveDistributionManager {
     DistributionTypes.AssetConfigInput[] memory assetsConfigInput
   ) internal {
     for (uint256 i = 0; i < assetsConfigInput.length; i++) {
-      AssetData storage assetConfig = assets[
-        assetsConfigInput[i].underlyingAsset
-      ];
+      AssetData storage assetConfig = assets[assetsConfigInput[i].underlyingAsset];
 
       _updateAssetStateInternal(
         assetsConfigInput[i].underlyingAsset,
@@ -1640,11 +1489,7 @@ contract AaveDistributionManager {
 
       accruedRewards =
         accruedRewards +
-        _getRewards(
-          stakes[i].stakedByUser,
-          assetIndex,
-          assetConfig.users[user]
-        );
+        _getRewards(stakes[i].stakedByUser, assetIndex, assetConfig.users[user]);
     }
     return accruedRewards;
   }
@@ -1661,9 +1506,7 @@ contract AaveDistributionManager {
     uint256 reserveIndex,
     uint256 userIndex
   ) internal pure returns (uint256) {
-    return
-      (principalUserBalance * (reserveIndex - userIndex)) /
-      (10 ** uint256(PRECISION));
+    return (principalUserBalance * (reserveIndex - userIndex)) / (10 ** uint256(PRECISION));
   }
 
   /**
@@ -1694,8 +1537,7 @@ contract AaveDistributionManager {
       : block.timestamp;
     uint256 timeDelta = currentTimestamp - lastUpdateTimestamp;
     return
-      ((emissionPerSecond * timeDelta * (10 ** uint256(PRECISION))) /
-        totalBalance) + currentIndex;
+      ((emissionPerSecond * timeDelta * (10 ** uint256(PRECISION))) / totalBalance) + currentIndex;
   }
 
   /**
@@ -1704,10 +1546,7 @@ contract AaveDistributionManager {
    * @param asset The address of the reference asset of the distribution
    * @return The new index
    */
-  function getUserAssetData(
-    address user,
-    address asset
-  ) public view returns (uint256) {
+  function getUserAssetData(address user, address asset) public view returns (uint256) {
     return assets[asset].users[user];
   }
 }
@@ -1721,9 +1560,7 @@ interface ITransferHook {
  * @notice ERC20 including snapshots of balances on transfer-related actions
  * @author Aave
  **/
-abstract contract GovernancePowerWithSnapshot is
-  GovernancePowerDelegationERC20
-{
+abstract contract GovernancePowerWithSnapshot is GovernancePowerDelegationERC20 {
   /**
    * @dev The following storage layout points to the prior StakedToken.sol implementation:
    * _snapshots => _votingSnapshots
@@ -1770,21 +1607,16 @@ abstract contract StakedTokenV2 is
   /// @dev To see the voting mappings, go to GovernancePowerWithSnapshot.sol
   mapping(address => address) internal _votingDelegates;
 
-  mapping(address => mapping(uint256 => Snapshot))
-    internal _propositionPowerSnapshots;
+  mapping(address => mapping(uint256 => Snapshot)) internal _propositionPowerSnapshots;
   mapping(address => uint256) internal _propositionPowerSnapshotsCounts;
   mapping(address => address) internal _propositionPowerDelegates;
 
   bytes32 public DOMAIN_SEPARATOR;
   bytes public constant EIP712_REVISION = bytes('1');
   bytes32 internal constant EIP712_DOMAIN =
-    keccak256(
-      'EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'
-    );
+    keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
   bytes32 public constant PERMIT_TYPEHASH =
-    keccak256(
-      'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'
-    );
+    keccak256('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)');
 
   /// @dev owner => next valid nonce to submit with permit()
   mapping(address => uint256) public _nonces;
@@ -1816,9 +1648,7 @@ abstract contract StakedTokenV2 is
   function claimRewards(address to, uint256 amount) external virtual override;
 
   /// @inheritdoc IStakedTokenV2
-  function getTotalRewardsBalance(
-    address staker
-  ) external view returns (uint256) {
+  function getTotalRewardsBalance(address staker) external view returns (uint256) {
     DistributionTypes.UserStakeInput[]
       memory userStakeInputs = new DistributionTypes.UserStakeInput[](1);
     userStakeInputs[0] = DistributionTypes.UserStakeInput({
@@ -1826,9 +1656,7 @@ abstract contract StakedTokenV2 is
       stakedByUser: balanceOf(staker),
       totalStaked: totalSupply()
     });
-    return
-      stakerRewardsToClaim[staker] +
-      _getUnclaimedRewards(staker, userStakeInputs);
+    return stakerRewardsToClaim[staker] + _getUnclaimedRewards(staker, userStakeInputs);
   }
 
   /// @inheritdoc IStakedTokenV2
@@ -1849,16 +1677,7 @@ abstract contract StakedTokenV2 is
       abi.encodePacked(
         '\x19\x01',
         DOMAIN_SEPARATOR,
-        keccak256(
-          abi.encode(
-            PERMIT_TYPEHASH,
-            owner,
-            spender,
-            value,
-            currentValidNonce,
-            deadline
-          )
-        )
+        keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, currentValidNonce, deadline))
       )
     );
 
@@ -1889,17 +1708,9 @@ abstract contract StakedTokenV2 is
     bytes32 s
   ) public {
     bytes32 structHash = keccak256(
-      abi.encode(
-        DELEGATE_BY_TYPE_TYPEHASH,
-        delegatee,
-        uint256(delegationType),
-        nonce,
-        expiry
-      )
+      abi.encode(DELEGATE_BY_TYPE_TYPEHASH, delegatee, uint256(delegationType), nonce, expiry)
     );
-    bytes32 digest = keccak256(
-      abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash)
-    );
+    bytes32 digest = keccak256(abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash));
     address signatory = ecrecover(digest, v, r, s);
     require(signatory != address(0), 'INVALID_SIGNATURE');
     require(nonce == _nonces[signatory]++, 'INVALID_NONCE');
@@ -1924,12 +1735,8 @@ abstract contract StakedTokenV2 is
     bytes32 r,
     bytes32 s
   ) public {
-    bytes32 structHash = keccak256(
-      abi.encode(DELEGATE_TYPEHASH, delegatee, nonce, expiry)
-    );
-    bytes32 digest = keccak256(
-      abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash)
-    );
+    bytes32 structHash = keccak256(abi.encode(DELEGATE_TYPEHASH, delegatee, nonce, expiry));
+    bytes32 digest = keccak256(abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, structHash));
     address signatory = ecrecover(digest, v, r, s);
     require(signatory != address(0), 'INVALID_SIGNATURE');
     require(nonce == _nonces[signatory]++, 'INVALID_NONCE');
@@ -1998,18 +1805,8 @@ abstract contract StakedTokenV2 is
 }
 
 interface IStakedTokenV3 is IStakedTokenV2 {
-  event Staked(
-    address indexed from,
-    address indexed to,
-    uint256 assets,
-    uint256 shares
-  );
-  event Redeem(
-    address indexed from,
-    address indexed to,
-    uint256 assets,
-    uint256 shares
-  );
+  event Staked(address indexed from, address indexed to, uint256 assets, uint256 shares);
+  event Redeem(address indexed from, address indexed to, uint256 assets, uint256 shares);
   event MaxSlashablePercentageChanged(uint256 newPercentage);
   event Slashed(address indexed destination, uint256 amount);
   event SlashingExitWindowDurationChanged(uint256 windowSeconds);
@@ -2035,10 +1832,7 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * - if the amount bigger than maximum allowed, the maximum will be slashed instead.
    * @return amount the amount slashed
    */
-  function slash(
-    address destination,
-    uint256 amount
-  ) external returns (uint256);
+  function slash(address destination, uint256 amount) external returns (uint256);
 
   /**
    * @dev Settles an ongoing slashing event
@@ -2130,11 +1924,7 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * @param claimAmount Amount to claim
    * @param redeemAmount Amount to redeem
    */
-  function claimRewardsAndRedeem(
-    address to,
-    uint256 claimAmount,
-    uint256 redeemAmount
-  ) external;
+  function claimRewardsAndRedeem(address to, uint256 claimAmount, uint256 redeemAmount) external;
 
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and redeems the `redeemAmount` to an address. Only the claim helper contract is allowed to call this function
@@ -2169,18 +1959,12 @@ library PercentageMath {
    * @param percentage The percentage of the value to be calculated
    * @return The percentage of value
    **/
-  function percentMul(
-    uint256 value,
-    uint256 percentage
-  ) internal pure returns (uint256) {
+  function percentMul(uint256 value, uint256 percentage) internal pure returns (uint256) {
     if (value == 0 || percentage == 0) {
       return 0;
     }
 
-    require(
-      value <= (type(uint256).max) / percentage,
-      'MATH_MULTIPLICATION_OVERFLOW'
-    );
+    require(value <= (type(uint256).max) / percentage, 'MATH_MULTIPLICATION_OVERFLOW');
 
     return (value * percentage) / PERCENTAGE_FACTOR;
   }
@@ -2191,16 +1975,10 @@ library PercentageMath {
    * @param percentage The percentage of the value to be calculated
    * @return The value divided the percentage
    **/
-  function percentDiv(
-    uint256 value,
-    uint256 percentage
-  ) internal pure returns (uint256) {
+  function percentDiv(uint256 value, uint256 percentage) internal pure returns (uint256) {
     require(percentage != 0, 'MATH_DIVISION_BY_ZERO');
 
-    require(
-      value <= type(uint256).max / PERCENTAGE_FACTOR,
-      'MATH_MULTIPLICATION_OVERFLOW'
-    );
+    require(value <= type(uint256).max / PERCENTAGE_FACTOR, 'MATH_MULTIPLICATION_OVERFLOW');
 
     return (value * PERCENTAGE_FACTOR) / percentage;
   }
@@ -2230,10 +2008,7 @@ contract RoleManager {
   }
 
   modifier onlyPendingRoleAdmin(uint256 role) {
-    require(
-      _pendingAdmins[role] == msg.sender,
-      'CALLER_NOT_PENDING_ROLE_ADMIN'
-    );
+    require(_pendingAdmins[role] == msg.sender, 'CALLER_NOT_PENDING_ROLE_ADMIN');
     _;
   }
 
@@ -2258,10 +2033,7 @@ contract RoleManager {
    * @param role the role associated with the new pending admin being set
    * @param newPendingAdmin the address of the new pending admin
    **/
-  function setPendingAdmin(
-    uint256 role,
-    address newPendingAdmin
-  ) public onlyRoleAdmin(role) {
+  function setPendingAdmin(uint256 role, address newPendingAdmin) public onlyRoleAdmin(role) {
     _pendingAdmins[role] = newPendingAdmin;
     emit PendingAdminChanged(newPendingAdmin, role);
   }
@@ -2279,8 +2051,7 @@ contract RoleManager {
   function _initAdmins(InitAdmin[] memory initAdmins) internal {
     for (uint256 i = 0; i < initAdmins.length; i++) {
       require(
-        _admins[initAdmins[i].role] == address(0) &&
-          initAdmins[i].admin != address(0),
+        _admins[initAdmins[i].role] == address(0) && initAdmins[i].admin != address(0),
         'ADMIN_CANNOT_BE_INITIALIZED'
       );
       _admins[initAdmins[i].role] = initAdmins[i].admin;
@@ -2321,10 +2092,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint248(uint256 value) internal pure returns (uint248) {
-    require(
-      value <= type(uint248).max,
-      "SafeCast: value doesn't fit in 248 bits"
-    );
+    require(value <= type(uint248).max, "SafeCast: value doesn't fit in 248 bits");
     return uint248(value);
   }
 
@@ -2341,10 +2109,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint240(uint256 value) internal pure returns (uint240) {
-    require(
-      value <= type(uint240).max,
-      "SafeCast: value doesn't fit in 240 bits"
-    );
+    require(value <= type(uint240).max, "SafeCast: value doesn't fit in 240 bits");
     return uint240(value);
   }
 
@@ -2361,10 +2126,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint232(uint256 value) internal pure returns (uint232) {
-    require(
-      value <= type(uint232).max,
-      "SafeCast: value doesn't fit in 232 bits"
-    );
+    require(value <= type(uint232).max, "SafeCast: value doesn't fit in 232 bits");
     return uint232(value);
   }
 
@@ -2381,10 +2143,7 @@ library SafeCast {
    * _Available since v4.2._
    */
   function toUint224(uint256 value) internal pure returns (uint224) {
-    require(
-      value <= type(uint224).max,
-      "SafeCast: value doesn't fit in 224 bits"
-    );
+    require(value <= type(uint224).max, "SafeCast: value doesn't fit in 224 bits");
     return uint224(value);
   }
 
@@ -2401,10 +2160,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint216(uint256 value) internal pure returns (uint216) {
-    require(
-      value <= type(uint216).max,
-      "SafeCast: value doesn't fit in 216 bits"
-    );
+    require(value <= type(uint216).max, "SafeCast: value doesn't fit in 216 bits");
     return uint216(value);
   }
 
@@ -2421,10 +2177,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint208(uint256 value) internal pure returns (uint208) {
-    require(
-      value <= type(uint208).max,
-      "SafeCast: value doesn't fit in 208 bits"
-    );
+    require(value <= type(uint208).max, "SafeCast: value doesn't fit in 208 bits");
     return uint208(value);
   }
 
@@ -2441,10 +2194,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint200(uint256 value) internal pure returns (uint200) {
-    require(
-      value <= type(uint200).max,
-      "SafeCast: value doesn't fit in 200 bits"
-    );
+    require(value <= type(uint200).max, "SafeCast: value doesn't fit in 200 bits");
     return uint200(value);
   }
 
@@ -2461,10 +2211,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint192(uint256 value) internal pure returns (uint192) {
-    require(
-      value <= type(uint192).max,
-      "SafeCast: value doesn't fit in 192 bits"
-    );
+    require(value <= type(uint192).max, "SafeCast: value doesn't fit in 192 bits");
     return uint192(value);
   }
 
@@ -2481,10 +2228,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint184(uint256 value) internal pure returns (uint184) {
-    require(
-      value <= type(uint184).max,
-      "SafeCast: value doesn't fit in 184 bits"
-    );
+    require(value <= type(uint184).max, "SafeCast: value doesn't fit in 184 bits");
     return uint184(value);
   }
 
@@ -2501,10 +2245,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint176(uint256 value) internal pure returns (uint176) {
-    require(
-      value <= type(uint176).max,
-      "SafeCast: value doesn't fit in 176 bits"
-    );
+    require(value <= type(uint176).max, "SafeCast: value doesn't fit in 176 bits");
     return uint176(value);
   }
 
@@ -2521,10 +2262,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint168(uint256 value) internal pure returns (uint168) {
-    require(
-      value <= type(uint168).max,
-      "SafeCast: value doesn't fit in 168 bits"
-    );
+    require(value <= type(uint168).max, "SafeCast: value doesn't fit in 168 bits");
     return uint168(value);
   }
 
@@ -2541,10 +2279,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint160(uint256 value) internal pure returns (uint160) {
-    require(
-      value <= type(uint160).max,
-      "SafeCast: value doesn't fit in 160 bits"
-    );
+    require(value <= type(uint160).max, "SafeCast: value doesn't fit in 160 bits");
     return uint160(value);
   }
 
@@ -2561,10 +2296,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint152(uint256 value) internal pure returns (uint152) {
-    require(
-      value <= type(uint152).max,
-      "SafeCast: value doesn't fit in 152 bits"
-    );
+    require(value <= type(uint152).max, "SafeCast: value doesn't fit in 152 bits");
     return uint152(value);
   }
 
@@ -2581,10 +2313,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint144(uint256 value) internal pure returns (uint144) {
-    require(
-      value <= type(uint144).max,
-      "SafeCast: value doesn't fit in 144 bits"
-    );
+    require(value <= type(uint144).max, "SafeCast: value doesn't fit in 144 bits");
     return uint144(value);
   }
 
@@ -2601,10 +2330,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint136(uint256 value) internal pure returns (uint136) {
-    require(
-      value <= type(uint136).max,
-      "SafeCast: value doesn't fit in 136 bits"
-    );
+    require(value <= type(uint136).max, "SafeCast: value doesn't fit in 136 bits");
     return uint136(value);
   }
 
@@ -2621,10 +2347,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint128(uint256 value) internal pure returns (uint128) {
-    require(
-      value <= type(uint128).max,
-      "SafeCast: value doesn't fit in 128 bits"
-    );
+    require(value <= type(uint128).max, "SafeCast: value doesn't fit in 128 bits");
     return uint128(value);
   }
 
@@ -2641,10 +2364,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint120(uint256 value) internal pure returns (uint120) {
-    require(
-      value <= type(uint120).max,
-      "SafeCast: value doesn't fit in 120 bits"
-    );
+    require(value <= type(uint120).max, "SafeCast: value doesn't fit in 120 bits");
     return uint120(value);
   }
 
@@ -2661,10 +2381,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint112(uint256 value) internal pure returns (uint112) {
-    require(
-      value <= type(uint112).max,
-      "SafeCast: value doesn't fit in 112 bits"
-    );
+    require(value <= type(uint112).max, "SafeCast: value doesn't fit in 112 bits");
     return uint112(value);
   }
 
@@ -2681,10 +2398,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint104(uint256 value) internal pure returns (uint104) {
-    require(
-      value <= type(uint104).max,
-      "SafeCast: value doesn't fit in 104 bits"
-    );
+    require(value <= type(uint104).max, "SafeCast: value doesn't fit in 104 bits");
     return uint104(value);
   }
 
@@ -2701,10 +2415,7 @@ library SafeCast {
    * _Available since v4.2._
    */
   function toUint96(uint256 value) internal pure returns (uint96) {
-    require(
-      value <= type(uint96).max,
-      "SafeCast: value doesn't fit in 96 bits"
-    );
+    require(value <= type(uint96).max, "SafeCast: value doesn't fit in 96 bits");
     return uint96(value);
   }
 
@@ -2721,10 +2432,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint88(uint256 value) internal pure returns (uint88) {
-    require(
-      value <= type(uint88).max,
-      "SafeCast: value doesn't fit in 88 bits"
-    );
+    require(value <= type(uint88).max, "SafeCast: value doesn't fit in 88 bits");
     return uint88(value);
   }
 
@@ -2741,10 +2449,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint80(uint256 value) internal pure returns (uint80) {
-    require(
-      value <= type(uint80).max,
-      "SafeCast: value doesn't fit in 80 bits"
-    );
+    require(value <= type(uint80).max, "SafeCast: value doesn't fit in 80 bits");
     return uint80(value);
   }
 
@@ -2761,10 +2466,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint72(uint256 value) internal pure returns (uint72) {
-    require(
-      value <= type(uint72).max,
-      "SafeCast: value doesn't fit in 72 bits"
-    );
+    require(value <= type(uint72).max, "SafeCast: value doesn't fit in 72 bits");
     return uint72(value);
   }
 
@@ -2781,10 +2483,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint64(uint256 value) internal pure returns (uint64) {
-    require(
-      value <= type(uint64).max,
-      "SafeCast: value doesn't fit in 64 bits"
-    );
+    require(value <= type(uint64).max, "SafeCast: value doesn't fit in 64 bits");
     return uint64(value);
   }
 
@@ -2801,10 +2500,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint56(uint256 value) internal pure returns (uint56) {
-    require(
-      value <= type(uint56).max,
-      "SafeCast: value doesn't fit in 56 bits"
-    );
+    require(value <= type(uint56).max, "SafeCast: value doesn't fit in 56 bits");
     return uint56(value);
   }
 
@@ -2821,10 +2517,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint48(uint256 value) internal pure returns (uint48) {
-    require(
-      value <= type(uint48).max,
-      "SafeCast: value doesn't fit in 48 bits"
-    );
+    require(value <= type(uint48).max, "SafeCast: value doesn't fit in 48 bits");
     return uint48(value);
   }
 
@@ -2841,10 +2534,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint40(uint256 value) internal pure returns (uint40) {
-    require(
-      value <= type(uint40).max,
-      "SafeCast: value doesn't fit in 40 bits"
-    );
+    require(value <= type(uint40).max, "SafeCast: value doesn't fit in 40 bits");
     return uint40(value);
   }
 
@@ -2861,10 +2551,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint32(uint256 value) internal pure returns (uint32) {
-    require(
-      value <= type(uint32).max,
-      "SafeCast: value doesn't fit in 32 bits"
-    );
+    require(value <= type(uint32).max, "SafeCast: value doesn't fit in 32 bits");
     return uint32(value);
   }
 
@@ -2881,10 +2568,7 @@ library SafeCast {
    * _Available since v4.7._
    */
   function toUint24(uint256 value) internal pure returns (uint24) {
-    require(
-      value <= type(uint24).max,
-      "SafeCast: value doesn't fit in 24 bits"
-    );
+    require(value <= type(uint24).max, "SafeCast: value doesn't fit in 24 bits");
     return uint24(value);
   }
 
@@ -2901,10 +2585,7 @@ library SafeCast {
    * _Available since v2.5._
    */
   function toUint16(uint256 value) internal pure returns (uint16) {
-    require(
-      value <= type(uint16).max,
-      "SafeCast: value doesn't fit in 16 bits"
-    );
+    require(value <= type(uint16).max, "SafeCast: value doesn't fit in 16 bits");
     return uint16(value);
   }
 
@@ -3508,10 +3189,7 @@ library SafeCast {
    */
   function toInt256(uint256 value) internal pure returns (int256) {
     // Note: Unsafe cast below is okay because `type(int256).max` is guaranteed to be positive
-    require(
-      value <= uint256(type(int256).max),
-      "SafeCast: value doesn't fit in an int256"
-    );
+    require(value <= uint256(type(int256).max), "SafeCast: value doesn't fit in an int256");
     return int256(value);
   }
 }
@@ -3521,12 +3199,7 @@ library SafeCast {
  * @notice Contract to stake Aave token, tokenize the position and get rewards, inheriting from a distribution manager contract
  * @author BGD Labs
  */
-contract StakedTokenV3 is
-  StakedTokenV2,
-  IStakedTokenV3,
-  RoleManager,
-  IAaveDistributionManager
-{
+contract StakedTokenV3 is StakedTokenV2, IStakedTokenV3, RoleManager, IAaveDistributionManager {
   using SafeERC20 for IERC20;
   using PercentageMath for uint256;
   using SafeCast for uint256;
@@ -3553,26 +3226,17 @@ contract StakedTokenV3 is
   bool public inPostSlashingPeriod;
 
   modifier onlySlashingAdmin() {
-    require(
-      msg.sender == getAdmin(SLASH_ADMIN_ROLE),
-      'CALLER_NOT_SLASHING_ADMIN'
-    );
+    require(msg.sender == getAdmin(SLASH_ADMIN_ROLE), 'CALLER_NOT_SLASHING_ADMIN');
     _;
   }
 
   modifier onlyCooldownAdmin() {
-    require(
-      msg.sender == getAdmin(COOLDOWN_ADMIN_ROLE),
-      'CALLER_NOT_COOLDOWN_ADMIN'
-    );
+    require(msg.sender == getAdmin(COOLDOWN_ADMIN_ROLE), 'CALLER_NOT_COOLDOWN_ADMIN');
     _;
   }
 
   modifier onlyClaimHelper() {
-    require(
-      msg.sender == getAdmin(CLAIM_HELPER_ROLE),
-      'CALLER_NOT_CLAIM_HELPER'
-    );
+    require(msg.sender == getAdmin(CLAIM_HELPER_ROLE), 'CALLER_NOT_CLAIM_HELPER');
     _;
   }
 
@@ -3672,10 +3336,7 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV2
-  function stake(
-    address to,
-    uint256 amount
-  ) external override(IStakedTokenV2, StakedTokenV2) {
+  function stake(address to, uint256 amount) external override(IStakedTokenV2, StakedTokenV2) {
     _stake(msg.sender, to, amount);
   }
 
@@ -3701,10 +3362,7 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV2
-  function redeem(
-    address to,
-    uint256 amount
-  ) external override(IStakedTokenV2, StakedTokenV2) {
+  function redeem(address to, uint256 amount) external override(IStakedTokenV2, StakedTokenV2) {
     _redeem(msg.sender, to, amount);
   }
 
@@ -3761,9 +3419,7 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV3
-  function previewRedeem(
-    uint256 shares
-  ) public view override returns (uint256) {
+  function previewRedeem(uint256 shares) public view override returns (uint256) {
     return (EXCHANGE_RATE_UNIT * shares) / _currentExchangeRate;
   }
 
@@ -3812,26 +3468,17 @@ contract StakedTokenV3 is
   }
 
   /// @inheritdoc IStakedTokenV3
-  function setMaxSlashablePercentage(
-    uint256 percentage
-  ) external override onlySlashingAdmin {
+  function setMaxSlashablePercentage(uint256 percentage) external override onlySlashingAdmin {
     _setMaxSlashablePercentage(percentage);
   }
 
   /// @inheritdoc IStakedTokenV3
-  function getMaxSlashablePercentage()
-    external
-    view
-    override
-    returns (uint256)
-  {
+  function getMaxSlashablePercentage() external view override returns (uint256) {
     return _maxSlashablePercentage;
   }
 
   /// @inheritdoc IStakedTokenV3
-  function setCooldownSeconds(
-    uint256 cooldownSeconds
-  ) external onlyCooldownAdmin {
+  function setCooldownSeconds(uint256 cooldownSeconds) external onlyCooldownAdmin {
     _setCooldownSeconds(cooldownSeconds);
   }
 
@@ -3850,10 +3497,7 @@ contract StakedTokenV3 is
    * @param percentage must be strictly lower 100% as otherwise the exchange rate calculation would result in 0 division
    */
   function _setMaxSlashablePercentage(uint256 percentage) internal {
-    require(
-      percentage < PercentageMath.PERCENTAGE_FACTOR,
-      'INVALID_SLASHING_PERCENTAGE'
-    );
+    require(percentage < PercentageMath.PERCENTAGE_FACTOR, 'INVALID_SLASHING_PERCENTAGE');
 
     _maxSlashablePercentage = percentage;
     emit MaxSlashablePercentageChanged(percentage);
@@ -3875,21 +3519,11 @@ contract StakedTokenV3 is
    * @param amount Amount to claim
    * @return amount claimed
    */
-  function _claimRewards(
-    address from,
-    address to,
-    uint256 amount
-  ) internal returns (uint256) {
+  function _claimRewards(address from, address to, uint256 amount) internal returns (uint256) {
     require(amount != 0, 'INVALID_ZERO_AMOUNT');
-    uint256 newTotalRewards = _updateCurrentUnclaimedRewards(
-      from,
-      balanceOf(from),
-      false
-    );
+    uint256 newTotalRewards = _updateCurrentUnclaimedRewards(from, balanceOf(from), false);
 
-    uint256 amountToClaim = (amount > newTotalRewards)
-      ? newTotalRewards
-      : amount;
+    uint256 amountToClaim = (amount > newTotalRewards) ? newTotalRewards : amount;
     require(amountToClaim != 0, 'INVALID_ZERO_AMOUNT');
 
     stakerRewardsToClaim[from] = newTotalRewards - amountToClaim;
@@ -3912,14 +3546,8 @@ contract StakedTokenV3 is
   ) internal returns (uint256) {
     require(REWARD_TOKEN == STAKED_TOKEN, 'REWARD_TOKEN_IS_NOT_STAKED_TOKEN');
 
-    uint256 userUpdatedRewards = _updateCurrentUnclaimedRewards(
-      from,
-      balanceOf(from),
-      true
-    );
-    uint256 amountToClaim = (amount > userUpdatedRewards)
-      ? userUpdatedRewards
-      : amount;
+    uint256 userUpdatedRewards = _updateCurrentUnclaimedRewards(from, balanceOf(from), true);
+    uint256 amountToClaim = (amount > userUpdatedRewards) ? userUpdatedRewards : amount;
 
     if (amountToClaim != 0) {
       _claimRewards(from, address(this), amountToClaim);
@@ -3977,16 +3605,13 @@ contract StakedTokenV3 is
         'INSUFFICIENT_COOLDOWN'
       );
       require(
-        (block.timestamp - (cooldownSnapshot.timestamp + _cooldownSeconds) <=
-          UNSTAKE_WINDOW),
+        (block.timestamp - (cooldownSnapshot.timestamp + _cooldownSeconds) <= UNSTAKE_WINDOW),
         'UNSTAKE_WINDOW_FINISHED'
       );
     }
 
     uint256 balanceOfFrom = balanceOf(from);
-    uint256 maxRedeemable = inPostSlashingPeriod
-      ? balanceOfFrom
-      : cooldownSnapshot.amount;
+    uint256 maxRedeemable = inPostSlashingPeriod ? balanceOfFrom : cooldownSnapshot.amount;
     require(maxRedeemable != 0, 'INVALID_ZERO_MAX_REDEEMABLE');
 
     uint256 amountToRedeem = (amount > maxRedeemable) ? maxRedeemable : amount;
@@ -4001,9 +3626,7 @@ contract StakedTokenV3 is
       if (cooldownSnapshot.amount - amountToRedeem == 0) {
         delete stakersCooldowns[from];
       } else {
-        stakersCooldowns[from].amount =
-          stakersCooldowns[from].amount -
-          amountToRedeem.toUint184();
+        stakersCooldowns[from].amount = stakersCooldowns[from].amount - amountToRedeem.toUint184();
       }
     }
 
@@ -4033,16 +3656,10 @@ contract StakedTokenV3 is
     uint256 totalAssets,
     uint256 totalShares
   ) internal pure returns (uint216) {
-    return
-      (((totalShares * EXCHANGE_RATE_UNIT) + totalAssets - 1) / totalAssets)
-        .toUint216();
+    return (((totalShares * EXCHANGE_RATE_UNIT) + totalAssets - 1) / totalAssets).toUint216();
   }
 
-  function _transfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _transfer(address from, address to, uint256 amount) internal override {
     uint256 balanceOfFrom = balanceOf(from);
     // Sender
     _updateCurrentUnclaimedRewards(from, balanceOfFrom, true);
@@ -4111,19 +3728,14 @@ interface IStakedAaveV3 is IStakedTokenV3 {
    * @dev Sets the GHO debt token (only callable by SHORT_EXECUTOR)
    * @param newGHODebtToken Address to GHO debt token
    */
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external;
+  function setGHODebtToken(IGhoVariableDebtTokenTransferHook newGHODebtToken) external;
 
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and stakes.
    * @param to Address to stake to
    * @param amount Amount to claim
    */
-  function claimRewardsAndStake(
-    address to,
-    uint256 amount
-  ) external returns (uint256);
+  function claimRewardsAndStake(address to, uint256 amount) external returns (uint256);
 
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and stakes. Only the claim helper contract is allowed to call this function
@@ -4231,19 +3843,14 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   }
 
   /// @inheritdoc IStakedAaveV3
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external {
+  function setGHODebtToken(IGhoVariableDebtTokenTransferHook newGHODebtToken) external {
     require(msg.sender == 0xEE56e2B3D491590B5b31738cC34d5232F378a8D5); // Short executor
     ghoDebtToken = newGHODebtToken;
     emit GHODebtTokenChanged(address(newGHODebtToken));
   }
 
   /// @inheritdoc IStakedAaveV3
-  function claimRewardsAndStake(
-    address to,
-    uint256 amount
-  ) external override returns (uint256) {
+  function claimRewardsAndStake(address to, uint256 amount) external override returns (uint256) {
     return _claimRewardsAndStakeOnBehalf(msg.sender, to, amount);
   }
 
@@ -4265,15 +3872,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     bytes32 r,
     bytes32 s
   ) external override {
-    IERC20WithPermit(address(STAKED_TOKEN)).permit(
-      from,
-      address(this),
-      amount,
-      deadline,
-      v,
-      r,
-      s
-    );
+    IERC20WithPermit(address(STAKED_TOKEN)).permit(from, address(this), amount, deadline, v, r, s);
     _stake(from, from, amount);
   }
 
@@ -4298,11 +3897,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    * @param to the to address
    * @param amount the amount to transfer
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try
@@ -4359,17 +3954,9 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     uint256 blockNumber
   ) internal view override returns (uint256) {
     return
-      (super._searchByBlockNumber(
-        snapshots,
-        snapshotsCounts,
-        user,
-        blockNumber
-      ) * EXCHANGE_RATE_UNIT) /
-      _binarySearchExchangeRate(
-        _exchangeRateSnapshots,
-        _exchangeRateSnapshotsCount,
-        blockNumber
-      );
+      (super._searchByBlockNumber(snapshots, snapshotsCounts, user, blockNumber) *
+        EXCHANGE_RATE_UNIT) /
+      _binarySearchExchangeRate(_exchangeRateSnapshots, _exchangeRateSnapshotsCount, blockNumber);
   }
 
   /**

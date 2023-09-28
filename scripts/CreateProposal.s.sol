@@ -10,9 +10,7 @@ import {EthereumScript} from 'aave-helpers/ScriptUtils.sol';
 contract CreateStkAAVELongProposal is EthereumScript {
   function run() external broadcast {
     GovHelpers.Payload[] memory payloads = new GovHelpers.Payload[](1);
-    payloads[0] = GovHelpers.buildMainnet(
-      0xe427FCbD54169136391cfEDf68E96abB13dA87A0
-    );
+    payloads[0] = GovHelpers.buildMainnet(0xe427FCbD54169136391cfEDf68E96abB13dA87A0);
     GovHelpers.createProposal(
       AaveGovernanceV2.LONG_EXECUTOR,
       payloads,
@@ -25,9 +23,7 @@ contract CreateStkAAVELongProposal is EthereumScript {
 contract CreateStkABPTShortProposal is EthereumScript {
   function run() external broadcast {
     GovHelpers.Payload[] memory payloads = new GovHelpers.Payload[](1);
-    payloads[0] = GovHelpers.buildMainnet(
-      0xe63eAf6DAb1045689BD3a332bC596FfcF54A5C88
-    );
+    payloads[0] = GovHelpers.buildMainnet(0xe63eAf6DAb1045689BD3a332bC596FfcF54A5C88);
     GovHelpers.createProposal(
       payloads,
       0xf8037b75b56dfc92c4ccd9e4d6202ffdefbfb8b28c5565efca8da3bfb1d8ad79 // part 2 payload
