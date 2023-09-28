@@ -18,6 +18,7 @@ git-diff :
 
 
 diff-all :
+	forge build
 	# make download chain=mainnet address=0xAa9FAa887bce5182C39F68Ac46C43F36723C395b
 	# make download chain=mainnet address=0x9921c8cea5815364d0f8350e6cbe9042A92448c9
 	forge flatten src/contracts/StakedAaveV3.sol --output src/flattened/StakedAaveV3Flattened.sol
