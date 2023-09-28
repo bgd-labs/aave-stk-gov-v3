@@ -1,9 +1,9 @@
 ```diff
-diff --git a/diffs/currentStakedAave.md b/diffs/nextStakedAave.md
-index 4933461..525cfe8 100644
---- a/diffs/currentStakedAave.md
-+++ b/diffs/nextStakedAave.md
-@@ -1,32 +1,27 @@
+diff --git a/diffs/currentStakedToken.md b/diffs/nextStakedToken.md
+index 6edc627..9f525e5 100644
+--- a/diffs/currentStakedToken.md
++++ b/diffs/nextStakedToken.md
+@@ -1,28 +1,24 @@
  | Name                                | Type                                                                                   | Slot | Offset | Bytes |
  |-------------------------------------|----------------------------------------------------------------------------------------|------|--------|-------|
 -| _balances                           | mapping(address => uint256)                                                            | 0    | 0      | 32    |
@@ -39,9 +39,4 @@ index 4933461..525cfe8 100644
  | _cooldownSeconds                    | uint256                                                                                | 79   | 0      | 32    |
  | _maxSlashablePercentage             | uint256                                                                                | 80   | 0      | 32    |
  | _currentExchangeRate                | uint216                                                                                | 81   | 0      | 27    |
- | inPostSlashingPeriod                | bool                                                                                   | 81   | 27     | 1     |
--| _exchangeRateSnapshotsCount         | uint32                                                                                 | 81   | 28     | 4     |
--| _exchangeRateSnapshots              | mapping(uint256 => struct IStakedAaveV3.ExchangeRateSnapshot)                          | 82   | 0      | 32    |
-+| ______DEPRECATED_FROM_STK_AAVE_V3   | uint256[1]                                                                             | 82   | 0      | 32    |
- | ghoDebtToken                        | contract IGhoVariableDebtTokenTransferHook                                             | 83   | 0      | 20    |
 ```

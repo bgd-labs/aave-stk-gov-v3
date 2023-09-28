@@ -38,6 +38,7 @@ diff-all :
 	forge inspect src/flattened/StakedTokenV3Flattened.sol:StakedTokenV3 storage-layout --pretty > diffs/nextStakedToken.md
 	sed -i -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/nextStakedToken.md
 	make git-diff before=diffs/currentStakedAave.md after=diffs/nextStakedAave.md out=StakedAave_layoutDiff
+	make git-diff before=diffs/currentStakedToken.md after=diffs/nextStakedToken.md out=StakedToken_layoutDiff
 
 interface :
 	cast interface --name AggregatedStakedAaveV3 -o ./src/interfaces/AggregatedStakedAaveV3.sol ./out/StakedAaveV3.sol/StakedAaveV3.json
