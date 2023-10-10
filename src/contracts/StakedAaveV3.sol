@@ -52,15 +52,6 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   function initialize() external override initializer {}
 
   /// @inheritdoc IStakedAaveV3
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external {
-    require(msg.sender == 0xEE56e2B3D491590B5b31738cC34d5232F378a8D5); // Short executor
-    ghoDebtToken = newGHODebtToken;
-    emit GHODebtTokenChanged(address(newGHODebtToken));
-  }
-
-  /// @inheritdoc IStakedAaveV3
   function claimRewardsAndStake(
     address to,
     uint256 amount

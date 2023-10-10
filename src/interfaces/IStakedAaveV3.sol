@@ -5,16 +5,6 @@ import {IStakedTokenV3} from './IStakedTokenV3.sol';
 import {IGhoVariableDebtTokenTransferHook} from './IGhoVariableDebtTokenTransferHook.sol';
 
 interface IStakedAaveV3 is IStakedTokenV3 {
-  event GHODebtTokenChanged(address indexed newDebtToken);
-
-  /**
-   * @dev Sets the GHO debt token (only callable by SHORT_EXECUTOR)
-   * @param newGHODebtToken Address to GHO debt token
-   */
-  function setGHODebtToken(
-    IGhoVariableDebtTokenTransferHook newGHODebtToken
-  ) external;
-
   /**
    * @dev Claims an `amount` of `REWARD_TOKEN` and stakes.
    * @param to Address to stake to
