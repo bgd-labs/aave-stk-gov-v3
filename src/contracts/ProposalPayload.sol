@@ -25,18 +25,23 @@ library GenericProposal {
  * @notice Payload for upgrading the StkAave implementation
  * @author BGD Labs
  */
-contract UpdateStkAavePayload {
+contract ProposalPayloadStkAave {
   address public constant STK_AAVE = 0x4da27a545c0c5B758a6BA100e3a049001de870f5;
-  address public immutable IMPL;
-
-  constructor(address impl) {
-    IMPL = impl;
-  }
 
   function execute() external {
+    // 1. deploy newimplementation
+    StakedAaveV3 newImpl = new StakedAaveV3(
+      IERC20(AaveV2EthereumAssets.AAVE_UNDERLYING),
+      IERC20(AaveV2EthereumAssets.AAVE_UNDERLYING),
+      GenericProposal.UNSTAKE_WINDOW,
+      GenericProposal.REWARDS_VAULT,
+      GenericProposal.EMISSION_MANAGER,
+      GenericProposal.DISTRIBUTION_DURATION
+    );
+    // 2. upgrade & initialize on proxy
     ProxyAdmin(AaveMisc.PROXY_ADMIN_ETHEREUM_LONG).upgradeAndCall(
       TransparentUpgradeableProxy(payable(STK_AAVE)),
-      address(IMPL),
+      address(newImpl),
       abi.encodeWithSignature('initialize()')
     );
   }

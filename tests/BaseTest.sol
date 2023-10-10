@@ -3,16 +3,14 @@ pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
 import {AaveMisc} from 'aave-address-book/AaveMisc.sol';
-import {AaveV2EthereumAssets} from 'aave-address-book/AaveV2Ethereum.sol';
 import {GovHelpers, AaveGovernanceV2} from 'aave-helpers/GovHelpers.sol';
 import {ProxyHelpers} from 'aave-helpers/ProxyHelpers.sol';
 import {StakedTokenV3} from '../src/contracts/StakedTokenV3.sol';
 import {StakedAaveV3} from '../src/contracts/StakedAaveV3.sol';
 import {IInitializableAdminUpgradeabilityProxy} from '../src/interfaces/IInitializableAdminUpgradeabilityProxy.sol';
 import {IGhoVariableDebtTokenTransferHook} from '../src/interfaces/IGhoVariableDebtTokenTransferHook.sol';
-import {ProposalPayloadStkAbpt, UpdateStkAavePayload, GenericProposal} from '../src/contracts/ProposalPayload.sol';
+import {ProposalPayloadStkAbpt, ProposalPayloadStkAave, GenericProposal} from '../src/contracts/ProposalPayload.sol';
 import {ProxyAdmin, TransparentUpgradeableProxy} from 'openzeppelin-contracts/contracts/proxy/transparent/ProxyAdmin.sol';
-import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 
 contract BaseTest is Test {
   StakedAaveV3 STAKE_CONTRACT;
@@ -26,29 +24,24 @@ contract BaseTest is Test {
   address claimHelper;
 
   function _executeProposal(bool stkAAVE) internal {
+    uint256 proposalId;
+    GovHelpers.Payload[] memory payloads = new GovHelpers.Payload[](1);
     if (stkAAVE) {
-      StakedAaveV3 newImpl = new StakedAaveV3(
-        IERC20(AaveV2EthereumAssets.AAVE_UNDERLYING),
-        IERC20(AaveV2EthereumAssets.AAVE_UNDERLYING),
-        GenericProposal.UNSTAKE_WINDOW,
-        GenericProposal.REWARDS_VAULT,
-        GenericProposal.EMISSION_MANAGER,
-        GenericProposal.DISTRIBUTION_DURATION
+      payloads[0] = GovHelpers.buildMainnet(
+        address(new ProposalPayloadStkAave())
       );
-
-      UpdateStkAavePayload payload = new UpdateStkAavePayload(address(newImpl));
-      GovHelpers.executePayload(
-        vm,
-        address(payload),
-        AaveGovernanceV2.LONG_EXECUTOR
+      proposalId = GovHelpers.createProposal(
+        AaveGovernanceV2.LONG_EXECUTOR,
+        payloads,
+        bytes32('1')
       );
     } else {
-      GovHelpers.executePayload(
-        vm,
-        address(new ProposalPayloadStkAbpt()),
-        AaveGovernanceV2.SHORT_EXECUTOR
+      payloads[0] = GovHelpers.buildMainnet(
+        address(new ProposalPayloadStkAbpt())
       );
+      proposalId = GovHelpers.createProposal(payloads, bytes32('1'));
     }
+    GovHelpers.passVoteAndExecute(vm, proposalId);
 
     // ensure implementation is bricked
     address impl = ProxyHelpers
@@ -75,7 +68,9 @@ contract BaseTest is Test {
       stake = 0xa1116930326D21fB917d5A27F1E9943A9595fb47;
     }
     STAKE_CONTRACT = StakedAaveV3(address(StakedTokenV3(stake)));
+    vm.startPrank(AaveMisc.ECOSYSTEM_RESERVE);
     _executeProposal(stkAAVE);
+    vm.stopPrank();
 
     slashingAdmin = STAKE_CONTRACT.getAdmin(SLASHING_ADMIN);
     cooldownAdmin = STAKE_CONTRACT.getAdmin(COOLDOWN_ADMIN);
