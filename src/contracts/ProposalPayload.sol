@@ -21,8 +21,8 @@ library GenericProposal {
 }
 
 /**
- * @title PayloadUpdateStkAave
- * @notice Payload for upgrading the StkAave implementation
+ * @title ProposalPayloadStkAave
+ * @notice Proposal for upgrading the StkAave implementation
  * @author BGD Labs
  */
 contract ProposalPayloadStkAave {
