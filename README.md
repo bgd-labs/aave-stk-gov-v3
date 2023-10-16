@@ -17,7 +17,8 @@ In addition to the inherited implementation from stkAAVE 1.5 (properties [HERE](
 This repository requires having Foundry installed in the running machine. Instructions on how to do it [HERE](https://github.com/foundry-rs/foundry#installation).
 
 After having installed Foundry:
-1. Add a `.env` file with properly configured `RPC_MAINNET` and `FORK_BLOCK`, following the example on `.env.example` 
+
+1. Add a `.env` file with properly configured `RPC_MAINNET` and `FORK_BLOCK`, following the example on `.env.example`
 2. `make test` to run the simulation tests.
 
 <br>
@@ -25,11 +26,11 @@ After having installed Foundry:
 ## Security
 
 - Internal testing and review by the BGD Labs team, but in terms of logic and upgradeability considerations.
-    - [Test suite](./tests/)
-    - [Storage layout diffs](./diffs/)
+  - [Test suite](./tests/)
+  - [Storage layout diffs](./diffs/)
 - Security review and properties checking (formal verification) by [Certora](https://www.certora.com/), service provider of the Aave DAO.
-    - [Properties](./certora/)
-    - [Reports](./audits/Formal_Verification_Report_stk_v3.pdf)
+  - [Properties](./certora/)
+  - [Reports](./audits/Formal_Verification_Report_stk_v3.pdf)
 
 <br>
 

@@ -18,6 +18,7 @@ git-diff :
 
 
 diff-all :
+	forge build
 	make download chain=mainnet address=0xAa9FAa887bce5182C39F68Ac46C43F36723C395b
 	make download chain=mainnet address=0x9921c8cea5815364d0f8350e6cbe9042A92448c9
 	forge flatten src/contracts/StakedAaveV3.sol --output src/flattened/StakedAaveV3Flattened.sol
@@ -28,16 +29,16 @@ diff-all :
 	make git-diff before=src/flattened/CurrentStakedTokenV3Flattened.sol after=src/flattened/StakedTokenV3Flattened.sol out=StakedTokenDiff
 	make git-diff before=src/flattened/CurrentStakedAaveV3Flattened.sol after=src/flattened/StakedAaveV3Flattened.sol out=StakedAaveDiff
 	forge inspect src/flattened/CurrentStakedAaveV3Flattened.sol:StakedAaveV3 storage-layout --pretty > diffs/currentStakedAave.md
-	sed -i '' -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/currentStakedAave.md
+	sed -i -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/currentStakedAave.md
 
 	forge inspect src/flattened/CurrentStakedTokenV3Flattened.sol:StakedTokenV3 storage-layout --pretty > diffs/currentStakedToken.md
-	sed -i '' -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/currentStakedToken.md
+	sed -i -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/currentStakedToken.md
 	forge inspect src/flattened/StakedAaveV3Flattened.sol:StakedAaveV3 storage-layout --pretty > diffs/nextStakedAave.md
-	sed -i '' -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/nextStakedAave.md
+	sed -i -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/nextStakedAave.md
 	forge inspect src/flattened/StakedTokenV3Flattened.sol:StakedTokenV3 storage-layout --pretty > diffs/nextStakedToken.md
-	sed -i '' -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/nextStakedToken.md
+	sed -i -E 's/(.*)\|[^|]*\s*\|/\1|/' diffs/nextStakedToken.md
 	make git-diff before=diffs/currentStakedAave.md after=diffs/nextStakedAave.md out=StakedAave_layoutDiff
-
+	make git-diff before=diffs/currentStakedToken.md after=diffs/nextStakedToken.md out=StakedToken_layoutDiff
 interface :
 	cast interface --name AggregatedStakedAaveV3 -o ./src/interfaces/AggregatedStakedAaveV3.sol ./out/StakedAaveV3.sol/StakedAaveV3.json
 	cast interface --name AggregatedStakedTokenV3 -o ./src/interfaces/AggregatedStakedTokenV3.sol ./out/StakedTokenV3.sol/StakedTokenV3.json

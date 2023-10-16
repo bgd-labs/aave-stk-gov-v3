@@ -1,9 +1,9 @@
 ```diff
-diff --git a/diffs/currentStakedAave.md b/diffs/nextStakedAave.md
-index 8368a7d..ecde69c 100644
---- a/diffs/currentStakedAave.md
-+++ b/diffs/nextStakedAave.md
-@@ -1,32 +1,27 @@
+diff --git a/diffs/currentStakedToken.md b/diffs/nextStakedToken.md
+index 1bc3e52..08f5a06 100644
+--- a/diffs/currentStakedToken.md
++++ b/diffs/nextStakedToken.md
+@@ -1,29 +1,25 @@
 -| Name                             | Type                                                                                   | Slot | Offset | Bytes |
 -|----------------------------------|----------------------------------------------------------------------------------------|------|--------|-------|
 -| _balances                        | mapping(address => uint256)                                                            | 0    | 0      | 32    |
@@ -33,9 +33,6 @@ index 8368a7d..ecde69c 100644
 -| _maxSlashablePercentage          | uint256                                                                                | 80   | 0      | 32    |
 -| _currentExchangeRate             | uint216                                                                                | 81   | 0      | 27    |
 -| inPostSlashingPeriod             | bool                                                                                   | 81   | 27     | 1     |
--| _exchangeRateSnapshotsCount      | uint32                                                                                 | 81   | 28     | 4     |
--| _exchangeRateSnapshots           | mapping(uint256 => struct IStakedAaveV3.ExchangeRateSnapshot)                          | 82   | 0      | 32    |
--| ghoDebtToken                     | contract IGhoVariableDebtTokenTransferHook                                             | 83   | 0      | 20    |
 +| Name                                | Type                                                            | Slot | Offset | Bytes |
 +|-------------------------------------|-----------------------------------------------------------------|------|--------|-------|
 +| _balances                           | mapping(address => struct BaseAaveToken.DelegationAwareBalance) | 0    | 0      | 32    |
@@ -61,6 +58,4 @@ index 8368a7d..ecde69c 100644
 +| _maxSlashablePercentage             | uint256                                                         | 80   | 0      | 32    |
 +| _currentExchangeRate                | uint216                                                         | 81   | 0      | 27    |
 +| inPostSlashingPeriod                | bool                                                            | 81   | 27     | 1     |
-+| ______DEPRECATED_FROM_STK_AAVE_V3   | uint256[1]                                                      | 82   | 0      | 32    |
-+| ghoDebtToken                        | contract IGhoVariableDebtTokenTransferHook                      | 83   | 0      | 20    |
 ```
