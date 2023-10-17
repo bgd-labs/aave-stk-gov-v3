@@ -1,6 +1,6 @@
 ```diff
 diff --git a/src/flattened/CurrentStakedAaveV3Flattened.sol b/src/flattened/StakedAaveV3Flattened.sol
-index 12d5367..6fbf466 100644
+index 12d5367..8509451 100644
 --- a/src/flattened/CurrentStakedAaveV3Flattened.sol
 +++ b/src/flattened/StakedAaveV3Flattened.sol
 @@ -1,7 +1,7 @@
@@ -2660,7 +2660,7 @@ index 12d5367..6fbf466 100644
  /**
   * @title VersionedInitializable
   *
-@@ -1712,32 +2857,315 @@ contract AaveDistributionManager {
+@@ -1712,32 +2857,272 @@ contract AaveDistributionManager {
    }
  }
  
@@ -2734,10 +2734,22 @@ index 12d5367..6fbf466 100644
 +    return _name;
 +  }
 +
-+  /**
+   /**
+-   * @dev The following storage layout points to the prior StakedToken.sol implementation:
+-   * _snapshots => _votingSnapshots
+-   * _snapshotsCounts =>  _votingSnapshotsCounts
+-   * _aaveGovernance => _aaveGovernance
 +   * @dev Returns the symbol of the token, usually a shorter version of the
 +   * name.
-+   */
+    */
+-  mapping(address => mapping(uint256 => Snapshot)) public _votingSnapshots;
+-  mapping(address => uint256) public _votingSnapshotsCounts;
+-
+-  /// @dev reference to the Aave governance contract to call (if initialized) on _beforeTokenTransfer
+-  /// !!! IMPORTANT The Aave governance is considered a trustable contract, being its responsibility
+-  /// to control all potential reentrancies by calling back the this contract
+-  /// @dev DEPRECATED
+-  ITransferHook public _aaveGovernance;
 +  function symbol() public view virtual override returns (string memory) {
 +    return _symbol;
 +  }
@@ -2906,13 +2918,12 @@ index 12d5367..6fbf466 100644
 +  function _mint(address account, uint104 amount) internal virtual {
 +    require(account != address(0), 'ERC20: mint to the zero address');
 +
-+    _beforeTokenTransfer(address(0), account, amount);
-+
++    uint104 balanceBefore = _balances[account].balance;
 +    _totalSupply += amount;
 +    _balances[account].balance += amount;
 +    emit Transfer(address(0), account, amount);
 +
-+    _afterTokenTransfer(address(0), account, amount);
++    _afterTokenTransfer(address(0), account, 0, balanceBefore, amount);
 +  }
 +
 +  /**
@@ -2929,8 +2940,6 @@ index 12d5367..6fbf466 100644
 +  function _burn(address account, uint104 amount) internal virtual {
 +    require(account != address(0), 'ERC20: burn from the zero address');
 +
-+    _beforeTokenTransfer(account, address(0), amount);
-+
 +    uint104 accountBalance = _balances[account].balance;
 +    require(accountBalance >= amount, 'ERC20: burn amount exceeds balance');
 +    unchecked {
@@ -2941,64 +2950,12 @@ index 12d5367..6fbf466 100644
 +
 +    emit Transfer(account, address(0), amount);
 +
-+    _afterTokenTransfer(account, address(0), amount);
++    _afterTokenTransfer(account, address(0), accountBalance, 0, amount);
 +  }
-+
-+  /**
-+   * @dev Hook that is called before any transfer of tokens. This includes
-+   * minting and burning.
-+   *
-+   * Calling conditions:
-+   *
-+   * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
-+   * will be transferred to `to`.
-+   * - when `from` is zero, `amount` tokens will be minted for `to`.
-+   * - when `to` is zero, `amount` of ``from``'s tokens will be burned.
-+   * - `from` and `to` are never both zero.
-+   *
-+   * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-+   */
-+  function _beforeTokenTransfer(
-+    address from,
-+    address to,
-+    uint256 amount
-+  ) internal virtual {}
-+
-   /**
--   * @dev The following storage layout points to the prior StakedToken.sol implementation:
--   * _snapshots => _votingSnapshots
--   * _snapshotsCounts =>  _votingSnapshotsCounts
--   * _aaveGovernance => _aaveGovernance
-+   * @dev Hook that is called after any transfer of tokens. This includes
-+   * minting and burning.
-+   *
-+   * Calling conditions:
-+   *
-+   * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
-+   * has been transferred to `to`.
-+   * - when `from` is zero, `amount` tokens have been minted for `to`.
-+   * - when `to` is zero, `amount` of ``from``'s tokens have been burned.
-+   * - `from` and `to` are never both zero.
-+   *
-+   * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-    */
--  mapping(address => mapping(uint256 => Snapshot)) public _votingSnapshots;
--  mapping(address => uint256) public _votingSnapshotsCounts;
--
--  /// @dev reference to the Aave governance contract to call (if initialized) on _beforeTokenTransfer
--  /// !!! IMPORTANT The Aave governance is considered a trustable contract, being its responsibility
--  /// to control all potential reentrancies by calling back the this contract
--  /// @dev DEPRECATED
--  ITransferHook public _aaveGovernance;
-+  function _afterTokenTransfer(
-+    address from,
-+    address to,
-+    uint256 amount
-+  ) internal virtual {}
  }
  
  /**
-@@ -1747,9 +3175,11 @@ abstract contract GovernancePowerWithSnapshot is
+@@ -1747,9 +3132,11 @@ abstract contract GovernancePowerWithSnapshot is
   */
  abstract contract StakedTokenV2 is
    IStakedTokenV2,
@@ -3011,7 +2968,7 @@ index 12d5367..6fbf466 100644
  {
    using SafeERC20 for IERC20;
  
-@@ -1766,21 +3196,8 @@ abstract contract StakedTokenV2 is
+@@ -1766,21 +3153,8 @@ abstract contract StakedTokenV2 is
    mapping(address => CooldownSnapshot) public stakersCooldowns;
  
    /// @dev End of Storage layout from StakedToken v1
@@ -3034,7 +2991,7 @@ index 12d5367..6fbf466 100644
    bytes32 public constant PERMIT_TYPEHASH =
      keccak256(
        'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'
-@@ -1796,13 +3213,30 @@ abstract contract StakedTokenV2 is
+@@ -1796,13 +3170,30 @@ abstract contract StakedTokenV2 is
      address rewardsVault,
      address emissionManager,
      uint128 distributionDuration
@@ -3066,7 +3023,7 @@ index 12d5367..6fbf466 100644
    /// @inheritdoc IStakedTokenV2
    function stake(address onBehalfOf, uint256 amount) external virtual override;
  
-@@ -1845,99 +3279,26 @@ abstract contract StakedTokenV2 is
+@@ -1845,99 +3236,26 @@ abstract contract StakedTokenV2 is
      //solium-disable-next-line
      require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
      uint256 currentValidNonce = _nonces[owner];
@@ -3176,7 +3133,7 @@ index 12d5367..6fbf466 100644
    /**
     * @dev Updates the user state related with his accrued rewards
     * @param user Address of the user
-@@ -1967,34 +3328,6 @@ abstract contract StakedTokenV2 is
+@@ -1967,34 +3285,6 @@ abstract contract StakedTokenV2 is
  
      return unclaimedRewards;
    }
@@ -3211,13 +3168,12 @@ index 12d5367..6fbf466 100644
  }
  
  interface IStakedTokenV3 is IStakedTokenV2 {
-@@ -2018,6 +3351,24 @@ interface IStakedTokenV3 is IStakedTokenV2 {
+@@ -2018,6 +3308,22 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    event FundsReturned(uint256 amount);
    event SlashingSettled();
  
 +  /**
 +   * @dev Allows staking a certain amount of STAKED_TOKEN with gasless approvals (permit)
-+   * @param from The address staking the token
 +   * @param amount The amount to be staked
 +   * @param deadline The permit execution deadline
 +   * @param v The v component of the signed message
@@ -3225,7 +3181,6 @@ index 12d5367..6fbf466 100644
 +   * @param s The s component of the signed message
 +   */
 +  function stakeWithPermit(
-+    address from,
 +    uint256 amount,
 +    uint256 deadline,
 +    uint8 v,
@@ -3236,7 +3191,7 @@ index 12d5367..6fbf466 100644
    /**
     * @dev Returns the current exchange rate
     * @return exchangeRate as 18 decimal precision uint216
-@@ -3516,6 +4867,18 @@ library SafeCast {
+@@ -3516,6 +4822,18 @@ library SafeCast {
    }
  }
  
@@ -3255,7 +3210,7 @@ index 12d5367..6fbf466 100644
  /**
   * @title StakedTokenV3
   * @notice Contract to stake Aave token, tokenize the position and get rewards, inheriting from a distribution manager contract
-@@ -3525,11 +4888,13 @@ contract StakedTokenV3 is
+@@ -3525,11 +4843,13 @@ contract StakedTokenV3 is
    StakedTokenV2,
    IStakedTokenV3,
    RoleManager,
@@ -3270,7 +3225,7 @@ index 12d5367..6fbf466 100644
  
    uint256 public constant SLASH_ADMIN_ROLE = 0;
    uint256 public constant COOLDOWN_ADMIN_ROLE = 1;
-@@ -3542,7 +4907,7 @@ contract StakedTokenV3 is
+@@ -3542,7 +4862,7 @@ contract StakedTokenV3 is
    uint256 public immutable LOWER_BOUND;
  
    // Reserved storage space to allow for layout changes in the future.
@@ -3279,7 +3234,7 @@ index 12d5367..6fbf466 100644
    /// @notice Seconds between starting cooldown and being able to withdraw
    uint256 internal _cooldownSeconds;
    /// @notice The maximum amount of funds that can be slashed at any given time
-@@ -3604,7 +4969,7 @@ contract StakedTokenV3 is
+@@ -3604,7 +4924,7 @@ contract StakedTokenV3 is
     * @return The revision
     */
    function REVISION() public pure virtual returns (uint256) {
@@ -3288,7 +3243,7 @@ index 12d5367..6fbf466 100644
    }
  
    /**
-@@ -3618,21 +4983,7 @@ contract StakedTokenV3 is
+@@ -3618,21 +4938,7 @@ contract StakedTokenV3 is
    /**
     * @dev Called by the proxy contract
     */
@@ -3311,35 +3266,40 @@ index 12d5367..6fbf466 100644
  
    function _initialize(
      address slashingAdmin,
-@@ -3679,6 +5030,27 @@ contract StakedTokenV3 is
+@@ -3679,6 +4985,32 @@ contract StakedTokenV3 is
      _stake(msg.sender, to, amount);
    }
  
 +  /// @inheritdoc IStakedTokenV3
 +  function stakeWithPermit(
-+    address from,
 +    uint256 amount,
 +    uint256 deadline,
 +    uint8 v,
 +    bytes32 r,
 +    bytes32 s
 +  ) external override {
-+    IERC20WithPermit(address(STAKED_TOKEN)).permit(
-+      from,
-+      address(this),
-+      amount,
-+      deadline,
-+      v,
-+      r,
-+      s
-+    );
-+    _stake(from, from, amount);
++    try
++      IERC20WithPermit(address(STAKED_TOKEN)).permit(
++        msg.sender,
++        address(this),
++        amount,
++        deadline,
++        v,
++        r,
++        s
++      )
++    {
++      // do nothing
++    } catch (bytes memory) {
++      // do nothing
++    }
++    _stake(msg.sender, msg.sender, amount);
 +  }
 +
    /// @inheritdoc IStakedTokenV2
    function cooldown() external override(IStakedTokenV2, StakedTokenV2) {
      _cooldown(msg.sender);
-@@ -3705,7 +5077,7 @@ contract StakedTokenV3 is
+@@ -3705,7 +5037,7 @@ contract StakedTokenV3 is
      address to,
      uint256 amount
    ) external override(IStakedTokenV2, StakedTokenV2) {
@@ -3348,7 +3308,7 @@ index 12d5367..6fbf466 100644
    }
  
    /// @inheritdoc IStakedTokenV3
-@@ -3714,7 +5086,7 @@ contract StakedTokenV3 is
+@@ -3714,7 +5046,7 @@ contract StakedTokenV3 is
      address to,
      uint256 amount
    ) external override onlyClaimHelper {
@@ -3357,7 +3317,7 @@ index 12d5367..6fbf466 100644
    }
  
    /// @inheritdoc IStakedTokenV2
-@@ -3741,7 +5113,7 @@ contract StakedTokenV3 is
+@@ -3741,7 +5073,7 @@ contract StakedTokenV3 is
      uint256 redeemAmount
    ) external override {
      _claimRewards(msg.sender, to, claimAmount);
@@ -3366,7 +3326,7 @@ index 12d5367..6fbf466 100644
    }
  
    /// @inheritdoc IStakedTokenV3
-@@ -3752,7 +5124,7 @@ contract StakedTokenV3 is
+@@ -3752,7 +5084,7 @@ contract StakedTokenV3 is
      uint256 redeemAmount
    ) external override onlyClaimHelper {
      _claimRewards(from, to, claimAmount);
@@ -3375,7 +3335,7 @@ index 12d5367..6fbf466 100644
    }
  
    /// @inheritdoc IStakedTokenV3
-@@ -3956,7 +5328,7 @@ contract StakedTokenV3 is
+@@ -3956,7 +5288,7 @@ contract StakedTokenV3 is
  
      STAKED_TOKEN.safeTransferFrom(from, address(this), amount);
  
@@ -3384,7 +3344,7 @@ index 12d5367..6fbf466 100644
  
      emit Staked(from, to, amount, sharesToMint);
    }
-@@ -3967,13 +5339,13 @@ contract StakedTokenV3 is
+@@ -3967,13 +5299,13 @@ contract StakedTokenV3 is
     * @param to Address to redeem to
     * @param amount Amount to redeem
     */
@@ -3400,7 +3360,7 @@ index 12d5367..6fbf466 100644
          'INSUFFICIENT_COOLDOWN'
        );
        require(
-@@ -3995,7 +5367,7 @@ contract StakedTokenV3 is
+@@ -3995,7 +5327,7 @@ contract StakedTokenV3 is
  
      uint256 underlyingToRedeem = previewRedeem(amountToRedeem);
  
@@ -3409,7 +3369,7 @@ index 12d5367..6fbf466 100644
  
      if (cooldownSnapshot.timestamp != 0) {
        if (cooldownSnapshot.amount - amountToRedeem == 0) {
-@@ -4058,13 +5430,68 @@ contract StakedTokenV3 is
+@@ -4058,13 +5390,76 @@ contract StakedTokenV3 is
          if (balanceOfFrom == amount) {
            delete stakersCooldowns[from];
          } else if (balanceOfFrom - amount < previousSenderCooldown.amount) {
@@ -3419,16 +3379,24 @@ index 12d5367..6fbf466 100644
        }
      }
  
+     super._transfer(from, to, amount);
+   }
++
++  function _afterTokenTransfer(
++    address from,
++    address to,
++    uint256 fromBalanceBefore,
++    uint256 toBalanceBefore,
++    uint256 amount
++  ) internal virtual override {
 +    _delegationChangeOnTransfer(
 +      from,
 +      to,
-+      _getBalance(from),
-+      _getBalance(to),
++      fromBalanceBefore,
++      toBalanceBefore,
 +      amount
 +    );
-+
-     super._transfer(from, to, amount);
-   }
++  }
 +
 +  function _getDelegationState(
 +    address user
@@ -3479,7 +3447,7 @@ index 12d5367..6fbf466 100644
  }
  
  interface IGhoVariableDebtTokenTransferHook {
-@@ -4087,26 +5514,8 @@ interface IGhoVariableDebtTokenTransferHook {
+@@ -4087,26 +5482,8 @@ interface IGhoVariableDebtTokenTransferHook {
  }
  
  interface IStakedAaveV3 is IStakedTokenV3 {
@@ -3506,7 +3474,7 @@ index 12d5367..6fbf466 100644
    /**
     * @dev Sets the GHO debt token (only callable by SHORT_EXECUTOR)
     * @param newGHODebtToken Address to GHO debt token
-@@ -4136,36 +5545,6 @@ interface IStakedAaveV3 is IStakedTokenV3 {
+@@ -4136,36 +5513,6 @@ interface IStakedAaveV3 is IStakedTokenV3 {
      address to,
      uint256 amount
    ) external returns (uint256);
@@ -3543,7 +3511,7 @@ index 12d5367..6fbf466 100644
  }
  
  /**
-@@ -4176,15 +5555,13 @@ interface IERC20WithPermit is IERC20 {
+@@ -4176,15 +5523,13 @@ interface IERC20WithPermit is IERC20 {
  contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    using SafeCast for uint256;
  
@@ -3561,7 +3529,7 @@ index 12d5367..6fbf466 100644
    }
  
    constructor(
-@@ -4211,24 +5588,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
+@@ -4211,24 +5556,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    /**
     * @dev Called by the proxy contract
     */
@@ -3587,7 +3555,7 @@ index 12d5367..6fbf466 100644
  
    /// @inheritdoc IStakedAaveV3
    function setGHODebtToken(
-@@ -4256,39 +5616,6 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
+@@ -4256,51 +5584,21 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
      return _claimRewardsAndStakeOnBehalf(from, to, amount);
    }
  
@@ -3625,15 +3593,44 @@ index 12d5367..6fbf466 100644
 -  }
 -
    /**
-    * @dev Writes a snapshot before any operation involving transfer of value: _transfer, _mint and _burn
-    * - On _transfer, it writes snapshots for both "from" and "to"
-@@ -4315,101 +5642,5 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
+-   * @dev Writes a snapshot before any operation involving transfer of value: _transfer, _mint and _burn
+-   * - On _transfer, it writes snapshots for both "from" and "to"
++   * - On _transfer, it updates discount, rewards & delegation for both "from" and "to"
+    * - On _mint, only for _to
+    * - On _burn, only for _from
+-   * @param from the from address
+-   * @param to the to address
+-   * @param amount the amount to transfer
++   * @param from token sender
++   * @param to token recipient
++   * @param fromBalanceBefore balance of the sender before transfer
++   * @param toBalanceBefore balance of the recipient before transfer
++   * @param amount amount of tokens sent
+    */
+-  function _beforeTokenTransfer(
++  function _afterTokenTransfer(
+     address from,
+     address to,
++    uint256 fromBalanceBefore,
++    uint256 toBalanceBefore,
+     uint256 amount
+   ) internal override {
+     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
+@@ -4309,107 +5607,19 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
+         cachedGhoDebtToken.updateDiscountDistribution(
+           from,
+           to,
+-          balanceOf(from),
+-          balanceOf(to),
++          fromBalanceBefore,
++          toBalanceBefore,
+           amount
          )
        {} catch (bytes memory) {}
      }
 -    address votingFromDelegatee = _votingDelegates[from];
 -    address votingToDelegatee = _votingDelegates[to];
--
+ 
 -    if (votingFromDelegatee == address(0)) {
 -      votingFromDelegatee = from;
 -    }
@@ -3663,8 +3660,14 @@ index 12d5367..6fbf466 100644
 -      propPowerToDelegatee,
 -      amount,
 -      DelegationType.PROPOSITION_POWER
--    );
--  }
++    super._afterTokenTransfer(
++      from,
++      to,
++      fromBalanceBefore,
++      toBalanceBefore,
++      amount
+     );
+   }
 -
 -  /// @dev Modified version accounting for exchange rate at block
 -  /// @inheritdoc GovernancePowerDelegationERC20
@@ -3727,6 +3730,6 @@ index 12d5367..6fbf466 100644
 -      }
 -      return snapshots[lower].value;
 -    }
-   }
+-  }
  }
 ```
