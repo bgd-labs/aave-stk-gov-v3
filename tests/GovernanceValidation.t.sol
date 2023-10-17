@@ -71,4 +71,26 @@ contract GovernanceValidation is BaseTest {
       0.001e18
     ); // allow for 0.1% derivation
   }
+
+  function test_delegatePowerIncreaseAfteStake() public {
+    deal(address(STAKE_CONTRACT.STAKED_TOKEN()), address(this), 100e18);
+    STAKE_CONTRACT.STAKED_TOKEN().approve(
+      address(STAKE_CONTRACT),
+      type(uint256).max
+    );
+    uint256 amount = 1e18;
+    STAKE_CONTRACT.stake(address(this), amount);
+    address delegatee = address(100);
+    STAKE_CONTRACT.delegate(delegatee);
+    uint256 powerBefore = STAKE_CONTRACT.getPowerCurrent(
+      delegatee,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    STAKE_CONTRACT.stake(address(this), amount);
+    uint256 powerAfter = STAKE_CONTRACT.getPowerCurrent(
+      delegatee,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    assertEq(powerAfter, powerBefore + amount);
+  }
 }

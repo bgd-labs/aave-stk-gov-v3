@@ -91,6 +91,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     address to,
     uint256 amount
   ) internal override {
+    super._beforeTokenTransfer(from, to, amount);
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try
