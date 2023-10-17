@@ -1,6 +1,6 @@
 ```diff
 diff --git a/src/flattened/CurrentStakedAaveV3Flattened.sol b/src/flattened/StakedAaveV3Flattened.sol
-index 12d5367..8509451 100644
+index 12d5367..89870d8 100644
 --- a/src/flattened/CurrentStakedAaveV3Flattened.sol
 +++ b/src/flattened/StakedAaveV3Flattened.sol
 @@ -1,7 +1,7 @@
@@ -3555,7 +3555,7 @@ index 12d5367..8509451 100644
  
    /// @inheritdoc IStakedAaveV3
    function setGHODebtToken(
-@@ -4256,51 +5584,21 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
+@@ -4256,160 +5584,42 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
      return _claimRewardsAndStakeOnBehalf(from, to, amount);
    }
  
@@ -3615,8 +3615,17 @@ index 12d5367..8509451 100644
 +    uint256 toBalanceBefore,
      uint256 amount
    ) internal override {
++    super._afterTokenTransfer(
++      from,
++      to,
++      fromBalanceBefore,
++      toBalanceBefore,
++      amount
++    );
++
      IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
-@@ -4309,107 +5607,19 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
+     if (address(cachedGhoDebtToken) != address(0)) {
+       try
          cachedGhoDebtToken.updateDiscountDistribution(
            from,
            to,
@@ -3630,7 +3639,7 @@ index 12d5367..8509451 100644
      }
 -    address votingFromDelegatee = _votingDelegates[from];
 -    address votingToDelegatee = _votingDelegates[to];
- 
+-
 -    if (votingFromDelegatee == address(0)) {
 -      votingFromDelegatee = from;
 -    }
@@ -3660,14 +3669,8 @@ index 12d5367..8509451 100644
 -      propPowerToDelegatee,
 -      amount,
 -      DelegationType.PROPOSITION_POWER
-+    super._afterTokenTransfer(
-+      from,
-+      to,
-+      fromBalanceBefore,
-+      toBalanceBefore,
-+      amount
-     );
-   }
+-    );
+-  }
 -
 -  /// @dev Modified version accounting for exchange rate at block
 -  /// @inheritdoc GovernancePowerDelegationERC20
@@ -3730,6 +3733,6 @@ index 12d5367..8509451 100644
 -      }
 -      return snapshots[lower].value;
 -    }
--  }
+   }
  }
 ```

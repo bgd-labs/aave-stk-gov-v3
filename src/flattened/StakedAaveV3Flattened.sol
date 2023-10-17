@@ -5601,6 +5601,14 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     uint256 toBalanceBefore,
     uint256 amount
   ) internal override {
+    super._afterTokenTransfer(
+      from,
+      to,
+      fromBalanceBefore,
+      toBalanceBefore,
+      amount
+    );
+
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try
@@ -5613,13 +5621,5 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
         )
       {} catch (bytes memory) {}
     }
-
-    super._afterTokenTransfer(
-      from,
-      to,
-      fromBalanceBefore,
-      toBalanceBefore,
-      amount
-    );
   }
 }
