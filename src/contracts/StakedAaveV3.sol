@@ -78,12 +78,14 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   }
 
   /**
-   * - On _transfer, it writes snapshots for both "from" and "to"
+   * - On _transfer, it updates discount, rewards & delegation for both "from" and "to"
    * - On _mint, only for _to
    * - On _burn, only for _from
-   * @param from the from address
-   * @param to the to address
-   * @param amount the amount to transfer
+   * @param from token sender
+   * @param to token recipient
+   * @param fromBalanceBefore balance of the sender before transfer
+   * @param toBalanceBefore balance of the recipient before transfer
+   * @param amount amount of tokens sent
    */
   function _afterTokenTransfer(
     address from,
