@@ -185,7 +185,11 @@ contract StakedTokenV3 is
         r,
         s
       )
-    {} catch (bytes memory) {}
+    {
+      // do nothing
+    } catch (bytes memory) {
+      // do nothing
+    }
     _stake(msg.sender, msg.sender, amount);
   }
 
@@ -553,6 +557,7 @@ contract StakedTokenV3 is
     address to,
     uint256 amount
   ) internal override {
+    _beforeTokenTransfer(from, to, amount);
     uint256 balanceOfFrom = balanceOf(from);
     // Sender
     _updateCurrentUnclaimedRewards(from, balanceOfFrom, true);

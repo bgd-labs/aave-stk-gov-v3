@@ -78,7 +78,6 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   }
 
   /**
-   * @dev Writes a snapshot before any operation involving transfer of value: _transfer, _mint and _burn
    * - On _transfer, it writes snapshots for both "from" and "to"
    * - On _mint, only for _to
    * - On _burn, only for _from
