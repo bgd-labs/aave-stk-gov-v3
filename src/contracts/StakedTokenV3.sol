@@ -557,7 +557,6 @@ contract StakedTokenV3 is
     address to,
     uint256 amount
   ) internal override {
-    _beforeTokenTransfer(from, to, amount);
     uint256 balanceOfFrom = balanceOf(from);
     // Sender
     _updateCurrentUnclaimedRewards(from, balanceOfFrom, true);
@@ -581,16 +580,18 @@ contract StakedTokenV3 is
     super._transfer(from, to, amount);
   }
 
-  function _beforeTokenTransfer(
+  function _afterTokenTransfer(
     address from,
     address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
     uint256 amount
   ) internal virtual override {
     _delegationChangeOnTransfer(
       from,
       to,
-      _getBalance(from),
-      _getBalance(to),
+      fromBalanceBefore,
+      toBalanceBefore,
       amount
     );
   }

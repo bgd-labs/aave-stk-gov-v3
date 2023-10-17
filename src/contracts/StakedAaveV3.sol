@@ -85,23 +85,32 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
    * @param to the to address
    * @param amount the amount to transfer
    */
-  function _beforeTokenTransfer(
+  function _afterTokenTransfer(
     address from,
     address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
     uint256 amount
   ) internal override {
-    super._beforeTokenTransfer(from, to, amount);
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try
         cachedGhoDebtToken.updateDiscountDistribution(
           from,
           to,
-          balanceOf(from),
-          balanceOf(to),
+          fromBalanceBefore,
+          toBalanceBefore,
           amount
         )
       {} catch (bytes memory) {}
     }
+
+    super._afterTokenTransfer(
+      from,
+      to,
+      fromBalanceBefore,
+      toBalanceBefore,
+      amount
+    );
   }
 }
