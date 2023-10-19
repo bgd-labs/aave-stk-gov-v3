@@ -29,7 +29,14 @@ ghost mul_div(mathint , mathint) returns uint256 {
          (mul_div(a+b,deno) + 0 == mul_div(a,deno) + mul_div(b,deno)-1)
         );
 }
-
+/*
+ghost mul_div(mathint , mathint) returns uint256 {
+    axiom
+        (forall mathint a. forall mathint deno.
+         (mul_div(a,deno)+0 == a) 
+        );
+}
+*/
 
 
 
@@ -179,7 +186,7 @@ rule vpDelegateWhenBothNotDelegating(address alice, address bob, address charlie
     mathint bobPowerAfter = getPowerCurrent(bob, VOTING_POWER());
     mathint charliePowerAfter = getPowerCurrent(charlie, VOTING_POWER());
 
-    assert getVotingDelegate(alice) == bob;
+    assert getVotingDelegatee(alice) == bob;
     assert charliePowerAfter == charliePowerBefore;
     assert upto_1(alicePowerAfter, alicePowerBefore - mul_div(aliceBalance,getExchangeRate()) );
     assert upto_1(bobPowerAfter, bobPowerBefore + normalizeNew(balanceOf(alice)));
@@ -221,7 +228,7 @@ rule ppDelegateWhenBothNotDelegating(address alice, address bob, address charlie
     mathint bobPowerAfter = getPowerCurrent(bob, PROPOSITION_POWER());
     mathint charliePowerAfter = getPowerCurrent(charlie, PROPOSITION_POWER());
 
-    assert getPropositionDelegate(alice) == bob;
+    assert getPropositionDelegatee(alice) == bob;
     assert charliePowerAfter == charliePowerBefore;
     assert upto_1(alicePowerAfter, alicePowerBefore - mul_div(aliceBalance,getExchangeRate()) );
     assert upto_1(bobPowerAfter, bobPowerBefore + normalizeNew(balanceOf(alice)));
@@ -249,7 +256,7 @@ rule vpTransferWhenOnlyOneIsDelegating(address alice, address bob, address charl
 
     bool isAliceDelegatingVoting = getDelegatingVoting(alice);
     bool isBobDelegatingVoting = getDelegatingVoting(bob);
-    address aliceDelegate = getVotingDelegate(alice);
+    address aliceDelegate = getVotingDelegatee(alice);
     require aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != bob && aliceDelegate != charlie;
 
     require isAliceDelegatingVoting && !isBobDelegatingVoting;
@@ -298,7 +305,7 @@ rule ppTransferWhenOnlyOneIsDelegating(address alice, address bob, address charl
 
     bool isAliceDelegatingProposition = getDelegatingProposition(alice);
     bool isBobDelegatingProposition = getDelegatingProposition(bob);
-    address aliceDelegate = getPropositionDelegate(alice);
+    address aliceDelegate = getPropositionDelegatee(alice);
     require aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != bob && aliceDelegate != charlie;
 
     require isAliceDelegatingProposition && !isBobDelegatingProposition;
@@ -348,7 +355,7 @@ rule vpStopDelegatingWhenOnlyOneIsDelegating(address alice, address charlie) {
     require alice == e.msg.sender;
 
     bool isAliceDelegatingVoting = getDelegatingVoting(alice);
-    address aliceDelegate = getVotingDelegate(alice);
+    address aliceDelegate = getVotingDelegatee(alice);
 
     require isAliceDelegatingVoting && aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != charlie;
 
@@ -384,7 +391,7 @@ rule ppStopDelegatingWhenOnlyOneIsDelegating(address alice, address charlie) {
     require alice == e.msg.sender;
 
     bool isAliceDelegatingProposition = getDelegatingProposition(alice);
-    address aliceDelegate = getPropositionDelegate(alice);
+    address aliceDelegate = getPropositionDelegatee(alice);
 
     require isAliceDelegatingProposition && aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != charlie;
 
@@ -419,7 +426,7 @@ rule vpChangeDelegateWhenOnlyOneIsDelegating(address alice, address delegate2, a
     require alice == e.msg.sender;
 
     bool isAliceDelegatingVoting = getDelegatingVoting(alice);
-    address aliceDelegate = getVotingDelegate(alice);
+    address aliceDelegate = getVotingDelegatee(alice);
     require aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != delegate2 && 
         delegate2 != 0 && delegate2 != charlie && aliceDelegate != charlie;
 
@@ -436,7 +443,7 @@ rule vpChangeDelegateWhenOnlyOneIsDelegating(address alice, address delegate2, a
     mathint charliePowerAfter = getPowerCurrent(charlie, VOTING_POWER());
     mathint aliceDelegatePowerAfter = getPowerCurrent(aliceDelegate, VOTING_POWER());
     mathint delegate2PowerAfter = getPowerCurrent(delegate2, VOTING_POWER());
-    address aliceDelegateAfter = getVotingDelegate(alice);
+    address aliceDelegateAfter = getVotingDelegatee(alice);
 
     assert alicePowerBefore == alicePowerAfter;
     assert aliceDelegateAfter == delegate2;
@@ -461,7 +468,7 @@ rule ppChangeDelegateWhenOnlyOneIsDelegating(address alice, address delegate2, a
     require alice == e.msg.sender;
 
     bool isAliceDelegatingVoting = getDelegatingProposition(alice);
-    address aliceDelegate = getPropositionDelegate(alice);
+    address aliceDelegate = getPropositionDelegatee(alice);
     require aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != delegate2 && 
         delegate2 != 0 && delegate2 != charlie && aliceDelegate != charlie;
 
@@ -478,7 +485,7 @@ rule ppChangeDelegateWhenOnlyOneIsDelegating(address alice, address delegate2, a
     mathint charliePowerAfter = getPowerCurrent(charlie, PROPOSITION_POWER());
     mathint aliceDelegatePowerAfter = getPowerCurrent(aliceDelegate, PROPOSITION_POWER());
     mathint delegate2PowerAfter = getPowerCurrent(delegate2, PROPOSITION_POWER());
-    address aliceDelegateAfter = getPropositionDelegate(alice);
+    address aliceDelegateAfter = getPropositionDelegatee(alice);
 
     assert alicePowerBefore == alicePowerAfter;
     assert aliceDelegateAfter == delegate2;
@@ -504,7 +511,7 @@ rule vpOnlyAccount2IsDelegating(address alice, address bob, address charlie, uin
 
     bool isAliceDelegatingVoting = getDelegatingVoting(alice);
     bool isBobDelegatingVoting = getDelegatingVoting(bob);
-    address bobDelegate = getVotingDelegate(bob);
+    address bobDelegate = getVotingDelegatee(bob);
     require bobDelegate != bob && bobDelegate != 0 && bobDelegate != alice && bobDelegate != charlie;
 
     require !isAliceDelegatingVoting && isBobDelegatingVoting;
@@ -550,7 +557,7 @@ rule ppOnlyAccount2IsDelegating(address alice, address bob, address charlie, uin
 
     bool isAliceDelegating = getDelegatingProposition(alice);
     bool isBobDelegating = getDelegatingProposition(bob);
-    address bobDelegate = getPropositionDelegate(bob);
+    address bobDelegate = getPropositionDelegatee(bob);
     require bobDelegate != bob && bobDelegate != 0 && bobDelegate != alice && bobDelegate != charlie;
 
     require !isAliceDelegating && isBobDelegating;
@@ -598,8 +605,8 @@ rule vpTransferWhenBothAreDelegating(address alice, address bob, address charlie
     bool isAliceDelegatingVoting = getDelegatingVoting(alice);
     bool isBobDelegatingVoting = getDelegatingVoting(bob);
     require isAliceDelegatingVoting && isBobDelegatingVoting;
-    address aliceDelegate = getVotingDelegate(alice);
-    address bobDelegate = getVotingDelegate(bob);
+    address aliceDelegate = getVotingDelegatee(alice);
+    address bobDelegate = getVotingDelegatee(bob);
     require aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != bob && aliceDelegate != charlie;
     require bobDelegate != bob && bobDelegate != 0 && bobDelegate != alice && bobDelegate != charlie;
     require aliceDelegate != bobDelegate;
@@ -648,8 +655,8 @@ rule ppTransferWhenBothAreDelegating(address alice, address bob, address charlie
     bool isAliceDelegating = getDelegatingProposition(alice);
     bool isBobDelegating = getDelegatingProposition(bob);
     require isAliceDelegating && isBobDelegating;
-    address aliceDelegate = getPropositionDelegate(alice);
-    address bobDelegate = getPropositionDelegate(bob);
+    address aliceDelegate = getPropositionDelegatee(alice);
+    address bobDelegate = getPropositionDelegatee(bob);
     require aliceDelegate != alice && aliceDelegate != 0 && aliceDelegate != bob && aliceDelegate != charlie;
     require bobDelegate != bob && bobDelegate != 0 && bobDelegate != alice && bobDelegate != charlie;
     require aliceDelegate != bobDelegate;
@@ -695,13 +702,13 @@ rule votingDelegateChanges(address alice, method f) {
     env e;
     calldataarg args;
 
-    address aliceVotingDelegateBefore = getVotingDelegate(alice);
-    address alicePropDelegateBefore = getPropositionDelegate(alice);
+    address aliceVotingDelegateBefore = getVotingDelegatee(alice);
+    address alicePropDelegateBefore = getPropositionDelegatee(alice);
 
     f(e, args);
 
-    address aliceVotingDelegateAfter = getVotingDelegate(alice);
-    address alicePropDelegateAfter = getPropositionDelegate(alice);
+    address aliceVotingDelegateAfter = getVotingDelegatee(alice);
+    address alicePropDelegateAfter = getPropositionDelegatee(alice);
 
     // only these four function may change the delegate of an address
     assert aliceVotingDelegateAfter != aliceVotingDelegateBefore || alicePropDelegateBefore != alicePropDelegateAfter =>
@@ -763,15 +770,15 @@ rule votingPowerChanges(address alice, method f) {
     @Link:
 */
 rule delegationTypeIndependence(address who, method f) filtered { f -> !f.isView } {
-    address _delegateeV = getVotingDelegate(who);
-    address _delegateeP = getPropositionDelegate(who);
+    address _delegateeV = getVotingDelegatee(who);
+    address _delegateeP = getPropositionDelegatee(who);
     
     env e;
     calldataarg arg;
     f(e, arg);
     
-    address delegateeV_ = getVotingDelegate(who);
-    address delegateeP_ = getPropositionDelegate(who);
+    address delegateeV_ = getVotingDelegatee(who);
+    address delegateeP_ = getPropositionDelegatee(who);
     assert _delegateeV != delegateeV_ && _delegateeP != delegateeP_ =>
         (f.selector == sig:delegate(address).selector ||
          f.selector == sig:metaDelegate(address,address,uint256,uint8,bytes32,bytes32).selector
@@ -792,8 +799,8 @@ rule delegationTypeIndependence(address who, method f) filtered { f -> !f.isView
 rule cantDelegateTwice(address _delegate) {
     env e;
 
-    address delegateBeforeV = getVotingDelegate(e.msg.sender);
-    address delegateBeforeP = getPropositionDelegate(e.msg.sender);
+    address delegateBeforeV = getVotingDelegatee(e.msg.sender);
+    address delegateBeforeP = getPropositionDelegatee(e.msg.sender);
     require delegateBeforeV != _delegate && delegateBeforeV != e.msg.sender && delegateBeforeV != 0;
     require delegateBeforeP != _delegate && delegateBeforeP != e.msg.sender && delegateBeforeP != 0;
     require _delegate != e.msg.sender && _delegate != 0 && e.msg.sender != 0;
@@ -852,3 +859,12 @@ rule transferAndTransferFromPowerEquivalence(address bob, uint amount) {
            alicePropPowerAfterTransfer == alicePropPowerAfterTransferFrom;
 
 }
+
+
+
+
+
+
+
+
+

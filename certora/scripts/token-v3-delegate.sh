@@ -1,12 +1,15 @@
 if [[ "$1" ]]
 then
     RULE="--rule $1"
+    MSG="--msg \"$1:: $2\""
 fi
 
 echo "RULE is ==>" $RULE "<=="
 
-certoraRun --send_only --server production --prover_version master \
-           certora/conf/token-v3-delegate.conf $RULE --msg "$1:: $2"
+eval \
+certoraRun --send_only \
+           --fe_version latest \
+           certora/conf/token-v3-delegate.conf $RULE $MSG
 
 
 
