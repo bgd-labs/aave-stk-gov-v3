@@ -78,27 +78,38 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   }
 
   /**
-   * @dev Writes a snapshot before any operation involving transfer of value: _transfer, _mint and _burn
-   * - On _transfer, it writes snapshots for both "from" and "to"
+   * - On _transfer, it updates discount, rewards & delegation for both "from" and "to"
    * - On _mint, only for _to
    * - On _burn, only for _from
-   * @param from the from address
-   * @param to the to address
-   * @param amount the amount to transfer
+   * @param from token sender
+   * @param to token recipient
+   * @param fromBalanceBefore balance of the sender before transfer
+   * @param toBalanceBefore balance of the recipient before transfer
+   * @param amount amount of tokens sent
    */
-  function _beforeTokenTransfer(
+  function _afterTokenTransfer(
     address from,
     address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
     uint256 amount
   ) internal override {
+    super._afterTokenTransfer(
+      from,
+      to,
+      fromBalanceBefore,
+      toBalanceBefore,
+      amount
+    );
+
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try
         cachedGhoDebtToken.updateDiscountDistribution(
           from,
           to,
-          balanceOf(from),
-          balanceOf(to),
+          fromBalanceBefore,
+          toBalanceBefore,
           amount
         )
       {} catch (bytes memory) {}

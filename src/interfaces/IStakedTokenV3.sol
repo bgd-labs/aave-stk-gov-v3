@@ -26,7 +26,6 @@ interface IStakedTokenV3 is IStakedTokenV2 {
 
   /**
    * @dev Allows staking a certain amount of STAKED_TOKEN with gasless approvals (permit)
-   * @param from The address staking the token
    * @param amount The amount to be staked
    * @param deadline The permit execution deadline
    * @param v The v component of the signed message
@@ -34,7 +33,6 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * @param s The s component of the signed message
    */
   function stakeWithPermit(
-    address from,
     uint256 amount,
     uint256 deadline,
     uint8 v,

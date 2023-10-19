@@ -3089,13 +3089,12 @@ contract BaseMintableAaveToken is BaseAaveToken {
   function _mint(address account, uint104 amount) internal virtual {
     require(account != address(0), 'ERC20: mint to the zero address');
 
-    _beforeTokenTransfer(address(0), account, amount);
-
+    uint104 balanceBefore = _balances[account].balance;
     _totalSupply += amount;
     _balances[account].balance += amount;
     emit Transfer(address(0), account, amount);
 
-    _afterTokenTransfer(address(0), account, amount);
+    _afterTokenTransfer(address(0), account, 0, balanceBefore, amount);
   }
 
   /**
@@ -3112,8 +3111,6 @@ contract BaseMintableAaveToken is BaseAaveToken {
   function _burn(address account, uint104 amount) internal virtual {
     require(account != address(0), 'ERC20: burn from the zero address');
 
-    _beforeTokenTransfer(account, address(0), amount);
-
     uint104 accountBalance = _balances[account].balance;
     require(accountBalance >= amount, 'ERC20: burn amount exceeds balance');
     unchecked {
@@ -3124,48 +3121,8 @@ contract BaseMintableAaveToken is BaseAaveToken {
 
     emit Transfer(account, address(0), amount);
 
-    _afterTokenTransfer(account, address(0), amount);
+    _afterTokenTransfer(account, address(0), accountBalance, 0, amount);
   }
-
-  /**
-   * @dev Hook that is called before any transfer of tokens. This includes
-   * minting and burning.
-   *
-   * Calling conditions:
-   *
-   * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
-   * will be transferred to `to`.
-   * - when `from` is zero, `amount` tokens will be minted for `to`.
-   * - when `to` is zero, `amount` of ``from``'s tokens will be burned.
-   * - `from` and `to` are never both zero.
-   *
-   * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-   */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {}
-
-  /**
-   * @dev Hook that is called after any transfer of tokens. This includes
-   * minting and burning.
-   *
-   * Calling conditions:
-   *
-   * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
-   * has been transferred to `to`.
-   * - when `from` is zero, `amount` tokens have been minted for `to`.
-   * - when `to` is zero, `amount` of ``from``'s tokens have been burned.
-   * - `from` and `to` are never both zero.
-   *
-   * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-   */
-  function _afterTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {}
 }
 
 /**
@@ -3353,7 +3310,6 @@ interface IStakedTokenV3 is IStakedTokenV2 {
 
   /**
    * @dev Allows staking a certain amount of STAKED_TOKEN with gasless approvals (permit)
-   * @param from The address staking the token
    * @param amount The amount to be staked
    * @param deadline The permit execution deadline
    * @param v The v component of the signed message
@@ -3361,7 +3317,6 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * @param s The s component of the signed message
    */
   function stakeWithPermit(
-    address from,
     uint256 amount,
     uint256 deadline,
     uint8 v,
@@ -5032,23 +4987,28 @@ contract StakedTokenV3 is
 
   /// @inheritdoc IStakedTokenV3
   function stakeWithPermit(
-    address from,
     uint256 amount,
     uint256 deadline,
     uint8 v,
     bytes32 r,
     bytes32 s
   ) external override {
-    IERC20WithPermit(address(STAKED_TOKEN)).permit(
-      from,
-      address(this),
-      amount,
-      deadline,
-      v,
-      r,
-      s
-    );
-    _stake(from, from, amount);
+    try
+      IERC20WithPermit(address(STAKED_TOKEN)).permit(
+        msg.sender,
+        address(this),
+        amount,
+        deadline,
+        v,
+        r,
+        s
+      )
+    {
+      // do nothing
+    } catch (bytes memory) {
+      // do nothing
+    }
+    _stake(msg.sender, msg.sender, amount);
   }
 
   /// @inheritdoc IStakedTokenV2
@@ -5435,15 +5395,23 @@ contract StakedTokenV3 is
       }
     }
 
+    super._transfer(from, to, amount);
+  }
+
+  function _afterTokenTransfer(
+    address from,
+    address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
+    uint256 amount
+  ) internal virtual override {
     _delegationChangeOnTransfer(
       from,
       to,
-      _getBalance(from),
-      _getBalance(to),
+      fromBalanceBefore,
+      toBalanceBefore,
       amount
     );
-
-    super._transfer(from, to, amount);
   }
 
   function _getDelegationState(
@@ -5617,27 +5585,38 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   }
 
   /**
-   * @dev Writes a snapshot before any operation involving transfer of value: _transfer, _mint and _burn
-   * - On _transfer, it writes snapshots for both "from" and "to"
+   * - On _transfer, it updates discount, rewards & delegation for both "from" and "to"
    * - On _mint, only for _to
    * - On _burn, only for _from
-   * @param from the from address
-   * @param to the to address
-   * @param amount the amount to transfer
+   * @param from token sender
+   * @param to token recipient
+   * @param fromBalanceBefore balance of the sender before transfer
+   * @param toBalanceBefore balance of the recipient before transfer
+   * @param amount amount of tokens sent
    */
-  function _beforeTokenTransfer(
+  function _afterTokenTransfer(
     address from,
     address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
     uint256 amount
   ) internal override {
+    super._afterTokenTransfer(
+      from,
+      to,
+      fromBalanceBefore,
+      toBalanceBefore,
+      amount
+    );
+
     IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
     if (address(cachedGhoDebtToken) != address(0)) {
       try
         cachedGhoDebtToken.updateDiscountDistribution(
           from,
           to,
-          balanceOf(from),
-          balanceOf(to),
+          fromBalanceBefore,
+          toBalanceBefore,
           amount
         )
       {} catch (bytes memory) {}

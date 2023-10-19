@@ -83,7 +83,10 @@ contract BaseTest is Test {
 
   function _stake(uint256 amount, address user) internal {
     deal(address(STAKE_CONTRACT.STAKED_TOKEN()), user, amount);
-    STAKE_CONTRACT.STAKED_TOKEN().approve(address(STAKE_CONTRACT), amount);
+    STAKE_CONTRACT.STAKED_TOKEN().approve(
+      address(STAKE_CONTRACT),
+      type(uint256).max
+    );
     STAKE_CONTRACT.stake(user, amount);
   }
 

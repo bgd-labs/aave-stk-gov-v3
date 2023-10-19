@@ -169,23 +169,28 @@ contract StakedTokenV3 is
 
   /// @inheritdoc IStakedTokenV3
   function stakeWithPermit(
-    address from,
     uint256 amount,
     uint256 deadline,
     uint8 v,
     bytes32 r,
     bytes32 s
   ) external override {
-    IERC20WithPermit(address(STAKED_TOKEN)).permit(
-      from,
-      address(this),
-      amount,
-      deadline,
-      v,
-      r,
-      s
-    );
-    _stake(from, from, amount);
+    try
+      IERC20WithPermit(address(STAKED_TOKEN)).permit(
+        msg.sender,
+        address(this),
+        amount,
+        deadline,
+        v,
+        r,
+        s
+      )
+    {
+      // do nothing
+    } catch (bytes memory) {
+      // do nothing
+    }
+    _stake(msg.sender, msg.sender, amount);
   }
 
   /// @inheritdoc IStakedTokenV2
@@ -572,15 +577,23 @@ contract StakedTokenV3 is
       }
     }
 
+    super._transfer(from, to, amount);
+  }
+
+  function _afterTokenTransfer(
+    address from,
+    address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
+    uint256 amount
+  ) internal virtual override {
     _delegationChangeOnTransfer(
       from,
       to,
-      _getBalance(from),
-      _getBalance(to),
+      fromBalanceBefore,
+      toBalanceBefore,
       amount
     );
-
-    super._transfer(from, to, amount);
   }
 
   function _getDelegationState(

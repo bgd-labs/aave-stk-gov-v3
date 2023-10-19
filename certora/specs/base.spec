@@ -88,7 +88,7 @@ definition NO_DELEGATION() returns StakedAaveV3Harness.DelegationMode = StakedAa
 definition VOTING_DELEGATED() returns StakedAaveV3Harness.DelegationMode = StakedAaveV3Harness.DelegationMode.VOTING_DELEGATED;
 definition PROPOSITION_DELEGATED() returns StakedAaveV3Harness.DelegationMode = StakedAaveV3Harness.DelegationMode.PROPOSITION_DELEGATED;
 definition FULL_POWER_DELEGATED() returns StakedAaveV3Harness.DelegationMode = StakedAaveV3Harness.DelegationMode.FULL_POWER_DELEGATED;
-definition DELEGATING_VOTING(StakedAaveV3Harness.DelegationMode mode) returns bool = 
+definition DELEGATING_VOTING(StakedAaveV3Harness.DelegationMode mode) returns bool =
     mode == VOTING_DELEGATED() || mode == FULL_POWER_DELEGATED();
 definition DELEGATING_PROPOSITION(StakedAaveV3Harness.DelegationMode mode) returns bool =
     mode == PROPOSITION_DELEGATED() || mode == FULL_POWER_DELEGATED();
@@ -166,7 +166,7 @@ definition is_redeem_method(method f) returns bool =
 definition is_stake_method(method f) returns bool =
     (
      f.selector == sig:stake(address,uint256).selector ||
-     f.selector == sig:stakeWithPermit(address,uint256,uint256,uint8,bytes32,bytes32).selector ||
+     f.selector == sig:stakeWithPermit(uint256,uint256,uint8,bytes32,bytes32).selector ||
      f.selector == sig:claimRewardsAndStake(address,uint256).selector ||
      f.selector == sig:claimRewardsAndStakeOnBehalf(address,address,uint256).selector
     );
