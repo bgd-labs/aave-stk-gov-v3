@@ -70,8 +70,8 @@ methods {
     function getDelegatedVotingBalance(address user) external returns (uint72) envfree;
     function getDelegatingProposition(address user) external returns (bool) envfree;
     function getDelegatingVoting(address user) external returns (bool) envfree;
-    function getVotingDelegate(address user) external returns (address) envfree;
-    function getPropositionDelegate(address user) external returns (address) envfree;
+    function getVotingDelegatee(address user) external returns (address) envfree;
+    function getPropositionDelegatee(address user) external returns (address) envfree;
     function getDelegationMode(address user) external returns (StakedAaveV3Harness.DelegationMode) envfree;
 
     function EXCHANGE_RATE_UNIT() external returns (uint256) envfree;

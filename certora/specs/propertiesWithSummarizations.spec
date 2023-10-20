@@ -16,7 +16,7 @@ invariant allSharesAreBacked()
         preserved stakeWithPermit(uint256 amount, uint256 deadline,
             uint8 v, bytes32 r, bytes32 s) with (env e3)
         {
-            // require from != currentContract;
+            require e3.msg.sender != currentContract;
         }
         preserved returnFunds(uint256 amount) with (env e4)
         {
