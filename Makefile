@@ -44,7 +44,9 @@ interface :
 	cast interface --name AggregatedStakedTokenV3 -o ./src/interfaces/AggregatedStakedTokenV3.sol ./out/StakedTokenV3.sol/StakedTokenV3.json
 
 
+deploy-stk-aave-token :;  forge script scripts/StkAaveScript.s.sol:DeployStkAaveToken --rpc-url mainnet --broadcast --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} --verify -vvvv
 
-deploy-payloads :;  forge script scripts/DeployPayload.s.sol:DeployPayloads --rpc-url mainnet --broadcast --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} --verify -vvvv
+deploy-stk-aave-payload :;  forge script scripts/DeployPayload.s.sol:DeployUpdateStkPayload --rpc-url mainnet --broadcast --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} --verify -vvvv
+deploy-stk-abpt-payload :;  forge script scripts/DeployPayload.s.sol:DeployUpdateABPTPayload --rpc-url mainnet --broadcast --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} --verify -vvvv
 create-stkabpt-proposal :; forge script scripts/CreateProposal.s.sol:CreateStkABPTShortProposal --rpc-url mainnet --broadcast --legacy --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} -vvvv
 create-stkaave-proposal :; forge script scripts/CreateProposal.s.sol:CreateStkAAVELongProposal --rpc-url mainnet --broadcast --legacy --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} -vvvv
