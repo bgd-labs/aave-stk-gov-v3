@@ -531,7 +531,7 @@ contract StakedTokenV3 is
       } else {
         stakersCooldowns[from].amount =
           stakersCooldowns[from].amount -
-          amountToRedeem.toUint104();
+          uint104(amountToRedeem);
       }
     }
 
