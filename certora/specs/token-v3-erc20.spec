@@ -128,20 +128,20 @@ rule transferCorrect(address to, uint256 amount) {
     // proven elsewhere
     address v_delegateTo = getVotingDelegatee(to);
     mathint dvbTo = getDelegatedVotingBalance(v_delegateTo);
-    require dvbTo >= balanceOf(to) / DELEGATED_POWER_DIVIDER() && 
-        dvbTo < SCALED_MAX_SUPPLY() - amount / DELEGATED_POWER_DIVIDER();
+    require dvbTo >= balanceOf(to) / FACTOR() && 
+        dvbTo < SCALED_MAX_SUPPLY() - amount / FACTOR();
     address p_delegateTo = getPropositionDelegatee(to);
     mathint pvbTo = getDelegatedPropositionBalance(p_delegateTo);
-    require pvbTo >= balanceOf(to) / DELEGATED_POWER_DIVIDER() && 
-        pvbTo < SCALED_MAX_SUPPLY() - amount / DELEGATED_POWER_DIVIDER();
+    require pvbTo >= balanceOf(to) / FACTOR() && 
+        pvbTo < SCALED_MAX_SUPPLY() - amount / FACTOR();
 
     // proven elsewhere
     address v_delegateFrom = getVotingDelegatee(e.msg.sender);
     address p_delegateFrom = getPropositionDelegatee(e.msg.sender);
     mathint dvbFrom = getDelegatedVotingBalance(v_delegateFrom);
     mathint pvbFrom = getDelegatedPropositionBalance(p_delegateFrom);
-    require dvbFrom >= balanceOf(e.msg.sender) / DELEGATED_POWER_DIVIDER();
-    require pvbFrom >= balanceOf(e.msg.sender) / DELEGATED_POWER_DIVIDER();
+    require dvbFrom >= balanceOf(e.msg.sender) / FACTOR();
+    require pvbFrom >= balanceOf(e.msg.sender) / FACTOR();
 
     require validDelegationMode(e.msg.sender) && validDelegationMode(to);
     require ! ( (getDelegatingVoting(to) && v_delegateTo == to) ||
@@ -552,7 +552,7 @@ rule noRebasing(method f, address alice) {
     env e;
     calldataarg args;
 
-    require !is_transfer_method(f)
+    require !is_transfer_method_func(f)
         && !is_stake_method(f) && !is_redeem_method(f)
         ;
     

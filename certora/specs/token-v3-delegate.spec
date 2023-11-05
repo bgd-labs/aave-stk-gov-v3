@@ -40,8 +40,8 @@ ghost mul_div(mathint , mathint) returns uint256 {
 
 
 
-function normalizeNew(uint256 amount) returns mathint {
-    return mul_div(amount / DELEGATED_POWER_DIVIDER() * DELEGATED_POWER_DIVIDER(),getExchangeRate());
+function norm_FACTOR(uint256 amount) returns mathint {
+    return mul_div(amount / FACTOR() * FACTOR(),getExchangeRate());
 }
 
 
@@ -189,7 +189,7 @@ rule vpDelegateWhenBothNotDelegating(address alice, address bob, address charlie
     assert getVotingDelegatee(alice) == bob;
     assert charliePowerAfter == charliePowerBefore;
     assert upto_1(alicePowerAfter, alicePowerBefore - mul_div(aliceBalance,getExchangeRate()) );
-    assert upto_1(bobPowerAfter, bobPowerBefore + normalizeNew(balanceOf(alice)));
+    assert upto_1(bobPowerAfter, bobPowerBefore + norm_FACTOR(balanceOf(alice)));
 }
 
 /*
@@ -231,7 +231,7 @@ rule ppDelegateWhenBothNotDelegating(address alice, address bob, address charlie
     assert getPropositionDelegatee(alice) == bob;
     assert charliePowerAfter == charliePowerBefore;
     assert upto_1(alicePowerAfter, alicePowerBefore - mul_div(aliceBalance,getExchangeRate()) );
-    assert upto_1(bobPowerAfter, bobPowerBefore + normalizeNew(balanceOf(alice)));
+    assert upto_1(bobPowerAfter, bobPowerBefore + norm_FACTOR(balanceOf(alice)));
 }
 
 /**
@@ -283,7 +283,7 @@ rule vpTransferWhenOnlyOneIsDelegating(address alice, address bob, address charl
     assert upto_1(bobPowerAfter, bobPowerBefore + mul_div(amount,getExchangeRate()));
     assert upto_2
         (aliceDelegatePowerAfter,
-         aliceDelegatePowerBefore - normalizeNew(aliceBalanceBefore) + normalizeNew(aliceBalanceAfter)
+         aliceDelegatePowerBefore - norm_FACTOR(aliceBalanceBefore) + norm_FACTOR(aliceBalanceAfter)
         );
 }
 
@@ -333,7 +333,7 @@ rule ppTransferWhenOnlyOneIsDelegating(address alice, address bob, address charl
     assert upto_1(bobPowerAfter, bobPowerBefore + mul_div(amount,getExchangeRate()));
     assert upto_2
         (aliceDelegatePowerAfter,
-         aliceDelegatePowerBefore - normalizeNew(aliceBalanceBefore) + normalizeNew(aliceBalanceAfter)
+         aliceDelegatePowerBefore - norm_FACTOR(aliceBalanceBefore) + norm_FACTOR(aliceBalanceAfter)
         );
 }
 
@@ -371,7 +371,7 @@ rule vpStopDelegatingWhenOnlyOneIsDelegating(address alice, address charlie) {
 
     assert charliePowerAfter == charliePowerBefore;
     assert upto_1(alicePowerAfter, alicePowerBefore + mul_div(balanceOf(alice), getExchangeRate()));
-    assert upto_1(aliceDelegatePowerAfter, aliceDelegatePowerBefore-normalizeNew(balanceOf(alice)));
+    assert upto_1(aliceDelegatePowerAfter, aliceDelegatePowerBefore-norm_FACTOR(balanceOf(alice)));
 }
 
 /*
@@ -407,7 +407,7 @@ rule ppStopDelegatingWhenOnlyOneIsDelegating(address alice, address charlie) {
 
     assert charliePowerAfter == charliePowerBefore;
     assert upto_1(alicePowerAfter, alicePowerBefore+mul_div(balanceOf(alice), getExchangeRate()));
-    assert upto_1(aliceDelegatePowerAfter, aliceDelegatePowerBefore - normalizeNew(balanceOf(alice)));
+    assert upto_1(aliceDelegatePowerAfter, aliceDelegatePowerBefore - norm_FACTOR(balanceOf(alice)));
 }
 
 /*
@@ -448,8 +448,8 @@ rule vpChangeDelegateWhenOnlyOneIsDelegating(address alice, address delegate2, a
     assert alicePowerBefore == alicePowerAfter;
     assert aliceDelegateAfter == delegate2;
     assert charliePowerAfter == charliePowerBefore;
-    assert upto_1(aliceDelegatePowerAfter, aliceDelegatePowerBefore - normalizeNew(balanceOf(alice)));
-    assert upto_1(delegate2PowerAfter, delegate2PowerBefore + normalizeNew(balanceOf(alice)));
+    assert upto_1(aliceDelegatePowerAfter, aliceDelegatePowerBefore - norm_FACTOR(balanceOf(alice)));
+    assert upto_1(delegate2PowerAfter, delegate2PowerBefore + norm_FACTOR(balanceOf(alice)));
 }
 
 /*
@@ -490,8 +490,8 @@ rule ppChangeDelegateWhenOnlyOneIsDelegating(address alice, address delegate2, a
     assert alicePowerBefore == alicePowerAfter;
     assert aliceDelegateAfter == delegate2;
     assert charliePowerAfter == charliePowerBefore;
-    assert upto_1(aliceDelegatePowerAfter,aliceDelegatePowerBefore - normalizeNew(balanceOf(alice)));
-    assert upto_1(delegate2PowerAfter,delegate2PowerBefore + normalizeNew(balanceOf(alice)));
+    assert upto_1(aliceDelegatePowerAfter,aliceDelegatePowerBefore - norm_FACTOR(balanceOf(alice)));
+    assert upto_1(delegate2PowerAfter,delegate2PowerBefore + norm_FACTOR(balanceOf(alice)));
 }
 
 /*
@@ -536,7 +536,7 @@ rule vpOnlyAccount2IsDelegating(address alice, address bob, address charlie, uin
     assert upto_1(alicePowerAfter, alicePowerBefore - mul_div(amount,getExchangeRate()));
     assert upto_2
         (bobDelegatePowerAfter,
-         bobDelegatePowerBefore - normalizeNew(bobBalanceBefore) + normalizeNew(bobBalanceAfter));
+         bobDelegatePowerBefore - norm_FACTOR(bobBalanceBefore) + norm_FACTOR(bobBalanceAfter));
 
 }
 
@@ -582,7 +582,7 @@ rule ppOnlyAccount2IsDelegating(address alice, address bob, address charlie, uin
     assert upto_1(alicePowerAfter, alicePowerBefore - mul_div(amount,getExchangeRate()));
     assert upto_2
         (bobDelegatePowerAfter,
-         bobDelegatePowerBefore - normalizeNew(bobBalanceBefore) + normalizeNew(bobBalanceAfter));
+         bobDelegatePowerBefore - norm_FACTOR(bobBalanceBefore) + norm_FACTOR(bobBalanceAfter));
 
 }
 
@@ -632,9 +632,9 @@ rule vpTransferWhenBothAreDelegating(address alice, address bob, address charlie
     assert alicePowerAfter == alicePowerBefore;
     assert bobPowerAfter == bobPowerBefore;
     assert upto_2(aliceDelegatePowerAfter,
-                  aliceDelegatePowerBefore - normalizeNew(aliceBalanceBefore) + normalizeNew(aliceBalanceAfter));
+                  aliceDelegatePowerBefore - norm_FACTOR(aliceBalanceBefore) + norm_FACTOR(aliceBalanceAfter));
     assert upto_2(bobDelegatePowerAfter,
-                  bobDelegatePowerBefore - normalizeNew(bobBalanceBefore) + normalizeNew(bobBalanceAfter));
+                  bobDelegatePowerBefore - norm_FACTOR(bobBalanceBefore) + norm_FACTOR(bobBalanceAfter));
 }
 
 /*
@@ -682,9 +682,9 @@ rule ppTransferWhenBothAreDelegating(address alice, address bob, address charlie
     assert alicePowerAfter == alicePowerBefore;
     assert bobPowerAfter == bobPowerBefore;
     assert upto_2(aliceDelegatePowerAfter,
-                  aliceDelegatePowerBefore - normalizeNew(aliceBalanceBefore) + normalizeNew(aliceBalanceAfter));
+                  aliceDelegatePowerBefore - norm_FACTOR(aliceBalanceBefore) + norm_FACTOR(aliceBalanceAfter));
     assert upto_2(bobDelegatePowerAfter,
-                  bobDelegatePowerBefore - normalizeNew(bobBalanceBefore) + normalizeNew(bobBalanceAfter));
+                  bobDelegatePowerBefore - norm_FACTOR(bobBalanceBefore) + norm_FACTOR(bobBalanceAfter));
 }
 
 /*
@@ -819,8 +819,8 @@ rule cantDelegateTwice(address _delegate) {
     mathint votingPowerAfter2 = getPowerCurrent(_delegate, VOTING_POWER());
     mathint propPowerAfter2 = getPowerCurrent(_delegate, PROPOSITION_POWER());
 
-    assert upto_1 (votingPowerAfter, votingPowerBefore + normalizeNew(balanceOf(e.msg.sender)));
-    assert upto_1 (propPowerAfter, propPowerBefore + normalizeNew(balanceOf(e.msg.sender)));
+    assert upto_1 (votingPowerAfter, votingPowerBefore + norm_FACTOR(balanceOf(e.msg.sender)));
+    assert upto_1 (propPowerAfter, propPowerBefore + norm_FACTOR(balanceOf(e.msg.sender)));
     assert votingPowerAfter2 == votingPowerAfter && propPowerAfter2 == propPowerAfter;
 }
 
