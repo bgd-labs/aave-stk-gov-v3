@@ -79,7 +79,7 @@ methods {
 
 definition VOTING_POWER() returns IGovernancePowerDelegationToken.GovernancePowerType = IGovernancePowerDelegationToken.GovernancePowerType.VOTING;
 definition PROPOSITION_POWER() returns IGovernancePowerDelegationToken.GovernancePowerType = IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION;
-definition DELEGATED_POWER_DIVIDER() returns uint256 = 10^10;
+definition FACTOR() returns uint256 = 10^10; // This is the POWER_SCALE_FACTOR
 
 /**
     Definitions of delegation modes
@@ -93,7 +93,7 @@ definition DELEGATING_VOTING(StakedAaveV3Harness.DelegationMode mode) returns bo
 definition DELEGATING_PROPOSITION(StakedAaveV3Harness.DelegationMode mode) returns bool =
     mode == PROPOSITION_DELEGATED() || mode == FULL_POWER_DELEGATED();
 
-definition SCALED_MAX_SUPPLY() returns mathint = AAVE_MAX_SUPPLY() / DELEGATED_POWER_DIVIDER();
+definition SCALED_MAX_SUPPLY() returns mathint = AAVE_MAX_SUPPLY() / FACTOR();
 
 definition AAVE_MAX_SUPPLY() returns uint256 = 16000000 * 10^18;
 //definition EXCHANGE_RATE_FACTOR() returns uint256 = 10^18;
@@ -124,12 +124,8 @@ definition redeem_funcs(method f) returns bool =
     f.selector == sig:claimRewardsAndRedeemOnBehalf(address, address, uint256, uint256).selector
 );
 
-function normalize(uint256 amount) returns mathint {
-    return (amount / DELEGATED_POWER_DIVIDER() * DELEGATED_POWER_DIVIDER());
-}
-//function normalizeNew(uint256 amount) returns mathint {
-//  return (amount / DELEGATED_POWER_DIVIDER() * DELEGATED_POWER_DIVIDER()) * EXCHANGE_RATE_FACTOR() / getExchangeRate();
-//}
+definition norm(uint256 amount) returns mathint = 
+    amount / FACTOR() * FACTOR();
 
 function upto_1(mathint a, mathint b) returns bool {
     return  a==b  ||  a==b+1  ||  a+1==b;
@@ -171,8 +167,28 @@ definition is_stake_method(method f) returns bool =
      f.selector == sig:claimRewardsAndStakeOnBehalf(address,address,uint256).selector
     );
 
-function is_transfer_method(method f) returns bool {
+definition is_transfer_method(method f) returns bool =
+    (
+     f.selector == sig:transfer(address,uint256).selector ||
+     f.selector == sig:transferFrom(address,address,uint256).selector
+    );
+
+definition is_delegate_method(method f) returns bool =
+    (
+     f.selector == sig:delegate(address).selector ||
+     f.selector == sig:metaDelegateByType(address,address,
+                                          IGovernancePowerDelegationToken.GovernancePowerType,
+                                          uint256,uint8,bytes32,bytes32).selector ||
+     f.selector == sig:metaDelegate(address,address,uint256,uint8,bytes32,bytes32).selector
+    );
+
+
+
+function is_transfer_method_func(method f) returns bool {
     return
         f.selector == sig:transfer(address,uint256).selector ||
         f.selector == sig:transferFrom(address,address,uint256).selector;
 }
+
+
+

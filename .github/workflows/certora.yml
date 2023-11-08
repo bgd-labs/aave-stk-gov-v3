@@ -28,7 +28,7 @@ jobs:
         with: { java-version: "11", java-package: jre }
 
       - name: Install certora cli
-        run: pip install certora-cli
+        run: pip3 install certora-cli==4.13.1
 
       - name: Install solc
         run: |
@@ -49,11 +49,23 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 16
+      max-parallel: 31
       matrix:
         rule:
-          - propertiesWithSummarization.conf
-          - invariants.conf
+          - token-v3-delegate-HL-under-approx.conf --rule vp_change_in_balance_affect_power_DELEGATEE_all_others
+          - token-v3-delegate-HL-under-approx.conf --rule vp_change_in_balance_affect_power_DELEGATEE_transfer_M
+          - token-v3-delegate-HL-under-approx.conf --rule vp_change_in_balance_affect_power_DELEGATEE_stake_M
+          - token-v3-delegate-HL-under-approx.conf --rule vp_change_in_balance_affect_power_DELEGATEE_redeem_M
+          - token-v3-delegate-HL-under-approx.conf --rule vp_change_in_balance_affect_power_DELEGATEE_delegate_M
+          - token-v3-delegate-HL-under-approx.conf --rule pp_change_in_balance_affect_power_DELEGATEE_all_others
+          - token-v3-delegate-HL-under-approx.conf --rule pp_change_in_balance_affect_power_DELEGATEE_transfer_M
+          - token-v3-delegate-HL-under-approx.conf --rule pp_change_in_balance_affect_power_DELEGATEE_stake_M
+          - token-v3-delegate-HL-under-approx.conf --rule pp_change_in_balance_affect_power_DELEGATEE_redeem_M
+          - token-v3-delegate-HL-under-approx.conf --rule pp_change_in_balance_affect_power_DELEGATEE_delegate_M
+          - token-v3-delegate-HL.conf --rule vp_change_of_balance_affect_power_NON_DELEGATEE
+          - token-v3-delegate-HL.conf --rule pp_change_of_balance_affect_power_NON_DELEGATEE
+          - token-v3-delegate-HL.conf --rule mirror_votingDelegatee_correct mirror_propositionDelegatee_correct mirror_delegationMode_correct mirror_balance_correct inv_voting_power_correct inv_proposition_power_correct user_cant_voting_delegate_to_himself user_cant_proposition_delegate_to_himself no_function_changes_both_balance_and_delegation_state sum_all_voting_delegated_power_EQ_DelegatingVotingBal sum_all_proposition_delegated_power_EQ_DelegatingPropositionBal
+          - token-v3-delegate.conf
           - allProps.conf --rule integrityOfSlashing --rule integrityOfStaking --rule previewStakeEquivalentStake --rule noStakingPostSlashingPeriod --rule noSlashingMoreThanMax --rule noRedeemOutOfUnstakeWindow --rule noEntryUntilSlashingSettled --rule integrityOfRedeem --rule cooldownCorrectness --rule airdropNotMutualized --rule integrityOfReturnFunds --rule slashAndReturnFundsOfZeroDoesntChangeExchangeRate
           - allProps.conf --rule rewardsIncreaseForNonClaimFunctions
           - allProps.conf --rule rewardsMonotonicallyIncrease
@@ -63,15 +75,13 @@ jobs:
           - allProps.conf --rule totalSupplyDoesNotDropToZero
           - allProps.conf --rule slashingIncreaseExchangeRate
           - allProps.conf --rule returnFundsDecreaseExchangeRate
+          - propertiesWithSummarization.conf
+          - invariants.conf
           - token-v3-general.conf --rule delegateCorrectness
           - token-v3-general.conf --rule sumOfVBalancesCorrectness
           - token-v3-general.conf --rule sumOfPBalancesCorrectness
           - token-v3-general.conf --rule transferDoesntChangeDelegationMode
           - token-v3-erc20.conf
-          - token-v3-delegate.conf
-          - token-v3-delegate-HL-rules.conf --rule vp_change_in_balance_affect_power_DELEGATEE
-          - token-v3-delegate-HL-rules.conf --rule vp_change_of_balance_affect_power_NON_DELEGATEE
-          - token-v3-delegate-HL-rules.conf --rule pp_change_in_balance_affect_power_DELEGATEE
-          - token-v3-delegate-HL-rules.conf --rule pp_change_of_balance_affect_power_NON_DELEGATEE
-          - token-v3-delegate-HL-rules.conf --rule mirror_votingDelegatee_correct mirror_propositionDelegatee_correct mirror_delegationMode_correct mirror_balance_correct inv_voting_power_correct inv_proposition_power_correct user_cant_voting_delegate_to_himself user_cant_proposition_delegate_to_himself no_function_changes_both_balance_and_delegation_state
           - token-v3-community.conf
+
+
