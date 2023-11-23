@@ -21,10 +21,6 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   /// @notice GHO debt token to be used in the _beforeTokenTransfer hook
   IGhoVariableDebtTokenTransferHook public ghoDebtToken;
 
-  function REVISION() public pure virtual override returns (uint256) {
-    return 6;
-  }
-
   constructor(
     IERC20 stakedToken,
     IERC20 rewardToken,
@@ -41,10 +37,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
       emissionManager,
       distributionDuration
     )
-  {
-    // brick initialize
-    lastInitializedRevision = REVISION();
-  }
+  {}
 
   /**
    * @dev Called by the proxy contract

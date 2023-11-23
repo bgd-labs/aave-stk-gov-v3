@@ -8,7 +8,7 @@ import {IStakedTokenV2} from '../interfaces/IStakedTokenV2.sol';
 import {DistributionTypes} from '../lib/DistributionTypes.sol';
 import {SafeERC20} from '../lib/SafeERC20.sol';
 
-import {VersionedInitializable} from '../utils/VersionedInitializable.sol';
+import {Initializable} from 'solidity-utils/contracts/transparent-proxy/Initializable.sol';
 import {AaveDistributionManager} from './AaveDistributionManager.sol';
 import {BaseMintableAaveToken} from './BaseMintableAaveToken.sol';
 
@@ -20,7 +20,7 @@ import {BaseMintableAaveToken} from './BaseMintableAaveToken.sol';
 abstract contract StakedTokenV2 is
   IStakedTokenV2,
   BaseMintableAaveToken,
-  VersionedInitializable,
+  Initializable,
   AaveDistributionManager,
   EIP712
 {

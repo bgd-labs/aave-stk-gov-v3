@@ -95,26 +95,8 @@ contract StakedTokenV3 is
       distributionDuration
     )
   {
-    // brick initialize
-    lastInitializedRevision = REVISION();
     uint256 decimals = IERC20Metadata(address(stakedToken)).decimals();
     LOWER_BOUND = 10 ** decimals;
-  }
-
-  /**
-   * @dev returns the revision of the implementation contract
-   * @return The revision
-   */
-  function REVISION() public pure virtual returns (uint256) {
-    return 4;
-  }
-
-  /**
-   * @dev returns the revision of the implementation contract
-   * @return The revision
-   */
-  function getRevision() internal pure virtual override returns (uint256) {
-    return REVISION();
   }
 
   /**
