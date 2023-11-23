@@ -6,17 +6,15 @@ import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/exten
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
 
 import {DistributionTypes} from '../lib/DistributionTypes.sol';
-import {SafeERC20} from '../lib/SafeERC20.sol';
+import {SafeERC20} from 'openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IAaveDistributionManager} from '../interfaces/IAaveDistributionManager.sol';
 import {IStakedTokenV2} from '../interfaces/IStakedTokenV2.sol';
 import {StakedTokenV2} from './StakedTokenV2.sol';
 import {IStakedTokenV3} from '../interfaces/IStakedTokenV3.sol';
 import {PercentageMath} from '../lib/PercentageMath.sol';
 import {RoleManager} from '../utils/RoleManager.sol';
-import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
-import {IERC20WithPermit} from 'solidity-utils/contracts/oz-common/interfaces/IERC20WithPermit.sol';
-import {SafeCast} from '../lib/SafeCast.sol';
-import {IERC20WithPermit} from '../interfaces/IERC20WithPermit.sol';
+import {IERC20Permit} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol';
+import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 
 /**
  * @title StakedTokenV3
@@ -160,7 +158,7 @@ contract StakedTokenV3 is
     bytes32 s
   ) external override {
     try
-      IERC20WithPermit(address(STAKED_TOKEN)).permit(
+      IERC20Permit(address(STAKED_TOKEN)).permit(
         msg.sender,
         address(this),
         amount,

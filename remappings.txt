@@ -7,5 +7,5 @@ aave-v3-periphery/=lib/aave-address-book/lib/aave-v3-periphery/
 aave-token-v3/=lib/aave-token-v3/src
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
-openzeppelin-contracts/=lib/openzeppelin-contracts/
+openzeppelin-contracts/=lib/aave-token-v3/lib/openzeppelin-contracts/
 solidity-utils/=lib/aave-helpers/lib/solidity-utils/src/
