@@ -5,7 +5,6 @@ import 'forge-std/Test.sol';
 import {GovHelpers} from 'aave-helpers/GovHelpers.sol';
 import {StakedTokenV3} from '../src/contracts/StakedTokenV3.sol';
 import {IInitializableAdminUpgradeabilityProxy} from '../src/interfaces/IInitializableAdminUpgradeabilityProxy.sol';
-import {BaseTest} from './BaseTest.sol';
 import {StakedAaveV3} from '../src/contracts/StakedAaveV3.sol';
 import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {GovernanceV3Ethereum} from 'aave-address-book/GovernanceV3Ethereum.sol';
@@ -14,17 +13,19 @@ import {AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
 import {IGhoVariableDebtTokenTransferHook} from '../src/interfaces/IGhoVariableDebtTokenTransferHook.sol';
 import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 
-contract GhoDistributionGasTest is Test, StakedAaveV3 {
+contract BaseTest is Test {
+  constructor() {
+    vm.createSelectFork(vm.rpcUrl('mainnet'), 18636130);
+  }
+}
+
+contract GhoDistributionGasTest is BaseTest, StakedAaveV3 {
   address ghoToken = 0x786dBff3f1292ae8F92ea68Cf93c30b34B1ed04B;
 
-  function setUp() public {
-    vm.createSelectFork(vm.rpcUrl('mainnet'), 18636130);
-    console.log(
-      IERC20Metadata(address(AaveV3EthereumAssets.AAVE_UNDERLYING)).decimals()
-    );
-  }
+  function setUp() public {}
 
   constructor()
+    BaseTest()
     StakedAaveV3(
       IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING),
       IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING),
@@ -66,6 +67,17 @@ contract GhoDistributionGasTest is Test, StakedAaveV3 {
       toBalance,
       amount
     );
+
+    vm.startPrank(0x4da27a545c0c5B758a6BA100e3a049001de870f5);
+    _updateDiscountDistribution(
+      ghoToken,
+      from,
+      to,
+      fromBalance,
+      toBalance,
+      amount
+    );
+    vm.stopPrank();
   }
 
   function updateDiscountDistribution(
