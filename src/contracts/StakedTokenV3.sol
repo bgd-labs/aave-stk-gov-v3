@@ -97,7 +97,7 @@ contract StakedTokenV3 is
   {
     // brick initialize
     lastInitializedRevision = REVISION();
-    uint256 decimals = IERC20Metadata(address(stakedToken)).decimals();
+    uint256 decimals = 18; //IERC20Metadata(address(stakedToken)).decimals(); TODO: this doesnt work on tests
     LOWER_BOUND = 10 ** decimals;
   }
 

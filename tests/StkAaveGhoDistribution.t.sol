@@ -12,12 +12,16 @@ import {GovernanceV3Ethereum} from 'aave-address-book/GovernanceV3Ethereum.sol';
 import {AaveMisc} from 'aave-address-book/AaveMisc.sol';
 import {AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
 import {IGhoVariableDebtTokenTransferHook} from '../src/interfaces/IGhoVariableDebtTokenTransferHook.sol';
+import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 
 contract GhoDistributionGasTest is Test, StakedAaveV3 {
-  address ghoToken = 0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f;
+  address ghoToken = 0x786dBff3f1292ae8F92ea68Cf93c30b34B1ed04B; //0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f;
 
   function setUp() public {
-    vm.createSelectFork(vm.rpcUrl('mainnet'), 18635596);
+    vm.createSelectFork(vm.rpcUrl('mainnet'), 18636130);
+    console.log(
+      IERC20Metadata(address(AaveV3EthereumAssets.AAVE_UNDERLYING)).decimals()
+    );
   }
 
   constructor()
@@ -34,15 +38,16 @@ contract GhoDistributionGasTest is Test, StakedAaveV3 {
   }
 
   function test_transferWithCorrectGas() public {
-    uint256 gasLimit = 300_000 - 64_000;
+    uint256 gasLimit = 4_000;
 
-    address from = address(1234);
+    address from = 0xE831C8903de820137c13681E78A5780afDdf7697;
     address to = address(123415);
     uint256 fromBalance = 10 ether;
-    uint256 toBalance = 10 ether;
+    uint256 toBalance = 0 ether;
 
     uint256 amount = 1 ether;
 
+    vm.expectRevert();
     this.updateDiscountDistribution{gas: gasLimit}(
       ghoToken,
       from,
@@ -51,23 +56,16 @@ contract GhoDistributionGasTest is Test, StakedAaveV3 {
       toBalance,
       amount
     );
-    //    address user = address(1234);
-    //
-    //    deal(address(STAKE_CONTRACT.STAKED_TOKEN()), user, amount);
-    //    console.log('balance', STAKE_CONTRACT.STAKED_TOKEN().balanceOf(user));
-    //
-    //    vm.startPrank(user);
-    //    STAKE_CONTRACT.STAKED_TOKEN().approve(
-    //      address(STAKE_CONTRACT),
-    //      type(uint256).max
-    //    );
-    //    console.log(
-    //      'balance',
-    //      STAKE_CONTRACT.STAKED_TOKEN().allowance(user, address(STAKE_CONTRACT))
-    //    );
-    //
-    //    STAKE_CONTRACT.stake{gas: gasLimit}(user, amount);
-    //    vm.stopPrank();
+
+    // expect error but not revert
+    this.updateDiscountDistribution(
+      ghoToken,
+      from,
+      to,
+      fromBalance,
+      toBalance,
+      amount
+    );
   }
 
   function updateDiscountDistribution(
