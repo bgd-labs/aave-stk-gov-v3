@@ -10,7 +10,8 @@ import {StakedAaveV3} from '../src/contracts/StakedAaveV3.sol';
 import {IInitializableAdminUpgradeabilityProxy} from '../src/interfaces/IInitializableAdminUpgradeabilityProxy.sol';
 import {IGhoVariableDebtTokenTransferHook} from '../src/interfaces/IGhoVariableDebtTokenTransferHook.sol';
 import {ProposalPayloadStkAbpt, ProposalPayloadStkAave, GenericProposal} from '../src/contracts/ProposalPayload.sol';
-import {ProxyAdmin, TransparentUpgradeableProxy} from 'openzeppelin-contracts/contracts/proxy/transparent/ProxyAdmin.sol';
+import {ProxyAdmin} from 'solidity-utils/contracts/transparent-proxy/ProxyAdmin.sol';
+import {TransparentUpgradeableProxy} from 'solidity-utils/contracts/transparent-proxy/TransparentUpgradeableProxy.sol';
 
 contract BaseTest is Test {
   StakedAaveV3 STAKE_CONTRACT;

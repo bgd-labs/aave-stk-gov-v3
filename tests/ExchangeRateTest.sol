@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {SafeCast} from '../src/lib/SafeCast.sol';
+import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
 
 contract ExchangeRateMock is Test {
   using SafeCast for uint256;
