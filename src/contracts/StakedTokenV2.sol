@@ -38,9 +38,6 @@ abstract contract StakedTokenV2 is
   mapping(address => uint256) public stakerRewardsToClaim;
   mapping(address => CooldownSnapshot) public stakersCooldowns;
 
-  /// @dev End of Storage layout from StakedToken v1
-  uint256[5] private ______DEPRECATED_FROM_STK_AAVE_V2;
-
   bytes32 public constant PERMIT_TYPEHASH =
     keccak256(
       'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'
