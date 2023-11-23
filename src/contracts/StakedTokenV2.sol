@@ -10,7 +10,6 @@ import {SafeERC20} from '../lib/SafeERC20.sol';
 
 import {VersionedInitializable} from '../utils/VersionedInitializable.sol';
 import {AaveDistributionManager} from './AaveDistributionManager.sol';
-import {GovernancePowerWithSnapshot} from '../lib/GovernancePowerWithSnapshot.sol';
 import {BaseMintableAaveToken} from './BaseMintableAaveToken.sol';
 
 /**
@@ -21,7 +20,6 @@ import {BaseMintableAaveToken} from './BaseMintableAaveToken.sol';
 abstract contract StakedTokenV2 is
   IStakedTokenV2,
   BaseMintableAaveToken,
-  GovernancePowerWithSnapshot,
   VersionedInitializable,
   AaveDistributionManager,
   EIP712
