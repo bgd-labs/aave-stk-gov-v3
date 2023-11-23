@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity ^0.8.0;
 
+import 'forge-std/console.sol';
 import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
@@ -96,8 +97,9 @@ contract StakedTokenV3 is
     )
   {
     // brick initialize
+    console.log('aave', address(stakedToken));
     lastInitializedRevision = REVISION();
-    uint256 decimals = 18; //IERC20Metadata(address(stakedToken)).decimals(); TODO: this doesnt work on tests
+    uint256 decimals = 18; //IERC20Metadata(address(stakedToken)).decimals();
     LOWER_BOUND = 10 ** decimals;
   }
 

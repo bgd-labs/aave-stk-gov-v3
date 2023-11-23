@@ -15,7 +15,7 @@ import {IGhoVariableDebtTokenTransferHook} from '../src/interfaces/IGhoVariableD
 import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 
 contract GhoDistributionGasTest is Test, StakedAaveV3 {
-  address ghoToken = 0x786dBff3f1292ae8F92ea68Cf93c30b34B1ed04B; //0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f;
+  address ghoToken = 0x786dBff3f1292ae8F92ea68Cf93c30b34B1ed04B;
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl('mainnet'), 18636130);
