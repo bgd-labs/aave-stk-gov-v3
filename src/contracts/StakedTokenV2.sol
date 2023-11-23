@@ -7,6 +7,7 @@ import {IStakedTokenV2} from '../interfaces/IStakedTokenV2.sol';
 
 import {DistributionTypes} from '../lib/DistributionTypes.sol';
 import {SafeERC20} from 'openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol';
+import {ERC20Permit} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Permit.sol';
 
 import {Initializable} from 'solidity-utils/contracts/transparent-proxy/Initializable.sol';
 import {AaveDistributionManager} from './AaveDistributionManager.sol';
@@ -19,6 +20,7 @@ import {BaseMintableAaveToken} from './BaseMintableAaveToken.sol';
  */
 abstract contract StakedTokenV2 is
   IStakedTokenV2,
+  ERC20Permit,
   BaseMintableAaveToken,
   Initializable,
   AaveDistributionManager,
@@ -37,14 +39,6 @@ abstract contract StakedTokenV2 is
 
   mapping(address => uint256) public stakerRewardsToClaim;
   mapping(address => CooldownSnapshot) public stakersCooldowns;
-
-  bytes32 public constant PERMIT_TYPEHASH =
-    keccak256(
-      'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'
-    );
-
-  /// @dev owner => next valid nonce to submit with permit()
-  mapping(address => uint256) public _nonces;
 
   constructor(
     IERC20 stakedToken,
@@ -103,40 +97,6 @@ abstract contract StakedTokenV2 is
     return
       stakerRewardsToClaim[staker] +
       _getUnclaimedRewards(staker, userStakeInputs);
-  }
-
-  /// @inheritdoc IStakedTokenV2
-  function permit(
-    address owner,
-    address spender,
-    uint256 value,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external {
-    require(owner != address(0), 'INVALID_OWNER');
-    //solium-disable-next-line
-    require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
-    uint256 currentValidNonce = _nonces[owner];
-    bytes32 digest = _hashTypedDataV4(
-      keccak256(
-        abi.encode(
-          PERMIT_TYPEHASH,
-          owner,
-          spender,
-          value,
-          currentValidNonce,
-          deadline
-        )
-      )
-    );
-
-    require(owner == ECDSA.recover(digest, v, r, s), 'INVALID_SIGNATURE');
-    unchecked {
-      _nonces[owner] = currentValidNonce + 1;
-    }
-    _approve(owner, spender, value);
   }
 
   /**

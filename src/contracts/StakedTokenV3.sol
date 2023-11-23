@@ -614,13 +614,6 @@ contract StakedTokenV3 is
     userState.delegationMode = delegationState.delegationMode;
   }
 
-  function _incrementNonces(address user) internal override returns (uint256) {
-    unchecked {
-      // Does not make sense to check because it's not realistic to reach uint256.max in nonce
-      return _nonces[user]++;
-    }
-  }
-
   function _getDomainSeparator() internal view override returns (bytes32) {
     return DOMAIN_SEPARATOR();
   }
