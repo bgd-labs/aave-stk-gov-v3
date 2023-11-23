@@ -14,7 +14,7 @@ import {IStakedTokenV3} from '../interfaces/IStakedTokenV3.sol';
 import {PercentageMath} from '../lib/PercentageMath.sol';
 import {RoleManager} from '../utils/RoleManager.sol';
 import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
-import {IERC20WithPermit} from '../interfaces/IERC20WithPermit.sol';
+import {IERC20WithPermit} from 'solidity-utils/contracts/oz-common/interfaces/IERC20WithPermit.sol';
 
 /**
  * @title StakedTokenV3
