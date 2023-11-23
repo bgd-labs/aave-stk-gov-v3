@@ -6,7 +6,7 @@ import {AaveMisc} from 'aave-address-book/AaveMisc.sol';
 import {AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
 import {GovernanceV3Ethereum} from 'aave-address-book/GovernanceV3Ethereum.sol';
 import {StakedAaveV3} from '../src/contracts/StakedAaveV3.sol';
-import {IERC20} from 'solidity-utils/contracts/oz-common/interfaces/IERC20.sol';
+import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 
 contract DeployStkAaveToken is EthereumScript {
   uint256 public constant UNSTAKE_WINDOW = 172800; // 2 days

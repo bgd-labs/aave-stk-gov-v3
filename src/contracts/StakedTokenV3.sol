@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity ^0.8.0;
 
-import {IERC20} from 'solidity-utils/contracts/oz-common/interfaces/IERC20.sol';
-import {IERC20Metadata} from 'solidity-utils/contracts/oz-common/interfaces/IERC20Metadata.sol';
+import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
+import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
 
 import {DistributionTypes} from '../lib/DistributionTypes.sol';
-import {SafeERC20} from 'solidity-utils/contracts/oz-common/SafeERC20.sol';
+import {SafeERC20} from '../lib/SafeERC20.sol';
 import {IAaveDistributionManager} from '../interfaces/IAaveDistributionManager.sol';
 import {IStakedTokenV2} from '../interfaces/IStakedTokenV2.sol';
 import {StakedTokenV2} from './StakedTokenV2.sol';
@@ -15,6 +15,8 @@ import {PercentageMath} from '../lib/PercentageMath.sol';
 import {RoleManager} from '../utils/RoleManager.sol';
 import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
 import {IERC20WithPermit} from 'solidity-utils/contracts/oz-common/interfaces/IERC20WithPermit.sol';
+import {SafeCast} from '../lib/SafeCast.sol';
+import {IERC20WithPermit} from '../interfaces/IERC20WithPermit.sol';
 
 /**
  * @title StakedTokenV3

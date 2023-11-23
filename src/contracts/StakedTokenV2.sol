@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity ^0.8.0;
 
-import {IERC20} from 'solidity-utils/contracts/oz-common/interfaces/IERC20.sol';
+import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {EIP712, ECDSA} from 'aave-token-v3/utils/EIP712.sol';
 import {IStakedTokenV2} from '../interfaces/IStakedTokenV2.sol';
 
 import {DistributionTypes} from '../lib/DistributionTypes.sol';
-import {SafeERC20} from 'solidity-utils/contracts/oz-common/SafeERC20.sol';
+import {SafeERC20} from '../lib/SafeERC20.sol';
 
 import {Initializable} from 'solidity-utils/contracts/transparent-proxy/Initializable.sol';
 import {AaveDistributionManager} from './AaveDistributionManager.sol';
