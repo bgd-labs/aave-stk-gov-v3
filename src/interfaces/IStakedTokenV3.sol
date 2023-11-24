@@ -120,18 +120,6 @@ interface IStakedTokenV3 is IStakedTokenV2 {
   function cooldownOnBehalfOf(address from) external;
 
   /**
-   * @dev Claims an `amount` of `REWARD_TOKEN` to the address `to` on behalf of the user. Only the claim helper contract is allowed to call this function
-   * @param from The address of the user from to claim
-   * @param to Address to send the claimed rewards
-   * @param amount Amount to claim
-   */
-  function claimRewardsOnBehalf(
-    address from,
-    address to,
-    uint256 amount
-  ) external returns (uint256);
-
-  /**
    * @dev returns the exact amount of assets that would be redeemed for the provided number of shares
    * @param shares the number of shares to redeem
    * @return uint256 assets the number of assets that would be redeemed
@@ -145,30 +133,4 @@ interface IStakedTokenV3 is IStakedTokenV2 {
    * @param amount Amount of shares to redeem
    */
   function redeemOnBehalf(address from, address to, uint256 amount) external;
-
-  /**
-   * @dev Claims an `amount` of `REWARD_TOKEN` and redeems to the provided address
-   * @param to Address to claim and redeem to
-   * @param claimAmount Amount to claim
-   * @param redeemAmount Amount to redeem
-   */
-  function claimRewardsAndRedeem(
-    address to,
-    uint256 claimAmount,
-    uint256 redeemAmount
-  ) external;
-
-  /**
-   * @dev Claims an `amount` of `REWARD_TOKEN` and redeems the `redeemAmount` to an address. Only the claim helper contract is allowed to call this function
-   * @param from The address of the from
-   * @param to Address to claim and redeem to
-   * @param claimAmount Amount to claim
-   * @param redeemAmount Amount to redeem
-   */
-  function claimRewardsAndRedeemOnBehalf(
-    address from,
-    address to,
-    uint256 claimAmount,
-    uint256 redeemAmount
-  ) external;
 }

@@ -5,12 +5,9 @@ import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {EIP712, ECDSA} from 'aave-token-v3/utils/EIP712.sol';
 import {IStakedTokenV2} from '../interfaces/IStakedTokenV2.sol';
 
-import {DistributionTypes} from '../lib/DistributionTypes.sol';
-import {SafeERC20} from '../lib/SafeERC20.sol';
+import {SafeERC20} from 'openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol';
 
-import {VersionedInitializable} from '../utils/VersionedInitializable.sol';
-import {AaveDistributionManager} from './AaveDistributionManager.sol';
-import {GovernancePowerWithSnapshot} from '../lib/GovernancePowerWithSnapshot.sol';
+import {Initializable} from 'solidity-utils/contracts/transparent-proxy/Initializable.sol';
 import {BaseMintableAaveToken} from './BaseMintableAaveToken.sol';
 
 /**
@@ -21,27 +18,18 @@ import {BaseMintableAaveToken} from './BaseMintableAaveToken.sol';
 abstract contract StakedTokenV2 is
   IStakedTokenV2,
   BaseMintableAaveToken,
-  GovernancePowerWithSnapshot,
-  VersionedInitializable,
-  AaveDistributionManager,
+  Initializable,
   EIP712
 {
   using SafeERC20 for IERC20;
 
   IERC20 public immutable STAKED_TOKEN;
-  IERC20 public immutable REWARD_TOKEN;
 
   /// @notice Seconds available to redeem once the cooldown period is fulfilled
   uint256 public immutable UNSTAKE_WINDOW;
 
-  /// @notice Address to pull from the rewards, needs to have approved this contract
-  address public immutable REWARDS_VAULT;
-
   mapping(address => uint256) public stakerRewardsToClaim;
   mapping(address => CooldownSnapshot) public stakersCooldowns;
-
-  /// @dev End of Storage layout from StakedToken v1
-  uint256[5] private ______DEPRECATED_FROM_STK_AAVE_V2;
 
   bytes32 public constant PERMIT_TYPEHASH =
     keccak256(
@@ -53,19 +41,10 @@ abstract contract StakedTokenV2 is
 
   constructor(
     IERC20 stakedToken,
-    IERC20 rewardToken,
-    uint256 unstakeWindow,
-    address rewardsVault,
-    address emissionManager,
-    uint128 distributionDuration
-  )
-    AaveDistributionManager(emissionManager, distributionDuration)
-    EIP712('Staked Aave', '2')
-  {
+    uint256 unstakeWindow
+  ) EIP712('Staked Aave', '2') {
     STAKED_TOKEN = stakedToken;
-    REWARD_TOKEN = rewardToken;
     UNSTAKE_WINDOW = unstakeWindow;
-    REWARDS_VAULT = rewardsVault;
   }
 
   /**
@@ -90,25 +69,6 @@ abstract contract StakedTokenV2 is
 
   /// @inheritdoc IStakedTokenV2
   function cooldown() external virtual override;
-
-  /// @inheritdoc IStakedTokenV2
-  function claimRewards(address to, uint256 amount) external virtual override;
-
-  /// @inheritdoc IStakedTokenV2
-  function getTotalRewardsBalance(
-    address staker
-  ) external view returns (uint256) {
-    DistributionTypes.UserStakeInput[]
-      memory userStakeInputs = new DistributionTypes.UserStakeInput[](1);
-    userStakeInputs[0] = DistributionTypes.UserStakeInput({
-      underlyingAsset: address(this),
-      stakedByUser: balanceOf(staker),
-      totalStaked: totalSupply()
-    });
-    return
-      stakerRewardsToClaim[staker] +
-      _getUnclaimedRewards(staker, userStakeInputs);
-  }
 
   /// @inheritdoc IStakedTokenV2
   function permit(
@@ -142,35 +102,5 @@ abstract contract StakedTokenV2 is
       _nonces[owner] = currentValidNonce + 1;
     }
     _approve(owner, spender, value);
-  }
-
-  /**
-   * @dev Updates the user state related with his accrued rewards
-   * @param user Address of the user
-   * @param userBalance The current balance of the user
-   * @param updateStorage Boolean flag used to update or not the stakerRewardsToClaim of the user
-   * @return The unclaimed rewards that were added to the total accrued
-   */
-  function _updateCurrentUnclaimedRewards(
-    address user,
-    uint256 userBalance,
-    bool updateStorage
-  ) internal returns (uint256) {
-    uint256 accruedRewards = _updateUserAssetInternal(
-      user,
-      address(this),
-      userBalance,
-      totalSupply()
-    );
-    uint256 unclaimedRewards = stakerRewardsToClaim[user] + accruedRewards;
-
-    if (accruedRewards != 0) {
-      if (updateStorage) {
-        stakerRewardsToClaim[user] = unclaimedRewards;
-      }
-      emit RewardsAccrued(user, accruedRewards);
-    }
-
-    return unclaimedRewards;
   }
 }

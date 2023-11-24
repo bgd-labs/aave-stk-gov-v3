@@ -5,16 +5,15 @@ import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
 
-import {DistributionTypes} from '../lib/DistributionTypes.sol';
-import {SafeERC20} from '../lib/SafeERC20.sol';
-import {IAaveDistributionManager} from '../interfaces/IAaveDistributionManager.sol';
+import {SafeERC20} from 'openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IStakedTokenV2} from '../interfaces/IStakedTokenV2.sol';
 import {StakedTokenV2} from './StakedTokenV2.sol';
 import {IStakedTokenV3} from '../interfaces/IStakedTokenV3.sol';
 import {PercentageMath} from '../lib/PercentageMath.sol';
 import {RoleManager} from '../utils/RoleManager.sol';
-import {SafeCast} from '../lib/SafeCast.sol';
-import {IERC20WithPermit} from '../interfaces/IERC20WithPermit.sol';
+import {IERC20Permit} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol';
+import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
+import {IRewardsController} from 'lib/aave-v3-periphery/contracts/rewards/interfaces/IRewardsController.sol';
 
 /**
  * @title StakedTokenV3
@@ -25,7 +24,6 @@ contract StakedTokenV3 is
   StakedTokenV2,
   IStakedTokenV3,
   RoleManager,
-  IAaveDistributionManager,
   BaseDelegation
 {
   using SafeERC20 for IERC20;
@@ -42,6 +40,8 @@ contract StakedTokenV3 is
   /// @notice lower bound to prevent spam & avoid exchangeRate issues
   // as returnFunds can be called permissionless an attacker could spam returnFunds(1) to produce exchangeRate snapshots making voting expensive
   uint256 public immutable LOWER_BOUND;
+
+  IRewardsController public immutable REWARDS_CONTROLLER;
 
   // Reserved storage space to allow for layout changes in the future.
   uint256[6] private ______gap;
@@ -80,55 +80,21 @@ contract StakedTokenV3 is
 
   constructor(
     IERC20 stakedToken,
-    IERC20 rewardToken,
     uint256 unstakeWindow,
-    address rewardsVault,
-    address emissionManager,
-    uint128 distributionDuration
-  )
-    StakedTokenV2(
-      stakedToken,
-      rewardToken,
-      unstakeWindow,
-      rewardsVault,
-      emissionManager,
-      distributionDuration
-    )
-  {
-    // brick initialize
-    lastInitializedRevision = REVISION();
+    IRewardsController rewardsController
+  ) StakedTokenV2(stakedToken, unstakeWindow) {
     uint256 decimals = IERC20Metadata(address(stakedToken)).decimals();
     LOWER_BOUND = 10 ** decimals;
+    REWARDS_CONTROLLER = rewardsController;
   }
 
-  /**
-   * @dev returns the revision of the implementation contract
-   * @return The revision
-   */
-  function REVISION() public pure virtual returns (uint256) {
-    return 4;
-  }
-
-  /**
-   * @dev returns the revision of the implementation contract
-   * @return The revision
-   */
-  function getRevision() internal pure virtual override returns (uint256) {
-    return REVISION();
-  }
-
-  /**
-   * @dev Called by the proxy contract
-   */
-  function initialize() external virtual initializer {}
-
-  function _initialize(
+  function initialize(
     address slashingAdmin,
     address cooldownPauseAdmin,
     address claimHelper,
     uint256 maxSlashablePercentage,
     uint256 cooldownSeconds
-  ) internal {
+  ) internal initializer {
     InitAdmin[] memory initAdmins = new InitAdmin[](3);
     initAdmins[0] = InitAdmin(SLASH_ADMIN_ROLE, slashingAdmin);
     initAdmins[1] = InitAdmin(COOLDOWN_ADMIN_ROLE, cooldownPauseAdmin);
@@ -139,19 +105,6 @@ contract StakedTokenV3 is
     _setMaxSlashablePercentage(maxSlashablePercentage);
     _setCooldownSeconds(cooldownSeconds);
     _updateExchangeRate(INITIAL_EXCHANGE_RATE);
-  }
-
-  /// @inheritdoc IAaveDistributionManager
-  function configureAssets(
-    DistributionTypes.AssetConfigInput[] memory assetsConfigInput
-  ) external override {
-    require(msg.sender == EMISSION_MANAGER, 'ONLY_EMISSION_MANAGER');
-
-    for (uint256 i = 0; i < assetsConfigInput.length; i++) {
-      assetsConfigInput[i].totalStaked = totalSupply();
-    }
-
-    _configureAssets(assetsConfigInput);
   }
 
   /// @inheritdoc IStakedTokenV3
@@ -176,7 +129,7 @@ contract StakedTokenV3 is
     bytes32 s
   ) external override {
     try
-      IERC20WithPermit(address(STAKED_TOKEN)).permit(
+      IERC20Permit(address(STAKED_TOKEN)).permit(
         msg.sender,
         address(this),
         amount,
@@ -229,44 +182,6 @@ contract StakedTokenV3 is
     uint256 amount
   ) external override onlyClaimHelper {
     _redeem(from, to, amount.toUint104());
-  }
-
-  /// @inheritdoc IStakedTokenV2
-  function claimRewards(
-    address to,
-    uint256 amount
-  ) external override(IStakedTokenV2, StakedTokenV2) {
-    _claimRewards(msg.sender, to, amount);
-  }
-
-  /// @inheritdoc IStakedTokenV3
-  function claimRewardsOnBehalf(
-    address from,
-    address to,
-    uint256 amount
-  ) external override onlyClaimHelper returns (uint256) {
-    return _claimRewards(from, to, amount);
-  }
-
-  /// @inheritdoc IStakedTokenV3
-  function claimRewardsAndRedeem(
-    address to,
-    uint256 claimAmount,
-    uint256 redeemAmount
-  ) external override {
-    _claimRewards(msg.sender, to, claimAmount);
-    _redeem(msg.sender, to, redeemAmount.toUint104());
-  }
-
-  /// @inheritdoc IStakedTokenV3
-  function claimRewardsAndRedeemOnBehalf(
-    address from,
-    address to,
-    uint256 claimAmount,
-    uint256 redeemAmount
-  ) external override onlyClaimHelper {
-    _claimRewards(from, to, claimAmount);
-    _redeem(from, to, redeemAmount.toUint104());
   }
 
   /// @inheritdoc IStakedTokenV3
@@ -383,67 +298,6 @@ contract StakedTokenV3 is
   }
 
   /**
-   * @dev claims the rewards for a specified address to a specified address
-   * @param from The address of the from from which to claim
-   * @param to Address to receive the rewards
-   * @param amount Amount to claim
-   * @return amount claimed
-   */
-  function _claimRewards(
-    address from,
-    address to,
-    uint256 amount
-  ) internal returns (uint256) {
-    require(amount != 0, 'INVALID_ZERO_AMOUNT');
-    uint256 newTotalRewards = _updateCurrentUnclaimedRewards(
-      from,
-      balanceOf(from),
-      false
-    );
-
-    uint256 amountToClaim = (amount > newTotalRewards)
-      ? newTotalRewards
-      : amount;
-    require(amountToClaim != 0, 'INVALID_ZERO_AMOUNT');
-
-    stakerRewardsToClaim[from] = newTotalRewards - amountToClaim;
-    REWARD_TOKEN.safeTransferFrom(REWARDS_VAULT, to, amountToClaim);
-    emit RewardsClaimed(from, to, amountToClaim);
-    return amountToClaim;
-  }
-
-  /**
-   * @dev Claims an `amount` of `REWARD_TOKEN` and stakes.
-   * @param from The address of the from from which to claim
-   * @param to Address to stake to
-   * @param amount Amount to claim
-   * @return amount claimed
-   */
-  function _claimRewardsAndStakeOnBehalf(
-    address from,
-    address to,
-    uint256 amount
-  ) internal returns (uint256) {
-    require(REWARD_TOKEN == STAKED_TOKEN, 'REWARD_TOKEN_IS_NOT_STAKED_TOKEN');
-
-    uint256 userUpdatedRewards = _updateCurrentUnclaimedRewards(
-      from,
-      balanceOf(from),
-      true
-    );
-    uint256 amountToClaim = (amount > userUpdatedRewards)
-      ? userUpdatedRewards
-      : amount;
-
-    if (amountToClaim != 0) {
-      _claimRewards(from, address(this), amountToClaim);
-      _stake(address(this), to, amountToClaim);
-    }
-
-    return amountToClaim;
-  }
-
-  /**
    * @dev Allows staking a specified amount of STAKED_TOKEN
    * @param to The address to receiving the shares
    * @param amount The amount of assets to be staked
@@ -454,17 +308,7 @@ contract StakedTokenV3 is
 
     uint256 balanceOfTo = balanceOf(to);
 
-    uint256 accruedRewards = _updateUserAssetInternal(
-      to,
-      address(this),
-      balanceOfTo,
-      totalSupply()
-    );
-
-    if (accruedRewards != 0) {
-      stakerRewardsToClaim[to] = stakerRewardsToClaim[to] + accruedRewards;
-      emit RewardsAccrued(to, accruedRewards);
-    }
+    REWARDS_CONTROLLER.handleAction(to, totalSupply(), balanceOfTo);
 
     uint256 sharesToMint = previewStake(amount);
 
@@ -505,7 +349,7 @@ contract StakedTokenV3 is
 
     uint256 amountToRedeem = (amount > maxRedeemable) ? maxRedeemable : amount;
 
-    _updateCurrentUnclaimedRewards(from, balanceOfFrom, true);
+    REWARDS_CONTROLLER.handleAction(from, totalSupply(), balanceOfFrom);
 
     uint256 underlyingToRedeem = previewRedeem(amountToRedeem);
 
@@ -559,12 +403,12 @@ contract StakedTokenV3 is
   ) internal override {
     uint256 balanceOfFrom = balanceOf(from);
     // Sender
-    _updateCurrentUnclaimedRewards(from, balanceOfFrom, true);
+    REWARDS_CONTROLLER.handleAction(from, totalSupply(), balanceOfFrom);
 
     // Recipient
     if (from != to) {
       uint256 balanceOfTo = balanceOf(to);
-      _updateCurrentUnclaimedRewards(to, balanceOfTo, true);
+      REWARDS_CONTROLLER.handleAction(to, totalSupply(), balanceOfTo);
 
       CooldownSnapshot memory previousSenderCooldown = stakersCooldowns[from];
       if (previousSenderCooldown.timestamp != 0) {
@@ -641,5 +485,12 @@ contract StakedTokenV3 is
 
   function _getDomainSeparator() internal view override returns (bytes32) {
     return DOMAIN_SEPARATOR();
+  }
+
+  /**
+   * @dev stub method to be compatibel with emissions manager
+   */
+  function totalScaledSupply() external returns (uint256) {
+    return totalSupply();
   }
 }

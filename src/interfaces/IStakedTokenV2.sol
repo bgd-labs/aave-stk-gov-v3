@@ -7,12 +7,6 @@ interface IStakedTokenV2 {
     uint216 amount;
   }
 
-  event RewardsAccrued(address user, uint256 amount);
-  event RewardsClaimed(
-    address indexed from,
-    address indexed to,
-    uint256 amount
-  );
   event Cooldown(address indexed user, uint256 amount);
 
   /**
@@ -34,22 +28,6 @@ interface IStakedTokenV2 {
    * - It can't be called if the user is not staking
    */
   function cooldown() external;
-
-  /**
-   * @dev Claims an `amount` of `REWARD_TOKEN` to the address `to`
-   * @param to Address to send the claimed rewards
-   * @param amount Amount to stake
-   */
-  function claimRewards(address to, uint256 amount) external;
-
-  /**
-   * @dev Return the total rewards pending to claim by an staker
-   * @param staker The staker address
-   * @return The rewards
-   */
-  function getTotalRewardsBalance(
-    address staker
-  ) external view returns (uint256);
 
   /**
    * @dev implements the permit function as for https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
