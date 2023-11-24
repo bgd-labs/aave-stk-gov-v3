@@ -15,6 +15,7 @@ import {PercentageMath} from '../lib/PercentageMath.sol';
 import {RoleManager} from '../utils/RoleManager.sol';
 import {IERC20Permit} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol';
 import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
+import {IRewardsController} from 'lib/aave-v3-periphery/contracts/rewards/interfaces/IRewardsController.sol';
 
 /**
  * @title StakedTokenV3
@@ -616,5 +617,12 @@ contract StakedTokenV3 is
 
   function _getDomainSeparator() internal view override returns (bytes32) {
     return DOMAIN_SEPARATOR();
+  }
+
+  /**
+   * @dev stub method to be compatibel with emissions manager
+   */
+  function totalScaledSupply() returns (uint256) {
+    return totalSupply();
   }
 }

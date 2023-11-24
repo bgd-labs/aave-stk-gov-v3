@@ -10,3 +10,6 @@
 [submodule "lib/aave-token-v3"]
 	path = lib/aave-token-v3
 	url = https://github.com/bgd-labs/aave-token-v3
+[submodule "lib/aave-v3-periphery"]
+	path = lib/aave-v3-periphery
+	url = https://github.com/aave/aave-v3-periphery
