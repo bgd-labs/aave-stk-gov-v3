@@ -119,7 +119,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
     bytes4 selector = IGhoVariableDebtTokenTransferHook
       .updateDiscountDistribution
       .selector;
-    uint256 gasLimit = 90_000;
+    uint256 gasLimit = 220_000;
     assembly ('memory-safe') {
       // solhint-disable-line no-inline-assembly
       let ptr := mload(0x40)
