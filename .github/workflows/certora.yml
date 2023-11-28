@@ -79,7 +79,13 @@ jobs:
           - invariants.conf
           - token-v3-general.conf --rule delegateCorrectness
           - token-v3-general.conf --rule sumOfVBalancesCorrectness
+          - token-v3-general.conf --rule sumOfVBalancesCorrectness_onlyClaimRewardsAndRedeem
+          - token-v3-general.conf --rule sumOfVBalancesCorrectness_onlyClaimRewardsAndRedeemOnBehalf
           - token-v3-general.conf --rule sumOfPBalancesCorrectness
+          - token-v3-general.conf --rule sumOfPBalancesCorrectness_onlyClaimRewardsAndRedeem
+          - token-v3-general.conf --rule sumOfPBalancesCorrectness_onlyClaimRewardsAndRedeemOnBehalf
+          - token-v3-general.conf --rule sumOfPBalancesCorrectness_onlyRedeem
+          - token-v3-general.conf --rule sumOfPBalancesCorrectness_onlyRedeemOnBehalf
           - token-v3-general.conf --rule transferDoesntChangeDelegationMode
           - token-v3-erc20.conf
           - token-v3-community.conf

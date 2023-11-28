@@ -160,8 +160,24 @@ invariant delegateCorrectness(address user)
     @Link:
 
 */
-invariant sumOfVBalancesCorrectness() sumDelegatedBalancesV + sumUndelegatedBalancesV == to_mathint(totalSupply());
+invariant sumOfVBalancesCorrectness() 
+    sumDelegatedBalancesV + sumUndelegatedBalancesV == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector != sig:claimRewardsAndRedeem(address, uint256, uint256).selector && 
+             f.selector != sig:claimRewardsAndRedeemOnBehalf(address, address, uint256, uint256).selector
+    }
 
+invariant sumOfVBalancesCorrectness_onlyClaimRewardsAndRedeem() 
+    sumDelegatedBalancesV + sumUndelegatedBalancesV == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector == sig:claimRewardsAndRedeem(address, uint256, uint256).selector
+    }
+
+invariant sumOfVBalancesCorrectness_onlyClaimRewardsAndRedeemOnBehalf() 
+    sumDelegatedBalancesV + sumUndelegatedBalancesV == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector != sig:claimRewardsAndRedeemOnBehalf(address, address, uint256, uint256).selector
+    }
 /*
     @Rule
 
@@ -174,7 +190,33 @@ invariant sumOfVBalancesCorrectness() sumDelegatedBalancesV + sumUndelegatedBala
     @Link:
 
 */
-invariant sumOfPBalancesCorrectness() sumDelegatedBalancesP + sumUndelegatedBalancesP == to_mathint(totalSupply());
+invariant sumOfPBalancesCorrectness() sumDelegatedBalancesP + sumUndelegatedBalancesP == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector != sig:claimRewardsAndRedeem(address, uint256, uint256).selector && 
+             f.selector != sig:claimRewardsAndRedeemOnBehalf(address, address, uint256, uint256).selector &&
+             f.selector != sig:redeem(address,uint256).selector &&
+             f.selector != sig:redeemOnBehalf(address,address,uint256).selector
+    }
+
+invariant sumOfPBalancesCorrectness_onlyClaimRewardsAndRedeem() sumDelegatedBalancesP + sumUndelegatedBalancesP == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector == sig:claimRewardsAndRedeem(address,uint256,uint256).selector
+    }
+
+invariant sumOfPBalancesCorrectness_onlyClaimRewardsAndRedeemOnBehalf() sumDelegatedBalancesP + sumUndelegatedBalancesP == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector == sig:claimRewardsAndRedeemOnBehalf(address, address, uint256, uint256).selector
+    }
+
+invariant sumOfPBalancesCorrectness_onlyRedeem() sumDelegatedBalancesP + sumUndelegatedBalancesP == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector == sig:redeem(address,uint256).selector
+    }
+
+invariant sumOfPBalancesCorrectness_onlyRedeemOnBehalf() sumDelegatedBalancesP + sumUndelegatedBalancesP == to_mathint(totalSupply())
+    filtered {
+        f -> f.selector == sig:redeemOnBehalf(address,address,uint256).selector
+    }
 
 /*
     @Rule
@@ -188,6 +230,7 @@ invariant sumOfPBalancesCorrectness() sumDelegatedBalancesP + sumUndelegatedBala
     @Link:
 
 */
+
 rule transferDoesntChangeDelegationMode() {
     env e;
     address from; address to; address charlie;
