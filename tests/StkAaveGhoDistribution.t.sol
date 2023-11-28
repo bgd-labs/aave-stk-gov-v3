@@ -22,6 +22,14 @@ contract BaseTest is Test {
 contract GhoDistributionGasTest is BaseTest, StakedAaveV3 {
   address ghoToken = 0x786dBff3f1292ae8F92ea68Cf93c30b34B1ed04B;
 
+  event Mint(
+    address indexed caller,
+    address indexed onBehalfOf,
+    uint256 value,
+    uint256 balanceIncrease,
+    uint256 index
+  );
+
   function setUp() public {}
 
   constructor()
@@ -68,7 +76,18 @@ contract GhoDistributionGasTest is BaseTest, StakedAaveV3 {
       amount
     );
 
+    // expect execution to complete
     vm.startPrank(0x4da27a545c0c5B758a6BA100e3a049001de870f5);
+    vm.expectEmit(true, true, false, true);
+    emit Transfer(address(0), from, 41185113828714);
+    vm.expectEmit(true, true, false, true);
+    emit Mint(
+      address(0),
+      from,
+      41185113828714,
+      41185113828714,
+      1008020889040822120071191507
+    );
     _updateDiscountDistribution(
       ghoToken,
       from,
