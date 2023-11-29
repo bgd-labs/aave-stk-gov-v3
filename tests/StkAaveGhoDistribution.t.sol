@@ -47,8 +47,6 @@ contract GhoDistributionGasTest is BaseTest, StakedAaveV3 {
   }
 
   function test_transferWithCorrectGasLimit() public {
-    uint256 gasLimit = 4_000;
-
     address from = 0xE831C8903de820137c13681E78A5780afDdf7697;
     address to = address(123415);
     uint256 fromBalance = 10 ether;
@@ -57,6 +55,19 @@ contract GhoDistributionGasTest is BaseTest, StakedAaveV3 {
     uint256 amount = 1 ether;
     // expect execution to complete
     vm.startPrank(0x4da27a545c0c5B758a6BA100e3a049001de870f5);
+    vm.expectCallMinGas(
+      ghoToken,
+      0,
+      220_000,
+      abi.encodeWithSelector(
+        IGhoVariableDebtTokenTransferHook.updateDiscountDistribution.selector,
+        from,
+        to,
+        fromBalance,
+        toBalance,
+        amount
+      )
+    );
     vm.expectEmit(true, true, false, true);
     emit Transfer(address(0), from, 41185113828714);
     vm.expectEmit(true, true, false, true);
@@ -80,8 +91,6 @@ contract GhoDistributionGasTest is BaseTest, StakedAaveV3 {
 
   // test to make external call revert but due other reason different than out of gas
   function test_transferWithCorrectGasButErrorsOut() public {
-    uint256 gasLimit = 4_000;
-
     address from = 0xE831C8903de820137c13681E78A5780afDdf7697;
     address to = address(123415);
     uint256 fromBalance = 10 ether;
