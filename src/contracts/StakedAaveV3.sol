@@ -93,17 +93,52 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
       amount
     );
 
-    IGhoVariableDebtTokenTransferHook cachedGhoDebtToken = ghoDebtToken;
-    if (address(cachedGhoDebtToken) != address(0)) {
-      try
-        cachedGhoDebtToken.updateDiscountDistribution(
-          from,
-          to,
-          fromBalanceBefore,
-          toBalanceBefore,
-          amount
-        )
-      {} catch (bytes memory) {}
+    address cachedGhoDebtToken = address(ghoDebtToken);
+    if (cachedGhoDebtToken != address(0)) {
+      _updateDiscountDistribution(
+        cachedGhoDebtToken,
+        from,
+        to,
+        fromBalanceBefore,
+        toBalanceBefore,
+        amount
+      );
+    }
+  }
+
+  /// @notice Assembly implementation of the gas limited call to avoid return gas bomb,
+  /// moreover call would also revert even inside try-catch block in Solidity 0.8.17
+  function _updateDiscountDistribution(
+    address cachedGhoDebtToken,
+    address from,
+    address to,
+    uint256 fromBalanceBefore,
+    uint256 toBalanceBefore,
+    uint256 amount
+  ) internal {
+    bytes4 selector = IGhoVariableDebtTokenTransferHook
+      .updateDiscountDistribution
+      .selector;
+    uint256 gasLimit = 220_000;
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      // solhint-disable-line no-inline-assembly
+      let ptr := mload(0x40)
+      mstore(ptr, selector)
+      mstore(add(ptr, 0x04), from)
+      mstore(add(ptr, 0x24), to)
+      mstore(add(ptr, 0x44), fromBalanceBefore)
+      mstore(add(ptr, 0x64), toBalanceBefore)
+      mstore(add(ptr, 0x84), amount)
+
+      let gasLeft := gas()
+      if iszero(call(gasLimit, cachedGhoDebtToken, 0, ptr, 0xA4, 0, 0)) {
+        if lt(div(mul(gasLeft, 63), 64), gasLimit) {
+          returndatacopy(ptr, 0, returndatasize())
+          revert(ptr, returndatasize())
+        }
+      }
     }
   }
 }
