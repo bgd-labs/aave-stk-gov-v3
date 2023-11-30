@@ -107,7 +107,7 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   }
 
   /// @notice Assembly implementation of the gas limited call to avoid return gas bomb,
-  /// moreover call to a destructed plugin would also revert even inside try-catch block in Solidity 0.8.17
+  /// moreover call would also revert even inside try-catch block in Solidity 0.8.17
   function _updateDiscountDistribution(
     address cachedGhoDebtToken,
     address from,
