@@ -31,6 +31,8 @@ After having installed Foundry:
 - Security review and properties checking (formal verification) by [Certora](https://www.certora.com/), service provider of the Aave DAO.
   - [Properties](./certora/)
   - [Reports](./audits/Formal_Verification_Report_stk_v3.pdf)
+- Audit by [MixBytes](https://mixbytes.io/).
+  - [Reports](./audits/MixBytes_audit_Report_gov_v3_voting_assets.pdf)
 
 <br>
 
