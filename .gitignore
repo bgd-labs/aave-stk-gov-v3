@@ -4,6 +4,7 @@ out/
 
 # general
 .env
+flattened/
 
 # editors
 .idea
