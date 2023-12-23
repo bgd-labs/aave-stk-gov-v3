@@ -49,7 +49,13 @@ contract StakedAaveV3 is StakedTokenV3, IStakedAaveV3 {
   /**
    * @dev Called by the proxy contract
    */
-  function initialize() external override initializer {}
+  function initialize(
+    address,
+    address,
+    address,
+    uint256,
+    uint256
+  ) external override initializer {}
 
   /// @inheritdoc IStakedAaveV3
   function claimRewardsAndStake(
